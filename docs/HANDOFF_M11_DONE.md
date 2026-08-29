@@ -159,3 +159,26 @@ Reranker/Final Score、Source Line（start_line-end_line）。
 6. 后端 API 若需要变更：先在后端窗口改 + 同步更新本文件的契约节 + 通知前端；
 7. 测试基线：`.venv\Scripts\python.exe -m pytest backend\tests\ -q` 应 102 passed
    （前端窗口不修改后端时此数字只增不减）。
+
+---
+
+## 6. 当前状态与剩余工作（窗口结束登记，2026-08-29）
+
+**任务已完成**，本文件归档为 HANDOFF_M11_DONE.md。
+
+验收 Gate 逐项结果：
+- [x] npm run build 无 TS 错误（tsc --noEmit 0 error + vite build 成功）
+- [x] 三页 P0 全部对接真实后端（uvicorn 8765 + vite 5173 真机 GUI 验证，非 mock）
+- [x] 搜索 -> 查看上下文 -> 文档滚动定位全链路演示通过
+      （「HBM4 接口位宽」→ /document/M04?line=395 → 行 395-401 高亮居中）
+- [x] Filters（Evidence L1 过滤后全 L1）/ Reranker toggle / Debug trace UI 生效
+- [x] Index 页四方计数 725 一致 + worker 健康 + scan 触发成功
+- [x] IMPLEMENTATION_STATUS.md 更新 + git commit
+- [x] P1 两页（/settings 8 组配置、/evaluation Gate 5/5 PASS + 报告）同步交付
+
+遗留备忘：
+1. 后端无按文档列 chunks 端点，前端用 chunk_id 探针法枚举（见 IMPLEMENTATION_STATUS
+   「M11 契约缺口备忘」）；后端窗口若增加 `GET /api/documents/{id}/chunks` 可替换。
+2. 系统原无 Node.js，便携版 Node v22.14.0 位于 `.tools/node/`（已 gitignore）。
+3. 已知小项：搜索页状态不跨路由保留（返回搜索页需重新输入，属常规 SPA 行为）；
+   bundle ~1.2MB 未做代码分割（本地单用户工具，暂不处理）。

@@ -1,22 +1,54 @@
 # Implementation Status
 
 ## Current Milestone
-M10 完成 —— 后端产品化就绪。M11 React Frontend 已交接至独立前端窗口
+M11 完成 —— React 前端交付（P0 三页 + P1 两页，真机验证通过）。下一里程碑未定义，待用户下发契约。
 
 ## 交接机制
 - `docs/HANDOFF_PROTOCOL.md`：多窗口交接流程（事实源/接手流程/结束流程/硬约束）
-- `docs/HANDOFF_M11.md`：M11 前端任务契约（API 契约、页面要求、验收 Gate）
-- `docs/PROMPT_NEW_WINDOW_M11.md`：新窗口启动提示词（用户复制即用）
+- `docs/HANDOFF_M11_DONE.md`：M11 前端任务契约（已完成归档，含 API 契约与验收 Gate 记录）
+- `docs/PROMPT_NEW_WINDOW_M11.md`：M11 启动提示词（历史存档）
 
 ## Completed
 - [x] M0-M9 全部完成（2026-08-29；M9 Retrieval Quality Gate 5/5 PASS）
 - [x] M10 FastAPI Productization（2026-08-29，API 11 项测试全过 + 真机冒烟）
+- [x] M11 React Frontend（2026-08-29，前端窗口交付）
 
-## In Progress
-- [ ] M11 React Frontend（前端窗口接手中）
+## M11 交付物（frontend/）
+- 技术栈：React 18 + TypeScript + Vite 5 + React Router 6 + TanStack Query 5 + Ant Design 5（spec §43）
+- `frontend/src/api/`：类型化 client（client.ts，错误体兼容 AppError/HTTPException）、
+  TS 类型（types.ts，按 HANDOFF_M11 §2 真实契约逐一建模）、Query hooks（hooks.ts）
+- 页面：
+  - `/search`：搜索框 + Filters（Domain 联动文档/Evidence/Content Type/Document）+
+    Mode 切换（Hybrid/Dense/Exact）+ Reranker/Debug 开关 + Top-K + 结果卡片
+    （Rank/标题/heading path/Evidence 徽章/类型标签/snippet 查询词高亮/final+rerank
+    分数/行号/chunk_id）+ 查看上下文跳转 + 复制引用 + timing 分解条 + Debug trace 面板
+  - `/document/:id`：左侧 TOC 树（parent_section_id 建树）+ 右侧按 section 分块
+    Markdown 渲染（react-markdown + GFM 表格）+ `?line=&chunk=` 跳转滚动高亮 +
+    打开原文（POST open-original）
+  - `/index`：四方计数（documents/sections/chunks/fts_terms/fts_trigram/qdrant_points）
+    + 一致性徽章 + worker 健康（device/fallback/restarts/last_full_scan）+
+    触发 scan + 单文档 reindex
+  - `/settings`：脱敏配置分组展示（8 组，含 fusion 权重/query_instruction）
+  - `/evaluation`：M9 Gate 五项判定 + 7-arm 指标表 + 分类型表 + 评测报告 Markdown
+- dev 代理：vite.config.ts server.proxy `/api` → 127.0.0.1:8765（host 显式 127.0.0.1）
 
-## In Progress
-- [ ] M11（React 前端；架构层无阻塞）
+## M11 验收结果（Gate 全部 PASS）
+- `npm run build`：tsc --noEmit 无错误 + vite 构建成功
+- pytest 基线：102 passed（前端窗口未改后端，数字无变化）
+- 真机 GUI 验证（uvicorn 8765 + vite 5173，真实后端非 mock）：
+  - 搜索「HBM4 的接口位宽是多少？」hybrid+rerank：10 条结果，Top1 rerank 0.995（与
+    M10 冒烟一致）；Evidence L1 过滤后全部结果仅 L1；Debug trace 面板显示候选数 80、
+    各路来源与 fused_top；timing 分解条正常
+  - 搜索 → 查看上下文 → `/document/M04?line=395`：文档 81 chunks 全量渲染、TOC 65 节点，
+    行 395-401 chunk（M04:ch3-2:o1:0040，契约示例）自动滚动定位并高亮 ✓
+  - `/index`：四方 725 一致 consistent ✓、worker alive cuda:1、scan 触发成功
+  - `/settings`、`/evaluation` 渲染正确（Gate 全 PASS、best_arm hybrid_rerank）
+
+## M11 契约缺口备忘（未改后端，前端已规避）
+- 后端无「按文档列 chunks」端点，sections 端点不含 raw_text；前端利用 chunk_id
+  确定性（{doc}:{section_path}:{ordinal}，ordinal 文档级连续无空洞，已在 10 篇全量
+  验证）以单查探针法枚举（hooks.ts loadDocumentChunks，请求量 ≈ chunks+sections）。
+  若后端未来提供 documents/{id}/chunks 列表端点，可替换该实现。
 
 ## M10 交付物
 - `backend/app/api/`：
@@ -84,7 +116,7 @@ M10 完成 —— 后端产品化就绪。M11 React Frontend 已交接至独立�
 - 16 条 Mini Eval A/B：Hit@1 0.625->0.750，NDCG 0.719->0.845
 
 ## Tests（最新）
-- pytest: 102 passed
+- pytest: 102 passed（M11 窗口复跑确认，基线未变）
 
 ## Known Issues
 1. 核显/HIP device 0 崩溃：device.py + worker 进程隔离双重规避（M0/M7）。
@@ -98,6 +130,11 @@ M10 完成 —— 后端产品化就绪。M11 React Frontend 已交接至独立�
 7. 表前引导句独立 chunk：Golden Set 中 table-context 查询未失败，
    判定为暂不增加规则（Addendum §60）。
 8. Watcher 进程内嵌推迟至 M10（与 FastAPI lifespan 一起接入）。
+9. （M11）交接文档称 Node.js 已安装，实际系统无 Node：前端窗口使用便携版
+   Node v22.14.0 于 `.tools/node/`（已 gitignore，不改全局配置）。复现构建：
+   `export PATH="$PWD/.tools/node:$PATH"` 后执行 npm 命令。
+10. （M11）后端缺「按文档列 chunks」端点，前端以 chunk_id 探针法枚举
+    （见上方 M11 契约缺口备忘）；文档打开需 ~N+m 次本地请求，量级可接受。
 
 ## Decisions
 - ADR-001 依赖管理：pip + pyproject.toml + requirements-lock.txt；torch 经 AMD 索引单独安装。

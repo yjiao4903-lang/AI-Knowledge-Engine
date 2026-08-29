@@ -1,0 +1,115 @@
+body {
+  margin: 0;
+  background: #f5f5f5;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.site-header .logo {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 64px;
+}
+
+/* 文档查看器 */
+.doc-layout {
+  background: #fff;
+  min-height: calc(100vh - 64px);
+}
+
+.doc-toc {
+  border-right: 1px solid #f0f0f0;
+  padding: 16px 8px;
+  overflow: auto;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+}
+
+.doc-content {
+  padding: 24px 40px;
+  max-width: 920px;
+}
+
+.doc-content .md-block {
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+  transition: background 0.6s ease;
+}
+
+.doc-content .md-block table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.doc-content .md-block th,
+.doc-content .md-block td {
+  border: 1px solid #d9d9d9;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.doc-content .md-block pre {
+  background: #f6f8fa;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.doc-content .md-block code {
+  background: #f6f8fa;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.doc-content .md-block pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.chunk-highlight {
+  background: #fffbe6 !important;
+  box-shadow: inset 3px 0 0 #faad14;
+}
+
+.snippet mark {
+  background: #ffe58f;
+  padding: 0 1px;
+}
+
+/* Debug timing 条 */
+.timing-bar {
+  display: flex;
+  height: 22px;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 720px;
+}
+
+.timing-bar span {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+}
