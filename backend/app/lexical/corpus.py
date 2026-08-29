@@ -20,7 +20,12 @@ from app.storage.repositories.knowledge import (
 from app.storage.sqlite import connect
 
 FIXTURES_DIR = Path(__file__).resolve().parents[3] / "backend" / "tests" / "fixtures"
-DEFAULT_FIXTURES = ["M04_sample.md", "M06_sample.md", "M09_sample.md", "M14_sample.md", "M18_sample.md"]
+# M9 Golden 语料：10 篇跨领域报告
+DEFAULT_FIXTURES = [
+    "M04_sample.md", "M05_sample.md", "M06_sample.md", "M07_sample.md",
+    "M09_sample.md", "M10_sample.md", "M14_sample.md", "M16_sample.md",
+    "M18_sample.md", "M22_sample.md",
+]
 
 
 def build_corpus_db(db_path: str | Path, fixture_names: list[str] | None = None) -> tuple[sqlite3.Connection, dict]:

@@ -28,8 +28,8 @@ def test_fts_count_consistency(corpus):
     n_chunks = conn.execute("SELECT count(*) FROM chunks").fetchone()[0]
     n_terms = conn.execute("SELECT count(*) FROM chunks_fts_terms").fetchone()[0]
     n_trigram = conn.execute("SELECT count(*) FROM chunks_fts_trigram").fetchone()[0]
-    assert n_chunks == n_terms == n_trigram > 300
-    assert set(info["documents"].keys()) == {"M04", "M06", "M09", "M14", "M18"}
+    assert n_chunks == n_terms == n_trigram > 700
+    assert set(info["documents"].keys()) == {"M04", "M05", "M06", "M07", "M09", "M10", "M14", "M16", "M18", "M22"}
 
 
 def test_exact_identifier_hit_at_5(corpus):

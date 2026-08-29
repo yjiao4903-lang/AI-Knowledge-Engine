@@ -1,0 +1,1104 @@
+[
+  {
+    "id": "E02",
+    "type": "exact",
+    "query": "EXE:5000 的成本和吞吐问题是什么？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 1.0,
+        "mrr": 0.125,
+        "ndcg": 0.315
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M04:ch2-2:o2:0028"
+        ],
+        "golden_top10": []
+      },
+      "terms": {
+        "golden_top": [
+          "M04:ch2-2:o2:0028"
+        ],
+        "golden_top10": [
+          "M04:ch2-2:o2:0028"
+        ]
+      },
+      "trigram": {
+        "golden_top": [
+          "M04:ch2-2:o2:0028"
+        ],
+        "golden_top10": [
+          "M04:ch2-2:o2:0028"
+        ]
+      }
+    },
+    "bucket": "PARTIAL:dense"
+  },
+  {
+    "id": "S01",
+    "type": "semantic",
+    "query": "AI 数据中心为什么受电网并网排队制约？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.143,
+        "recall10": 0.286,
+        "mrr": 0.5,
+        "ndcg": 0.639
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.095,
+        "recall10": 0.143,
+        "mrr": 0.333,
+        "ndcg": 0.582
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.143,
+        "mrr": 0.143,
+        "ndcg": 0.349
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.095,
+        "recall10": 0.286,
+        "mrr": 0.333,
+        "ndcg": 0.645
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.238,
+        "recall10": 0.286,
+        "mrr": 0.5,
+        "ndcg": 0.679
+      },
+      "hybrid_rerank": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.238,
+        "recall10": 0.286,
+        "mrr": 0.5,
+        "ndcg": 0.788
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M06:ch3-3:o1:0038"
+        ],
+        "golden_top10": [
+          "M06:ch3-3:o1:0038"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M06:ch3-3:o1:0039"
+        ],
+        "golden_top10": [
+          "M06:ch3-3:o1:0039"
+        ]
+      },
+      "trigram": {
+        "golden_top": [
+          "M06:ch2-2:o2:0023"
+        ],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  },
+  {
+    "id": "S06",
+    "type": "semantic",
+    "query": "铜为什么成为算力与电气化扩张的瓶颈金属？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.111,
+        "recall10": 0.222,
+        "mrr": 0.25,
+        "ndcg": 0.474
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.111,
+        "mrr": 0.167,
+        "ndcg": 0.356
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.111,
+        "recall10": 0.111,
+        "mrr": 0.5,
+        "ndcg": 0.651
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.111,
+        "recall10": 0.222,
+        "mrr": 0.333,
+        "ndcg": 0.554
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.111,
+        "recall10": 0.333,
+        "mrr": 1.0,
+        "ndcg": 0.848
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M16:ch2-1:0009"
+        ],
+        "golden_top10": [
+          "M16:ch2-1:0009"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M16:ch2-1:0008"
+        ],
+        "golden_top10": [
+          "M16:ch2-1:0008"
+        ]
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  },
+  {
+    "id": "C01",
+    "type": "causal",
+    "query": "先进制程的供电电压为什么很难继续下降？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.5,
+        "mrr": 0.125,
+        "ndcg": 0.315
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_rerank": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.5,
+        "mrr": 0.143,
+        "ndcg": 0.333
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M04:ch1-2:o2:0014"
+        ],
+        "golden_top10": []
+      },
+      "terms": {
+        "golden_top": [
+          "M04:ch1-2:o1:0012"
+        ],
+        "golden_top10": [
+          "M04:ch1-2:o1:0012"
+        ]
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "BAD_FUSION"
+  },
+  {
+    "id": "C03",
+    "type": "causal",
+    "query": "为什么光刻越先进大芯片的成本反而可能越高？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.5,
+        "mrr": 0.167,
+        "ndcg": 0.356
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.5,
+        "recall10": 0.5,
+        "mrr": 0.2,
+        "ndcg": 0.387
+      },
+      "hybrid_rerank": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.5,
+        "mrr": 0.125,
+        "ndcg": 0.315
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M04:ch2-2:o2:0028"
+        ],
+        "golden_top10": []
+      },
+      "terms": {
+        "golden_top": [
+          "M04:ch2-2:o2:0028"
+        ],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:dense,lexical,hybrid,hybrid_rerank"
+  },
+  {
+    "id": "W03",
+    "type": "monitoring",
+    "query": "大模型产业有哪些战略监测看板指标？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.25,
+        "recall10": 0.5,
+        "mrr": 0.5,
+        "ndcg": 0.634
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.25,
+        "mrr": 0.143,
+        "ndcg": 0.333
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.25,
+        "mrr": 0.143,
+        "ndcg": 0.333
+      },
+      "dense": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.25,
+        "recall10": 0.5,
+        "mrr": 1.0,
+        "ndcg": 0.795
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.25,
+        "recall10": 0.5,
+        "mrr": 0.5,
+        "ndcg": 0.655
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.25,
+        "recall10": 0.5,
+        "mrr": 1.0,
+        "ndcg": 0.893
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M10:ch6-3:0054"
+        ],
+        "golden_top10": [
+          "M10:ch6-3:0054"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M10:ch6-3:0054"
+        ],
+        "golden_top10": [
+          "M10:ch6-3:0054"
+        ]
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  },
+  {
+    "id": "O02",
+    "type": "overview",
+    "query": "液冷报告的战略全景是什么？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 0.667,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.667,
+        "mrr": 0.143,
+        "ndcg": 0.333
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.667,
+        "mrr": 0.143,
+        "ndcg": 0.333
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 0.667,
+        "mrr": 0.333,
+        "ndcg": 0.484
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 0.667,
+        "mrr": 0.5,
+        "ndcg": 0.571
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 0.667,
+        "mrr": 1.0,
+        "ndcg": 1.0
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M07:top1:o2:o4:0002"
+        ],
+        "golden_top10": [
+          "M07:top1:o2:o4:0002"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M07:top1:o2:o4:0002"
+        ],
+        "golden_top10": [
+          "M07:top1:o2:o4:0002"
+        ]
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  },
+  {
+    "id": "O03",
+    "type": "overview",
+    "query": "硬资产地理学报告的核心判断是什么？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.25,
+        "ndcg": 0.431
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.333,
+        "ndcg": 0.5
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.333,
+        "ndcg": 0.5
+      },
+      "hybrid_rerank": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.631
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M16:top1:o3:0002"
+        ],
+        "golden_top10": [
+          "M16:top1:o3:0002"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M16:top1:o3:0002"
+        ],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  },
+  {
+    "id": "R01",
+    "type": "reference",
+    "query": "半导体报告引用了哪些参考文献？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.8,
+        "recall10": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.935
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.4,
+        "recall10": 0.6,
+        "mrr": 1.0,
+        "ndcg": 0.798
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M04:top58:o60:o63:0080"
+        ],
+        "golden_top10": [
+          "M04:top58:o60:o63:0080"
+        ]
+      },
+      "terms": {
+        "golden_top": [],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [
+          "M04:top58:o60:o64:0081"
+        ],
+        "golden_top10": [
+          "M04:top58:o60:o64:0081"
+        ]
+      }
+    },
+    "bucket": "PARTIAL:lexical,hybrid"
+  },
+  {
+    "id": "R02",
+    "type": "reference",
+    "query": "AI 计算架构报告的一手资料来源有哪些？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 1.0,
+        "mrr": 0.25,
+        "ndcg": 0.482
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M05:top1:o49:o50:0068"
+        ],
+        "golden_top10": [
+          "M05:top1:o49:o50:0068"
+        ]
+      },
+      "terms": {
+        "golden_top": [],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical,hybrid"
+  },
+  {
+    "id": "R03",
+    "type": "reference",
+    "query": "帝国兴衰报告的证据索引在哪里？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.667,
+        "recall10": 1.0,
+        "mrr": 0.333,
+        "ndcg": 0.525
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "hybrid_rerank": {
+        "hit1": 1,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 1.0,
+        "recall10": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M22:top1:o40:o41:0059"
+        ],
+        "golden_top10": [
+          "M22:top1:o40:o41:0059"
+        ]
+      },
+      "terms": {
+        "golden_top": [],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical,hybrid"
+  },
+  {
+    "id": "X01",
+    "type": "cross_document",
+    "query": "AI 算力扩张面临哪些物理硬约束？",
+    "arms": {
+      "hybrid": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.037,
+        "recall10": 0.074,
+        "mrr": 0.25,
+        "ndcg": 0.382
+      },
+      "terms": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "trigram": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "lexical": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 0,
+        "recall5": 0.0,
+        "recall10": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0
+      },
+      "dense": {
+        "hit1": 0,
+        "hit3": 1,
+        "hit5": 1,
+        "recall5": 0.074,
+        "recall10": 0.111,
+        "mrr": 0.5,
+        "ndcg": 0.694
+      },
+      "hybrid_boost": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.037,
+        "recall10": 0.074,
+        "mrr": 0.25,
+        "ndcg": 0.426
+      },
+      "hybrid_rerank": {
+        "hit1": 0,
+        "hit3": 0,
+        "hit5": 1,
+        "recall5": 0.037,
+        "recall10": 0.074,
+        "mrr": 0.2,
+        "ndcg": 0.538
+      }
+    },
+    "sources": {
+      "dense": {
+        "golden_top": [
+          "M06:ch1-1:0004"
+        ],
+        "golden_top10": [
+          "M06:ch1-1:0004"
+        ]
+      },
+      "terms": {
+        "golden_top": [
+          "M05:ch2-1:0018"
+        ],
+        "golden_top10": []
+      },
+      "trigram": {
+        "golden_top": [],
+        "golden_top10": []
+      }
+    },
+    "bucket": "PARTIAL:lexical"
+  }
+]

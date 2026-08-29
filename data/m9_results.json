@@ -1,0 +1,327 @@
+{
+  "n_queries": 50,
+  "corpus": {
+    "documents": {
+      "M04": {
+        "chunks": 81,
+        "file": "M04_sample.md"
+      },
+      "M05": {
+        "chunks": 69,
+        "file": "M05_sample.md"
+      },
+      "M06": {
+        "chunks": 70,
+        "file": "M06_sample.md"
+      },
+      "M07": {
+        "chunks": 65,
+        "file": "M07_sample.md"
+      },
+      "M09": {
+        "chunks": 77,
+        "file": "M09_sample.md"
+      },
+      "M10": {
+        "chunks": 56,
+        "file": "M10_sample.md"
+      },
+      "M14": {
+        "chunks": 110,
+        "file": "M14_sample.md"
+      },
+      "M16": {
+        "chunks": 68,
+        "file": "M16_sample.md"
+      },
+      "M18": {
+        "chunks": 69,
+        "file": "M18_sample.md"
+      },
+      "M22": {
+        "chunks": 60,
+        "file": "M22_sample.md"
+      }
+    },
+    "total_chunks": 725
+  },
+  "summary": {
+    "terms": {
+      "hit1": 0.36,
+      "hit3": 0.7,
+      "hit5": 0.72,
+      "recall5": 0.384,
+      "recall10": 0.5,
+      "mrr": 0.535,
+      "ndcg": 0.599,
+      "p50": 0.0,
+      "p95": 0.0
+    },
+    "trigram": {
+      "hit1": 0.38,
+      "hit3": 0.52,
+      "hit5": 0.54,
+      "recall5": 0.35,
+      "recall10": 0.413,
+      "mrr": 0.455,
+      "ndcg": 0.466,
+      "p50": 0.0,
+      "p95": 0.0
+    },
+    "lexical": {
+      "hit1": 0.44,
+      "hit3": 0.76,
+      "hit5": 0.78,
+      "recall5": 0.434,
+      "recall10": 0.517,
+      "mrr": 0.599,
+      "ndcg": 0.652,
+      "p50": 1.3,
+      "p95": 1.9
+    },
+    "dense": {
+      "hit1": 0.68,
+      "hit3": 0.88,
+      "hit5": 0.94,
+      "recall5": 0.518,
+      "recall10": 0.612,
+      "mrr": 0.773,
+      "ndcg": 0.779,
+      "p50": 39.0,
+      "p95": 58.1
+    },
+    "hybrid": {
+      "hit1": 0.6,
+      "hit3": 0.82,
+      "hit5": 0.9,
+      "recall5": 0.491,
+      "recall10": 0.601,
+      "mrr": 0.73,
+      "ndcg": 0.751,
+      "p50": 41.0,
+      "p95": 60.9
+    },
+    "hybrid_boost": {
+      "hit1": 0.58,
+      "hit3": 0.86,
+      "hit5": 0.92,
+      "recall5": 0.494,
+      "recall10": 0.599,
+      "mrr": 0.724,
+      "ndcg": 0.758,
+      "p50": 78.7,
+      "p95": 104.4
+    },
+    "hybrid_rerank": {
+      "hit1": 0.78,
+      "hit3": 0.94,
+      "hit5": 0.96,
+      "recall5": 0.614,
+      "recall10": 0.731,
+      "mrr": 0.869,
+      "ndcg": 0.897,
+      "p50": 990.2,
+      "p95": 1198.6
+    }
+  },
+  "per_type": {
+    "exact": {
+      "n": 6,
+      "hit5": {
+        "terms": 0.833,
+        "trigram": 1.0,
+        "lexical": 1.0,
+        "dense": 0.833,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.854,
+        "trigram": 0.833,
+        "lexical": 0.917,
+        "dense": 0.833,
+        "hybrid": 0.917,
+        "hybrid_boost": 0.917,
+        "hybrid_rerank": 1.0
+      }
+    },
+    "semantic": {
+      "n": 8,
+      "hit5": {
+        "terms": 0.875,
+        "trigram": 0.25,
+        "lexical": 0.75,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.458,
+        "trigram": 0.271,
+        "lexical": 0.393,
+        "dense": 0.854,
+        "hybrid": 0.781,
+        "hybrid_boost": 0.729,
+        "hybrid_rerank": 0.812
+      }
+    },
+    "causal": {
+      "n": 8,
+      "hit5": {
+        "terms": 0.75,
+        "trigram": 0.625,
+        "lexical": 0.75,
+        "dense": 0.75,
+        "hybrid": 0.75,
+        "hybrid_boost": 0.875,
+        "hybrid_rerank": 0.75
+      },
+      "mrr": {
+        "terms": 0.557,
+        "trigram": 0.5,
+        "lexical": 0.688,
+        "dense": 0.75,
+        "hybrid": 0.771,
+        "hybrid_boost": 0.775,
+        "hybrid_rerank": 0.783
+      }
+    },
+    "comparison": {
+      "n": 6,
+      "hit5": {
+        "terms": 1.0,
+        "trigram": 0.5,
+        "lexical": 1.0,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.833,
+        "trigram": 0.5,
+        "lexical": 0.833,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      }
+    },
+    "metric": {
+      "n": 5,
+      "hit5": {
+        "terms": 1.0,
+        "trigram": 1.0,
+        "lexical": 1.0,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.667,
+        "trigram": 0.65,
+        "lexical": 0.8,
+        "dense": 0.74,
+        "hybrid": 0.8,
+        "hybrid_boost": 0.8,
+        "hybrid_rerank": 0.8
+      }
+    },
+    "monitoring": {
+      "n": 5,
+      "hit5": {
+        "terms": 0.6,
+        "trigram": 0.6,
+        "lexical": 0.8,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.301,
+        "trigram": 0.467,
+        "lexical": 0.435,
+        "dense": 0.867,
+        "hybrid": 0.75,
+        "hybrid_boost": 0.75,
+        "hybrid_rerank": 1.0
+      }
+    },
+    "overview": {
+      "n": 4,
+      "hit5": {
+        "terms": 0.5,
+        "trigram": 0.0,
+        "lexical": 0.5,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.411,
+        "trigram": 0.0,
+        "lexical": 0.411,
+        "dense": 0.467,
+        "hybrid": 0.521,
+        "hybrid_boost": 0.583,
+        "hybrid_rerank": 0.875
+      }
+    },
+    "reference": {
+      "n": 3,
+      "hit5": {
+        "terms": 0.0,
+        "trigram": 0.333,
+        "lexical": 0.0,
+        "dense": 1.0,
+        "hybrid": 0.0,
+        "hybrid_boost": 0.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.0,
+        "trigram": 0.333,
+        "lexical": 0.0,
+        "dense": 0.528,
+        "hybrid": 0.0,
+        "hybrid_boost": 0.0,
+        "hybrid_rerank": 1.0
+      }
+    },
+    "cross_document": {
+      "n": 5,
+      "hit5": {
+        "terms": 0.4,
+        "trigram": 0.4,
+        "lexical": 0.8,
+        "dense": 1.0,
+        "hybrid": 1.0,
+        "hybrid_boost": 1.0,
+        "hybrid_rerank": 1.0
+      },
+      "mrr": {
+        "terms": 0.4,
+        "trigram": 0.4,
+        "lexical": 0.6,
+        "dense": 0.667,
+        "hybrid": 0.55,
+        "hybrid_boost": 0.517,
+        "hybrid_rerank": 0.64
+      }
+    }
+  },
+  "gate": {
+    "hit5": true,
+    "mrr": true,
+    "ndcg": true,
+    "exact_hit5": true,
+    "semantic_hit5": true
+  },
+  "best_arm": "hybrid_rerank",
+  "index_seconds": 43.3
+}
