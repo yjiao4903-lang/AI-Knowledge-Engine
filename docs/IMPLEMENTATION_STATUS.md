@@ -1,7 +1,7 @@
 # Implementation Status
 
 ## Current Milestone
-M6 Hybrid Retrieval / Weighted RRF（下一步）
+M7 Qwen3 Reranker（下一步）
 
 ## Completed
 - [x] M0 环境与硬件验证（2026-08-29）
@@ -10,43 +10,55 @@ M6 Hybrid Retrieval / Weighted RRF（下一步）
 - [x] M3 Semantic Chunker（2026-08-29，Gate 六项全 0）
 - [x] M4 Chinese Lexical / SQLite FTS5（2026-08-29，Exact Hit@5 = 1.000）
 - [x] M5 Qwen3 Dense Retrieval（2026-08-29，Semantic Hit@5 = 1.00）
+- [x] M6 Hybrid Retrieval / Weighted RRF（2026-08-29，Hybrid Hit@5 = 1.000 / MRR 0.865）
 
 ## In Progress
-- [ ] M6
+- [ ] M7
 
-## M5 交付物
-- `app/retrieval/dense.py`：DenseRetriever（Embedding + Qdrant 统一入口）
-  - 设备经 get_inference_device()（preferred_gpu_name 匹配 cuda:1，iGPU 排除）
-  - index_chunks：Chunk.embedding_text 批量向量化（batch 8 GPU / 2 CPU），
-    payload 按 spec §25，点 ID 为 chunk_id 的确定性 UUID5（幂等 upsert）
-  - index_sections：kb_sections_v1（title+path+heading+首段，spec §9.2）
-  - search：query instruction 配置化，Qdrant query_points named vector "dense"
-  - build_qdrant_filter：document_ids/domains/evidence_levels/content_types/
-    date(DatetimeRange) 全部 prefilter
-  - delete_document：按 document_id 清理两 collection（M8 复用）
-- `backend/scripts/m5_index.py`：5 篇语料 -> 407 chunks + 351 sections 入 Qdrant
-- `backend/scripts/m5_eval.py` + `docs/M5_DENSE_EVALUATION.md`
+## M6 交付物
+- `app/retrieval/search_engine.py`：SearchEngine
+  - 三路候选（dense 50 / terms 50 / trigram 30）-> Weighted RRF -> 去重
+  - Section Parent Boost 1.08（section dense prior 前缀匹配 chunk_id，轻量非硬过滤）
+  - Metadata 统一 post-filter（document/domain/content_type/evidence/date）
+  - 三种模式 dense / lexical / hybrid；snippet 取首个查询词命中窗口
+  - timing 全链路（embed/dense/terms/trigram/fusion/section/filter/total）
+  - debug=true 返回各路 Top10 + boosted_sections + fused_top + filters
+- `backend/scripts/m6_eval.py` + `docs/M6_EVALUATION.md`
+- FusionConfig 新增 parent_boost / parent_boost_sections_k / parent_boost_enabled
+
+## M6 验收结果（docs/M6_EVALUATION.md，16 条混合类型 Query）
+- Hybrid：Hit@5 **16/16 = 1.000**，MRR@10 **0.865**，延迟 P50 75ms
+- Dense only：Hit@5 0.938 / MRR 0.842；Lexical only：Hit@5 0.938 / MRR 0.844
+- Gate PASS：Hybrid ≥ 单路。互补性实证：EXE:5000 由 lexical 补 dense（Dense 0/0.143），
+  液冷语义查询由 dense 补 lexical（Lexical 0/0.167）
+- 每条候选记录 dense_rank/terms_rank/trigram_rank/rrf/section_boost（可解释）
+
+## M5 交付物（摘要）
+- `app/retrieval/dense.py`：DenseRetriever（Embedding + Qdrant 统一入口）：
+  get_inference_device() 选 cuda:1；index_chunks（payload 按 spec §25，确定性
+  UUID5 幂等）；index_sections（kb_sections_v1，spec §9.2）；search（instruction
+  配置化，named vector）；build_qdrant_filter（document/domain/evidence/
+  content_type/date prefilter）；delete_document（M8 复用）
+- `backend/scripts/m5_index.py` / `m5_eval.py` + `docs/M5_DENSE_EVALUATION.md`
 
 ## M5 验收结果（docs/M5_DENSE_EVALUATION.md）
-- Semantic Rewrite Hit@5：**10/10 = 1.00**（含 §31 两条改写查询），Top1 命中率 0.70
-- 延迟：query embed+search P50 28.8ms（首次 1.3s 属模型冷启动）
-- 索引耗时：407 chunks + 351 sections 全量 embedding 22.8s（GPU fp16 batch 8）
+- Semantic Rewrite Hit@5：10/10 = 1.00，Top1 命中率 0.70
+- 延迟：query embed+search P50 28.8ms；索引 407+351 点 22.8s（GPU fp16 batch 8）
 - CPU fallback：单条 query 32.1s（约 1/1100 速度），功能完整 PASS
-- Metadata Filter：evidence_levels / document_ids prefilter 验证 PASS
+- Metadata Filter prefilter 验证 PASS
 
 ## M4 交付物（摘要）
 - `app/lexical/`：normalizer（NFKC + IDENT_RE 标识符保护）、
   tokenizer（jieba + tech_terms 预注册 + 占位符回填 -> lexical_text）、
   query_parser（统一 Safe Query Parser，双引号包裹杜绝 FTS 语法误解析）、
   fts_search（terms / trigram / combined RRF + timing）、corpus（5 篇语料构建）
-- `app/retrieval/fusion.py`：weighted_rrf（M6 复用）
-- Chunk 模型新增 lexical_text + to_db_dict()；LEXICAL_VERSION=4.0.0
+- `app/retrieval/fusion.py`：weighted_rrf；Chunk 模型新增 lexical_text + to_db_dict()
 - 新增 fixtures：M06（AI 基础设施/能源）、M09（AI 模型）、M14（宏观）、M18（生物医疗）
 
 ## M4 验收结果（docs/M4_EVALUATION.md）
 - 索引一致性：chunks 407 = fts_terms 407 = fts_trigram 407 PASS
-- Exact Hit@5：**15/15 = 1.000**；Chinese Hit@5：7/7 = 1.000
-- 延迟：Terms P50 0.14ms / Trigram P50 0.21ms / Combined P50 0.37ms（亚毫秒级）
+- Exact Hit@5：15/15 = 1.000；Chinese Hit@5：7/7 = 1.000
+- 延迟：Terms P50 0.14ms / Trigram P50 0.21ms / Combined P50 0.37ms
 - 特殊字符 - : / + . _ 全部无 FTS 语法错误
 
 ## M3 交付物（摘要）
@@ -63,8 +75,8 @@ M6 Hybrid Retrieval / Weighted RRF（下一步）
 - Gate 六项全 0；人工抽样 22 chunks 通过（data/m3_sample_review.md）
 
 ## Tests（最新）
-- pytest: 64 passed（dense 5、lexical 6、fts_search 8、chunker 11、m04 chunker 3、
-  metadata 4、heading 3、m04 parser 6、migrations 5、repositories 6、
+- pytest: 72 passed（search_engine 8、dense 5、lexical 6、fts_search 8、chunker 11、
+  m04 chunker 3、metadata 4、heading 3、m04 parser 6、migrations 5、repositories 6、
   qdrant 1、health 2、sqlite capability 4）
 
 ## Known Issues
@@ -76,15 +88,14 @@ M6 Hybrid Retrieval / Weighted RRF（下一步）
 2. **rocm-sdk 10.0.0（stable index whl-next）Windows 回归**：kernel launch 段错误
    （amdhip64_7.dll，见 TheRock issue #4958）。已锁定 7.13.0。
    升级前必须重跑 `scripts/run_m0_smoke.ps1`（Addendum §18）。
-3. FTS5 查询语法问题已由统一 Query Parser 解决（M4 落地，单测固化）。
-4. rocm-sdk test 的 hipconfig 控制台脚本存在 GBK 编码报错，不影响运行时。
-5. 表格前的短引导句成为独立小 chunk，留待 M9 Golden Set 评估后决定
+3. rocm-sdk test 的 hipconfig 控制台脚本存在 GBK 编码报错，不影响运行时。
+4. 表格前的短引导句成为独立小 chunk，留待 M9 Golden Set 评估后决定
    是否增加"表前引导段附加"规则（Addendum §64/65）。
-6. GPU Worker 进程隔离（Addendum §19/30/46）：M5 已实现 Provider 最小版本，
-   Worker 进程隔离在 M7 必须完成。
-7. 中文查询集"铜互连/推理算力/电网瓶颈"在 5 篇语料中无逐字匹配，
-   M9 Golden Set 需改用章节级标注而非词面匹配。
-8. Dense Top1 命中率 0.70（Hit@5 1.00）：Top1 质量预期由 M7 Reranker 提升。
+5. GPU Worker 进程隔离（Addendum §19/30/46）：M7 必须完成。
+6. 评测 ground truth 为词面匹配（chunk plain_text 含关键词），偏宽松；
+   M9 Golden Set 改用人工章节级标注。
+7. Dense Top1 命中率 0.70、Hybrid 个别 Top1 仍非最佳（词面 truth 偏宽松所致），
+   预期由 M7 Reranker 提升后用同一 Query Set 复测对比。
 
 ## Decisions
 - ADR-001 依赖管理：pip + pyproject.toml + requirements-lock.txt；不引入 poetry/uv，
@@ -104,3 +115,6 @@ M6 Hybrid Retrieval / Weighted RRF（下一步）
   body 子节继承 reference/audit 父节类型，供检索侧按 §22 排除。
 - ADR-008 Qdrant 点 ID = 确定性 UUID5(chunk_id / section_id)（幂等 upsert，
   重建可复现）；Qdrant 仅存向量+payload，正文以 SQLite 为准（spec §9/26）。
+- ADR-009 Hybrid 融合统一走 weighted_rrf（单路模式也用同一排序机制）；
+  Metadata 过滤在 dense 路 prefilter、lexical 路 post-filter，结果一致；
+  Section Parent Boost 只做乘法 prior（1.08），禁止按 section 硬过滤（spec §19）。

@@ -75,6 +75,9 @@ fusion:
   dense_weight: 1.0
   terms_weight: 0.9
   trigram_weight: 0.7
+  parent_boost: 1.08        # Section Parent Boost（spec §19）
+  parent_boost_sections_k: 8
+  parent_boost_enabled: true
 
 indexing:
   startup_scan: true

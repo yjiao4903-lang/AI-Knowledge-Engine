@@ -100,6 +100,10 @@ class FusionConfig(BaseModel):
     dense_weight: float = 1.0
     terms_weight: float = 0.9
     trigram_weight: float = 0.7
+    # Section Parent Boost（spec §19）：section dense prior 对子 chunk 的轻量加成
+    parent_boost: float = 1.08
+    parent_boost_sections_k: int = 8
+    parent_boost_enabled: bool = True
 
 
 class IndexingConfig(BaseModel):
