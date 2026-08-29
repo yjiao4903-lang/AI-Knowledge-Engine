@@ -1,22 +1,39 @@
 # Implementation Status
 
 ## Current Milestone
-M9 完成 —— Retrieval Quality Gate 通过。下一步：M10 FastAPI Productization
+M10 完成 —— 后端产品化就绪。下一步：M11 React Frontend
 
 ## Completed
-- [x] M0 环境与硬件验证（2026-08-29）
-- [x] M1 项目骨架与 Storage（2026-08-29）
-- [x] M2 Markdown Parser（2026-08-29）
-- [x] M3 Semantic Chunker（2026-08-29，Gate 六项全 0）
-- [x] M4 Chinese Lexical / SQLite FTS5（Exact Hit@5 = 1.000）
-- [x] M5 Qwen3 Dense Retrieval（Semantic Hit@5 = 1.00）
-- [x] M6 Hybrid Retrieval / Weighted RRF（Hybrid Hit@5 = 1.000 / MRR 0.865）
-- [x] M7 Qwen3 Reranker + GPU Worker（NDCG 0.719 -> 0.845）
-- [x] M8 Incremental Index（Add/Modify/Rename/Delete/Crash/Repair 全 PASS）
-- [x] M9 Human-Labeled Golden Evaluation（2026-08-29，**Quality Gate 5/5 PASS**）
+- [x] M0-M9 全部完成（2026-08-29；M9 Retrieval Quality Gate 5/5 PASS）
+- [x] M10 FastAPI Productization（2026-08-29，API 11 项测试全过 + 真机冒烟）
 
 ## In Progress
-- [ ] M10（Gate 已通过，允许开始产品化）
+- [ ] M11（React 前端；架构层无阻塞）
+
+## M10 交付物
+- `backend/app/api/`：
+  - search.py：POST /api/search（filters/mode/rerank/top_k/debug，spec §32 契约）
+  - documents.py：documents 列表/详情/sections、chunks 详情、open-original
+    （路径白名单校验，Path Traversal 403 防护，spec §33/52）
+  - index.py：status（四方计数+worker 健康）、scan、reindex-document、
+    rebuild（显式 confirm="yes"）、jobs（spec §34）
+  - evaluation.py：latest（m9_results.json + 报告）、run（golden 子集在线评测）
+  - settings.py：脱敏配置
+- `backend/app/main.py`：lifespan——InferenceManager 启动、startup reconcile
+  （后台线程）、周期性 reconcile watcher（index_lock 串行化，spec §24/44）、
+  shutdown 清理；AppError 统一错误体
+- `backend/scripts/seed_dev_kb.py`：dev 语料库 seed（10 篇 -> data/dev_kb +
+  data/catalog.db + kb_chunks_v1/kb_sections_v1；含 sections 重建）
+- config.yaml：dev roots 指向 data/dev_kb；切全量归档改回后运行 reindex.py scan
+
+## M10 验收结果
+- pytest: 102 passed（新增 API 11 项：search 契约/模式/过滤、documents、
+  path security 403、index status/jobs、reindex、rebuild confirm、evaluation、settings）
+- 真机冒烟：uvicorn 127.0.0.1:8765，/api/health ok（worker cuda:1）、
+  /api/search 带 reranker 正常（Top1 0.995）、debug trace 完整、
+  index status 四方一致（chunks 725 = fts 725 = qdrant 725）
+- 修复：kb_sections_v1 被 seed 脚本清空（已加入 sections 重建）；
+  SQLite 跨线程（check_same_thread=False）
 
 ## M9 交付物
 - `data/golden_queries.jsonl`：**50 条**人工章节级标注（grade 3/2，heading 锚定），
@@ -59,7 +76,7 @@ M9 完成 —— Retrieval Quality Gate 通过。下一步：M10 FastAPI Product
 - 16 条 Mini Eval A/B：Hit@1 0.625->0.750，NDCG 0.719->0.845
 
 ## Tests（最新）
-- pytest: 91 passed
+- pytest: 102 passed
 
 ## Known Issues
 1. 核显/HIP device 0 崩溃：device.py + worker 进程隔离双重规避（M0/M7）。
