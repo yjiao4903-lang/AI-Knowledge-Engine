@@ -1,11 +1,19 @@
 # Implementation Status
 
 ## Current Milestone
-M10 完成 —— 后端产品化就绪。下一步：M11 React Frontend
+M10 完成 —— 后端产品化就绪。M11 React Frontend 已交接至独立前端窗口
+
+## 交接机制
+- `docs/HANDOFF_PROTOCOL.md`：多窗口交接流程（事实源/接手流程/结束流程/硬约束）
+- `docs/HANDOFF_M11.md`：M11 前端任务契约（API 契约、页面要求、验收 Gate）
+- `docs/PROMPT_NEW_WINDOW_M11.md`：新窗口启动提示词（用户复制即用）
 
 ## Completed
 - [x] M0-M9 全部完成（2026-08-29；M9 Retrieval Quality Gate 5/5 PASS）
 - [x] M10 FastAPI Productization（2026-08-29，API 11 项测试全过 + 真机冒烟）
+
+## In Progress
+- [ ] M11 React Frontend（前端窗口接手中）
 
 ## In Progress
 - [ ] M11（React 前端；架构层无阻塞）
