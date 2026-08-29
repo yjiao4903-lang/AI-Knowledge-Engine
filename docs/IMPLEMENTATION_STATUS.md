@@ -1,9 +1,13 @@
 # Implementation Status
 
 ## Current Milestone
-M0-M11 完成；**I0 Full Corpus Gate + Integration Contract 完成（2026-08-30）**。
-项目处于 Integration 路线 I0-I6（AI Research OS），下一步 I1（Cognition Retrieval Proxy，
-从 I1 起才允许修改 cognition-app，先 git init）。
+M0-M11 完成；**I0-I5 全部完成（2026-08-30）**：I0 Full Corpus Gate + Integration Contract、
+I1-I3（Cognition Retrieval Proxy / Reports 融合 / Evidence Bridge）、I4 Unified Runtime、
+I5 Backup/Restore/Hardening。
+项目处于 Integration 路线 I0-I6（AI Research OS）。**整合事实源
+`D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md` 为唯一进度来源**，本文件为 KE 侧镜像；
+I4/I5 交付摘要与 Known Issues #14-21 见整合事实源。
+下一步 I6（可选，Cognition Read-only Semantic Search，契约 docs/HANDOFF_I6.md，主计划 §48-50）。
 
 ## I0 交付摘要（2026-08-30，详见 docs/FULL_CORPUS_REPORT.md）
 - **Full Corpus Index**：189 篇终版（v2 策略 ADR-013）/ 8828 sections / 9780 chunks；

@@ -1,4 +1,28 @@
-# I5 交接契约：Backup / Restore / Hardening（Window E）
+# I5 交接契约：Backup / Restore / Hardening（Window E）【已完成】
+
+> 状态：**DONE（2026-08-30）** ｜ 交接方：Window D（I4 Lead）→ 执行方：Window E
+
+## 完成记录（Window E，2026-08-30）
+
+- 交付：`D:\AI知识整合体系\runtime\{backup,restore}.ps1`（Tier1 认知 Markdown 全量 + 逐文件
+  sha256 manifest；Tier2 版本化资产快照；Tier3 重建命令记录；Tier4 可选 Qdrant Snapshot）；
+  `golden_queries.jsonl` 补入整合 git 版本管理；runtime/README.md 追加用法。**两 Core 零改动**。
+- **I5 Gate 全 PASS**：
+  - Backup：Tier1 全量 + manifest VerifyOnly/VerifyAfter 独立校验 PASS；
+  - Restore：隔离副本真实演练（备份→删除 3 个正式认知对象 133→130→恢复→独立 sha256 全量比对
+    **133 一致 / 0 缺失 / 0 不符**→副本重建派生索引 **38/38 文件、notes 37 行**）；未触碰真实认知目录；
+  - Offline：停 Qdrant 下 KE degraded 存活、**lexical 纯 FTS 可用**、hybrid 明确 503 QDRANT_ERROR、
+    Cognition 自动 legacy_substring 降级；恢复后全栈 PASS；
+  - Index Rebuild：`reindex.py check` 四方一致 9780 + 副本派生索引重建；
+  - Cognition Data Intact ✅；Unified Health（health.ps1 全绿）✅。
+- 回归：KE pytest dev 配置 **114 passed**；cognition unit **64/64**、E2E **15/0**、黑盒 **10/10**；
+  Golden 引用 I4 复验一致（0.920/0.765/0.801，I5 未改 KE 检索代码）。
+- 新 Known Issues：见整合 IMPLEMENTATION_STATUS #19-21（qdrant 中断后需重启 KE 恢复 dense；
+  Tier1 排除项；golden_queries.jsonl 版本管理补录）。
+- 收尾：整合 IMPLEMENTATION_STATUS 已更新；本契约归档为 HANDOFF_I5_DONE.md；
+  I6 契约 `docs/HANDOFF_I6.md` 已起草。
+
+---
 
 > 交接日期：2026-08-30 ｜ 交接方：Window D（I4 Lead）｜ I4 已完成并归档
 > 依据：主计划 §43-47、补充方案 §34 可选加分；I0-I4 全部完成
