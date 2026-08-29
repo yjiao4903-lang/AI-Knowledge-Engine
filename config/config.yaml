@@ -1,0 +1,82 @@
+app:
+  name: "AI Research Knowledge Engine"
+  bind_host: "127.0.0.1"
+  port: 8765
+  log_level: "INFO"
+
+knowledge_base:
+  roots:
+    - "D:/AI深度报告归档"
+  read_only: true
+  extensions:
+    - ".md"
+
+paths:
+  data_dir: "D:/AI-Knowledge-Engine/data"
+  model_dir: "D:/AI-Models"
+  log_dir: "D:/AI-Knowledge-Engine/logs"
+
+sqlite:
+  path: "D:/AI-Knowledge-Engine/data/catalog.db"
+  wal: true
+
+qdrant:
+  url: "http://127.0.0.1:6333"
+  chunks_collection: "kb_chunks_v1"
+  sections_collection: "kb_sections_v1"
+
+embedding:
+  model: "Qwen/Qwen3-Embedding-0.6B"
+  local_path: "D:/AI-Models/Qwen3-Embedding-0.6B"
+  dimension: 1024
+  normalize: true
+  preferred_device: "rocm"
+  fallback_device: "cpu"
+  dtype_gpu: "float16"
+  batch_size_gpu: 8
+  batch_size_cpu: 2
+  max_tokens: 4096
+  query_instruction: >
+    Given a query for a private research knowledge base, retrieve the most
+    relevant passages from Chinese and English technical, semiconductor,
+    AI, macroeconomic, industry, and investment research reports.
+    Preserve exact entities, model names, technical terms, causal
+    relationships, quantitative indicators, and evidence levels.
+
+reranker:
+  model: "Qwen/Qwen3-Reranker-0.6B"
+  local_path: "D:/AI-Models/Qwen3-Reranker-0.6B"
+  preferred_device: "rocm"
+  fallback_device: "cpu"
+  dtype_gpu: "float16"
+  max_tokens: 3072
+  candidate_k: 24
+
+chunking:
+  target_chars: 900
+  soft_min_chars: 350
+  soft_max_chars: 1400
+  hard_max_chars: 2200
+  overlap_chars: 100
+  keep_tables_whole: true
+  keep_formulas_with_explanation: true
+
+retrieval:
+  dense_k: 50
+  fts_terms_k: 50
+  fts_trigram_k: 30
+  fused_k: 30
+  rerank_k: 24
+  final_k: 10
+
+fusion:
+  method: "rrf"
+  rrf_k: 60
+  dense_weight: 1.0
+  terms_weight: 0.9
+  trigram_weight: 0.7
+
+indexing:
+  startup_scan: true
+  periodic_reconcile_seconds: 300
+  watcher_enabled: true
