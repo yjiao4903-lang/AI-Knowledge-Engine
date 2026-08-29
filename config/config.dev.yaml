@@ -6,7 +6,7 @@ app:
 
 knowledge_base:
   roots:
-    - "D:/AI深度报告归档"
+    - "D:/AI-Knowledge-Engine/data/dev_kb"  # dev 语料配置留档（I0）；使用方式：KE_CONFIG=config/config.dev.yaml
   read_only: true
   extensions:
     - ".md"
@@ -17,13 +17,13 @@ paths:
   log_dir: "D:/AI-Knowledge-Engine/logs"
 
 sqlite:
-  path: "D:/AI-Knowledge-Engine/data/catalog_full.db"
+  path: "D:/AI-Knowledge-Engine/data/catalog.db"
   wal: true
 
 qdrant:
   url: "http://127.0.0.1:6333"
-  chunks_collection: "kb_chunks_full_v1"
-  sections_collection: "kb_sections_full_v1"
+  chunks_collection: "kb_chunks_v1"
+  sections_collection: "kb_sections_v1"
 
 embedding:
   model: "Qwen/Qwen3-Embedding-0.6B"

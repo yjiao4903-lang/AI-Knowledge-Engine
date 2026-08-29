@@ -1,0 +1,2386 @@
+{
+  "generated_at": "2026-08-30T02:28:40",
+  "seed": 20260829,
+  "sampled": 100,
+  "passed": 100,
+  "failed": 0,
+  "pass_rate": 1.0,
+  "failures": [],
+  "results": [
+    {
+      "document_id": "社资分野与AI时代阶级重塑_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (51 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (65 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 51,
+        "chunks": 65,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "古典多国体系的终结机制_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (41 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (48 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 41,
+        "chunks": 48,
+        "content_types": [
+          "code",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "人类记忆推理机制与AI对照_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (66 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (73 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 66,
+        "chunks": 73,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "蒸馏经济大模型压缩产业链_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (41 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (40 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 41,
+        "chunks": 40,
+        "content_types": [
+          "audit",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "蒙古治世与第一次全球化_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (50 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 4"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 50,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI缩放定律与AGI路线_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (59 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (56 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 59,
+        "chunks": 56,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI时代利率形成机制_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (39 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (54 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 39,
+        "chunks": 54,
+        "content_types": [
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI生物前沿与生物学工程化_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (77 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 77,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M13",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (35 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (55 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 35,
+        "chunks": 55,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI上下文与大模型参数_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (47 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (61 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 47,
+        "chunks": 61,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI基建投资回报周期_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (35 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (44 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 35,
+        "chunks": 44,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI第三支柱_数据",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (67 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (73 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 67,
+        "chunks": 73,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "睡眠机制与潜意识研究_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (50 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (61 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 50,
+        "chunks": 61,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M18",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (69 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 69,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "大宪章到法国大革命政治体制_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (52 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (51 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 52,
+        "chunks": 51,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M12",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (56 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (72 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 3"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 56,
+        "chunks": 72,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "海盗文化与大航海时代",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (87 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (83 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 87,
+        "chunks": 83,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T8_科幻史与AGI社会想象_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (48 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (43 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 48,
+        "chunks": 43,
+        "content_types": [
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "文生图提示词四模型深度研究_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (69 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (68 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 69,
+        "chunks": 68,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M19",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (30 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (57 chunks)",
+        "tables": "N/A(无表)",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 30,
+        "chunks": 57,
+        "content_types": [
+          "causal_chain",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary"
+        ]
+      }
+    },
+    {
+      "document_id": "量子力学与量子通信计算_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (54 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (60 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 54,
+        "chunks": 60,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "现代性心理疾病产业革命",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (89 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (75 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 89,
+        "chunks": 75,
+        "content_types": [
+          "audit",
+          "causal_chain",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "青铜时代晚期大崩溃_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (47 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 47,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M17",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (59 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (78 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 59,
+        "chunks": 78,
+        "content_types": [
+          "audit",
+          "causal_chain",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "D_访问权帝国治理成本_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (44 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (37 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 44,
+        "chunks": 37,
+        "content_types": [
+          "causal_chain",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "A3_AI的能源硬约束与全球资产错配_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (47 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (46 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 47,
+        "chunks": 46,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "人类嗅觉机制与跨感官交互_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (19 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (17 chunks)",
+        "tables": "N/A(无表)",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 19,
+        "chunks": 17,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "prose"
+        ]
+      }
+    },
+    {
+      "document_id": "_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (37 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (30 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 37,
+        "chunks": 30,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "尿酸生成代谢与痛风关系_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (67 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 67,
+        "chunks": 58,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "人类影像技术史与前沿_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (36 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (29 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 36,
+        "chunks": 29,
+        "content_types": [
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T6_学习科学的认知革命_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (42 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 42,
+        "content_types": [
+          "audit",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "四次技术革命比较解剖_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (85 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (148 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 5"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 85,
+        "chunks": 148,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "行为成瘾产品工程与反制设计",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (54 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 54,
+        "chunks": 58,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "近代性文化变迁_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (24 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (35 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 24,
+        "chunks": 35,
+        "content_types": [
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "先进封装与HBM技术路线_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (59 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (67 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 59,
+        "chunks": 67,
+        "content_types": [
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "社会加速批判理论检验_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (33 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (32 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 33,
+        "chunks": 32,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "佛教起源与传入中国_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (55 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (52 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 55,
+        "chunks": 52,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "西方对亚洲的殖民历程_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (62 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 62,
+        "chunks": 58,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "人像摄影系统学习路径_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (51 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 51,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "黄金资本市场_产业革命视角_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (32 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (36 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 32,
+        "chunks": 36,
+        "content_types": [
+          "code",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M25",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (37 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (60 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 37,
+        "chunks": 60,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "summary"
+        ]
+      }
+    },
+    {
+      "document_id": "P10",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (22 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (19 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 22,
+        "chunks": 19,
+        "content_types": [
+          "audit",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "A2_AI时代的分配效应_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (25 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (32 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 25,
+        "chunks": 32,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "多巴胺与内啡肽的作用机制_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (44 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (39 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 44,
+        "chunks": 39,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "音频技术发展源流_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (17 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (23 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 17,
+        "chunks": 23,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "大模型官方API定价对比",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (25 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (41 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 25,
+        "chunks": 41,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "两次工业革命期间的地缘政治_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (33 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (26 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 33,
+        "chunks": 26,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "GPU产业技术源流与投资机会_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (52 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (52 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 52,
+        "chunks": 52,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "兴奋剂经济_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (41 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (42 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 41,
+        "chunks": 42,
+        "content_types": [
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "A_失败产业革命考古学_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (43 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 43,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "5nm制程_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (95 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (140 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 95,
+        "chunks": 140,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "第二次工业革命对组织变革的影响_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (22 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (23 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 22,
+        "chunks": 23,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "欧洲长期利率走低根源与2022后反转_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (69 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (72 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 69,
+        "chunks": 72,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI生物前沿_深度研究_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (77 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 77,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M05",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (51 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (69 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 3"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 51,
+        "chunks": 69,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "大模型技术的核心原理_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (43 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 43,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "小冰期气候改写王朝与革命_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (28 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (40 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 28,
+        "chunks": 40,
+        "content_types": [
+          "causal_chain",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "电子元器件涨价与消费挤出_最终报告_原始_20260816",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (41 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 41,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI_capex信用传导_表外债务利差定价_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (47 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (48 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 47,
+        "chunks": 48,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "明末清初辽东军事格局与女真崛起_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (30 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (25 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 30,
+        "chunks": 25,
+        "content_types": [
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "性与心理学研究历程_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (43 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (45 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 43,
+        "chunks": 45,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "量化投资框架与市场风险_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (46 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (39 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 46,
+        "chunks": 39,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "C_AI硬资产矿业经济学_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (53 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 53,
+        "chunks": 58,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "汉萨同盟无国家的商业帝国_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (30 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (28 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 30,
+        "chunks": 28,
+        "content_types": [
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "_最终报告__fa3459ce",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (21 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (39 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 21,
+        "chunks": 39,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "递归自我进化RSI与AI产业链投资_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (52 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (67 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 52,
+        "chunks": 67,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M24",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (53 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 53,
+        "content_types": [
+          "audit",
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M16",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (56 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (68 chunks)",
+        "tables": "N/A(无表)",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 56,
+        "chunks": 68,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "monitoring",
+          "prose",
+          "summary"
+        ]
+      }
+    },
+    {
+      "document_id": "11_最终报告_final",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (25 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (41 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 25,
+        "chunks": 41,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T1_能源技术权力AI算力时代_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (45 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (50 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 45,
+        "chunks": 50,
+        "content_types": [
+          "code",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T3_认知战与叙事武器化_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (54 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (56 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 54,
+        "chunks": 56,
+        "content_types": [
+          "causal_chain",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "阿富汗近代混乱根源与冷战地缘政治_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (36 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 36,
+        "content_types": [
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T10_具身智能与机器人经济_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (56 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 56,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "人类认知与生成式AI异同_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (31 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (30 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 31,
+        "chunks": 30,
+        "content_types": [
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "台风的形成说明_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (17 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (24 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 17,
+        "chunks": 24,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "_最终报告__e3e6f8dd",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (70 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (67 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 70,
+        "chunks": 67,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "大变革时期的社会与人文精神变迁_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (55 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (53 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 55,
+        "chunks": 53,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "羞耻的社会学_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (31 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (31 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 5"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 31,
+        "chunks": 31,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "军事溢出和平红利_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (37 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (42 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 37,
+        "chunks": 42,
+        "content_types": [
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "P6_疲惫社会的叙事生态_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (63 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (59 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 63,
+        "chunks": 59,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "P3_债务周期与技术金融周期_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (45 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (41 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 45,
+        "chunks": 41,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M14",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (123 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (110 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 123,
+        "chunks": 110,
+        "content_types": [
+          "causal_chain",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "伊斯兰文明与中东地缘格局_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (61 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (62 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 61,
+        "chunks": 62,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "二次工业革命转换盲区",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (27 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (30 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 27,
+        "chunks": 30,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M06",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (59 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (70 chunks)",
+        "tables": "N/A(无表)",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 59,
+        "chunks": 70,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary"
+        ]
+      }
+    },
+    {
+      "document_id": "M04",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (64 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (81 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 2 vs 6"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 64,
+        "chunks": 81,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "厄尔尼诺现象的形成机制",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (16 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (28 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 16,
+        "chunks": 28,
+        "content_types": [
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "心理学源流与发展_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (57 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 57,
+        "chunks": 58,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "资本市场预期与现实_重大泡沫研究_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (46 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (55 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 46,
+        "chunks": 55,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "第一次工业革命_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (22 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (40 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 22,
+        "chunks": 40,
+        "content_types": [
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "主体性溢价验证权稀缺",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (14 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (14 chunks)",
+        "tables": "N/A(无表)",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 14,
+        "chunks": 14,
+        "content_types": [
+          "causal_chain",
+          "prose",
+          "reference"
+        ]
+      }
+    },
+    {
+      "document_id": "珠宝宝石全球贸易_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (48 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (47 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 48,
+        "chunks": 47,
+        "content_types": [
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M08",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (49 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (77 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 49,
+        "chunks": 77,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "reference",
+          "summary"
+        ]
+      }
+    },
+    {
+      "document_id": "交易者情绪与市场波动",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (68 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (73 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 68,
+        "chunks": 73,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M07",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (53 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (65 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 53,
+        "chunks": 65,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "monitoring",
+          "prose",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "AI革命与互联网泡沫周期对比_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (42 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (34 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 42,
+        "chunks": 34,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "自动驾驶传感方案路线之争_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (51 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (61 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 51,
+        "chunks": 61,
+        "content_types": [
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "T9_注意力监管立法竞速_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (52 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (44 chunks)",
+        "tables": "PASS",
+        "reference_audit": "FAIL: 1 vs 5"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 52,
+        "chunks": 44,
+        "content_types": [
+          "audit",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "M10",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (48 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (56 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 48,
+        "chunks": 56,
+        "content_types": [
+          "causal_chain",
+          "code",
+          "comparison",
+          "monitoring",
+          "prose",
+          "summary",
+          "table"
+        ]
+      }
+    },
+    {
+      "document_id": "罗马征服历程与文明比对_最终报告",
+      "checks": {
+        "encoding": "PASS",
+        "metadata": "PASS",
+        "heading_tree": "PASS (53 sections)",
+        "line_range": "PASS",
+        "chunks": "PASS (58 chunks)",
+        "tables": "PASS",
+        "reference_audit": "PASS"
+      },
+      "ok": true,
+      "counts": {
+        "sections": 53,
+        "chunks": 58,
+        "content_types": [
+          "causal_chain",
+          "comparison",
+          "prose",
+          "reference",
+          "summary",
+          "table"
+        ]
+      }
+    }
+  ]
+}

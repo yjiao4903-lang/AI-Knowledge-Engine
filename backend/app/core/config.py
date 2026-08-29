@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import yaml
@@ -150,7 +151,12 @@ class Config(BaseModel):
 
 
 def load_config(path: str | Path | None = None) -> Config:
-    """加载配置；path 缺省时依次尝试 config/config.yaml 与 config.example.yaml。"""
+    """加载配置；path 缺省时依次尝试 KE_CONFIG 环境变量、config/config.yaml
+    与 config.example.yaml（I0：全量索引与 dev 语料用独立配置切换）。"""
+    if path is None:
+        env = os.environ.get("KE_CONFIG")
+        if env:
+            path = env
     if path is None:
         candidates = [CONFIG_DIR / "config.yaml", CONFIG_DIR / "config.example.yaml"]
         for c in candidates:

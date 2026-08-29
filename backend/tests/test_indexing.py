@@ -53,7 +53,7 @@ def env(tmp_path, cfg, worker, monkeypatch):
     kb = tmp_path / "kb"
     kb.mkdir()
     cfg.knowledge_base.roots = [str(kb)]
-    shutil.copy(FIXTURES / "M14_sample.md", kb / "M14_sample.md")
+    shutil.copy(FIXTURES / "M14_sample.md", kb / "M14_测试_最终报告.md")  # 命名须满足收录策略（ADR-013 v2）
     conn = connect(tmp_path / "catalog.db")
     init_schema(conn)
     pipeline = IndexPipeline(cfg, conn, EmbedderAdapter(cfg, worker))
@@ -84,7 +84,7 @@ def _fts_count(env, term):
 
 
 def test_add_new_file(env):
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     stats = env["pipeline"].apply_scan(_scan(env))
     assert stats["indexed"] == 2 and not stats["errors"]  # M14 fixture + T99
     assert any(d["document_id"] == "T99" for d in stats.get("details", []))
@@ -97,12 +97,12 @@ def test_add_new_file(env):
 
 
 def test_modify_file(env):
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
 
     modified = MINI_DOC.replace("独有内容段", "被改写的第二版内容").replace(
         "QUARKX917", "ZETA42BETA")
-    (env["kb"] / "T99_mini.md").write_text(modified, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(modified, encoding="utf-8")
     stats = env["pipeline"].apply_scan(_scan(env))
     assert stats["indexed"] == 1 and not stats["errors"]
 
@@ -116,7 +116,7 @@ def test_modify_file(env):
 
 def test_staging_failure_preserves_old_version(env, monkeypatch):
     """MODIFIED 的 staging 失败 => 旧版本继续可搜索（Addendum §35/52）。"""
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
 
     from app.indexing import pipeline as pipeline_mod
@@ -125,7 +125,7 @@ def test_staging_failure_preserves_old_version(env, monkeypatch):
         raise RuntimeError("模拟解析/分块崩溃")
 
     monkeypatch.setattr(pipeline_mod.SemanticChunker, "chunk_document", boom)
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC + "\n损坏的新版本", encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC + "\n损坏的新版本", encoding="utf-8")
     stats = env["pipeline"].apply_scan(_scan(env))
     monkeypatch.undo()
 
@@ -139,7 +139,7 @@ def test_staging_failure_preserves_old_version(env, monkeypatch):
 
 
 def test_rename_file_no_reembed(env, worker, monkeypatch):
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
 
     from app.indexing.pipeline import EmbedderAdapter
@@ -153,8 +153,8 @@ def test_rename_file_no_reembed(env, worker, monkeypatch):
 
     monkeypatch.setattr(EmbedderAdapter, "embed_documents", counting)
 
-    (env["kb"] / "T99_mini_renamed.md").write_text(MINI_DOC, encoding="utf-8")
-    (env["kb"] / "T99_mini.md").unlink()
+    (env["kb"] / "T99_mini_最终报告_renamed.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").unlink()
     stats = env["pipeline"].apply_scan(_scan(env))
 
     monkeypatch.undo()
@@ -162,13 +162,13 @@ def test_rename_file_no_reembed(env, worker, monkeypatch):
     assert calls["n"] == 0, "RENAMED 不应重新嵌入"
     row = env["conn"].execute(
         "SELECT source_path FROM documents WHERE id='T99'").fetchone()
-    assert row["source_path"].endswith("T99_mini_renamed.md")
+    assert row["source_path"].endswith("T99_mini_最终报告_renamed.md")
 
 
 def test_delete_file_tombstone(env):
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
-    (env["kb"] / "T99_mini.md").unlink()
+    (env["kb"] / "T99_mini_最终报告.md").unlink()
     stats = env["pipeline"].apply_scan(_scan(env))
     assert stats["deleted"] == 1
 
@@ -186,7 +186,7 @@ def test_repair_restores_missing_points(env):
     """Qdrant 点被删 -> check 不一致 -> repair 恢复（Addendum §42-43）。"""
     from qdrant_client import models as qm
 
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
     col = env["cfg"].qdrant.chunks_collection
     client = env["pipeline"].qdrant_client()
@@ -208,10 +208,10 @@ def test_repair_restores_missing_points(env):
 
 def test_fast_path_unchanged(env):
     """size+mtime 未变 -> UNCHANGED（跳过 sha256 重索引）。"""
-    (env["kb"] / "T99_mini.md").write_text(MINI_DOC, encoding="utf-8")
+    (env["kb"] / "T99_mini_最终报告.md").write_text(MINI_DOC, encoding="utf-8")
     env["pipeline"].apply_scan(_scan(env))
     result = _scan(env)
-    states = [s for s in result.states if s.path.endswith("T99_mini.md")]
+    states = [s for s in result.states if s.path.endswith("T99_mini_最终报告.md")]
     assert states and states[0].status == "UNCHANGED"
     stats = env["pipeline"].apply_scan(result)
     assert stats["indexed"] == 0 and stats["unchanged"] >= 1

@@ -112,14 +112,26 @@ def create_app(cfg: Config | None = None) -> FastAPI:
 
     @app.get("/api/health")
     def health() -> dict:
-        return collect_health(cfg)
+        body = collect_health(cfg)
+        # I0 Error/Health Model：聚合 gpu_worker 明细与 index_generation
+        mgr = getattr(app.state, "manager", None)
+        if mgr is not None:
+            body["gpu_worker"] = {
+                "alive": mgr.is_alive(), "device": mgr.device,
+                "device_kind": mgr.device_kind,
+                "fallback_to_cpu": mgr.fallback_to_cpu,
+                "total_restarts": mgr.total_restarts,
+            }
+        else:
+            body["gpu_worker"] = {"alive": False}
+        return body
 
     @app.exception_handler(AppError)
     async def app_error_handler(request, exc: AppError):  # noqa: ANN001
         from fastapi.responses import JSONResponse
 
         return JSONResponse(
-            status_code=400,
+            status_code=getattr(exc, "http_status", 400),
             content={"error": exc.code, "message": str(exc), "detail": exc.detail},
         )
 

@@ -46,6 +46,24 @@ def get_document_sections(doc_id: str, request: Request) -> dict:
     return {"document_id": doc_id, "sections": [dict(r) for r in rows]}
 
 
+@router.get("/documents/{doc_id}/chunks")
+def get_document_chunks(doc_id: str, request: Request) -> dict:
+    """按文档列出全部 chunks（I0 契约端点，主计划 §18）。
+
+    替代前端依赖 chunk_id 确定性的探针枚举方案；仅元数据 + 正文，不含向量。
+    """
+    conn = request.app.state.conn
+    if conn.execute("SELECT 1 FROM documents WHERE id = ?", (doc_id,)).fetchone() is None:
+        raise HTTPException(status_code=404, detail=f"document not found: {doc_id}")
+    rows = conn.execute(
+        "SELECT id, document_id, section_id, ordinal, content_type, evidence_level, "
+        "start_line, end_line, plain_text FROM chunks WHERE document_id = ? ORDER BY ordinal",
+        (doc_id,)).fetchall()
+    total = len(rows)
+    return {"document_id": doc_id, "chunks": [dict(r) for r in rows],
+            "total": total, "chunk_count": total}
+
+
 @router.get("/chunks/{chunk_id}")
 def get_chunk(chunk_id: str, request: Request) -> dict:
     conn = request.app.state.conn

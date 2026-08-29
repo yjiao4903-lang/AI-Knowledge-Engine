@@ -42,9 +42,26 @@ _CN_NUMS = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7
 
 
 def _cn_to_int(s: str) -> int:
+    """中文数字转 int；支持复合形式（十一=11、二十三=23、一百零四…）。
+
+    I0 全量语料修复：此前仅支持单字（一..十），"第十一章" 被判为 0 导致
+    多个 section 撞名 ch0（sections UNIQUE 约束失败，无法索引）。
+    """
     if s.isdigit():
         return int(s)
-    return _CN_NUMS.get(s, 0)
+    units = {"十": 10, "百": 100}
+    total, num = 0, 0
+    for ch in s.strip():
+        if ch in units:  # 十/百 须先于 _CN_NUMS 判断（"十" 亦在 _CN_NUMS）
+            total += (num or 1) * units[ch]
+            num = 0
+        elif ch in _CN_NUMS:
+            num = _CN_NUMS[ch]
+        elif ch == "零":
+            continue
+        else:
+            return 0
+    return total + num
 
 
 # --- M2-10 Section 类型分类 ---

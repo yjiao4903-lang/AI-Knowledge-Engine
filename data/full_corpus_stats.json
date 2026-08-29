@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-08-30T02:27:03",
+  "config": {
+    "roots": [
+      "D:/AI深度报告归档"
+    ],
+    "sqlite": "D:/AI-Knowledge-Engine/data/catalog_full.db",
+    "collections": [
+      "kb_chunks_full_v1",
+      "kb_sections_full_v1"
+    ]
+  },
+  "total_files_scanned": 7159,
+  "indexed_files": 189,
+  "parsed_files": 189,
+  "skipped_files": 6970,
+  "skipped_by_reason": {
+    "EXCLUDED_DIR": 6413,
+    "EXCLUDED_PROCESS": 191,
+    "EXCLUDED_NON_FINAL": 339,
+    "EXCLUDED_DUPLICATE": 27
+  },
+  "failed_files": 0,
+  "errors_sample": [],
+  "encoding_failures": 0,
+  "total_sections": 8828,
+  "total_chunks": 9780,
+  "fts_terms_count": 9780,
+  "fts_trigram_count": 9780,
+  "qdrant_points": 9780,
+  "qdrant_sections_points": 8987,
+  "duplicate_document_ids_in_catalog": 0,
+  "disambiguated_ids": 2,
+  "oversized_chunks_gt_hardmax": 18,
+  "parser_warnings": "not_tracked(v0.1.1 无告警通道)",
+  "chunker_warnings": "not_tracked",
+  "consistency": {
+    "chunks": 9780,
+    "fts_terms": 9780,
+    "fts_trigram": 9780,
+    "qdrant_points": 9780,
+    "equal": true
+  }
+}

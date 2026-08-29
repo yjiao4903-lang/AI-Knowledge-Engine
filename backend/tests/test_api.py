@@ -1,25 +1,55 @@
-"""M10 API 测试（TestClient + 真实 dev catalog/Qdrant/worker）。"""
+"""M10 API 测试（I0 解耦：tmp 语料 + tmp catalog + 独立 Qdrant collection）。
+
+此前依赖 dev seed catalog（等待 documents>=10），config.yaml 切换全量归档后
+会导致 startup reconcile 误索引全库。现在 fixture 自建 3 篇语料（M04/M07/M10
+fixture 拷贝），完全不触碰真实 catalog 与知识源。
+"""
+
+import shutil
+import time
+from pathlib import Path
 
 import pytest
 
-from app.core.config import load_config
+FIXTURES = Path(__file__).parent / "fixtures"
+SEED_DOCS = ["M04_sample.md", "M07_sample.md", "M10_sample.md"]
 
 
 @pytest.fixture(scope="module")
-def client():
+def client(tmp_path_factory):
     from fastapi.testclient import TestClient
 
+    from app.core.config import load_config
     from app.main import create_app
+    from app.storage.qdrant import QdrantStore
+
+    root = tmp_path_factory.mktemp("api_test")
+    kb = root / "kb"
+    kb.mkdir()
+    for name in SEED_DOCS:
+        # 文件名须满足收录策略（终版报告命名，ADR-013 v2）；doc_id 由专题代号元数据决定
+        shutil.copy(FIXTURES / name, kb / name.replace("_sample", "_测试_最终报告"))
 
     cfg = load_config()
+    cfg.knowledge_base.roots = [str(kb)]
+    cfg.sqlite.path = str(root / "catalog.db")
+    cfg.qdrant.chunks_collection = "kb_chunks_apitest"
+    cfg.qdrant.sections_collection = "kb_sections_apitest"
+    cfg.indexing.periodic_reconcile_seconds = 0  # 测试期间禁用 watcher
+
+    store = QdrantStore(cfg.qdrant)
+    for col in (cfg.qdrant.chunks_collection, cfg.qdrant.sections_collection):
+        try:
+            store.client.delete_collection(col)
+        except Exception:
+            pass
+
     app = create_app(cfg)
     with TestClient(app) as c:
-        # 等待 startup reconcile 完成（有变更时在后台线程索引）
-        import time
-
-        for _ in range(60):
+        # 等待 startup reconcile 完成（3 篇 -> GPU 索引数十秒内）
+        for _ in range(120):
             counts = c.get("/api/index/status").json()["counts"]
-            if counts["documents"] >= 10:
+            if counts["documents"] >= len(SEED_DOCS):
                 break
             time.sleep(1)
         yield c
@@ -62,12 +92,32 @@ def test_search_modes_and_filters(client):
 
 def test_documents_endpoints(client):
     docs = client.get("/api/documents").json()
-    assert docs["total"] >= 10
+    assert docs["total"] >= 3
     one = client.get("/api/documents/M04").json()
     assert one["id"] == "M04" and one["chunk_count"] > 50
     sections = client.get("/api/documents/M04/sections").json()
     assert len(sections["sections"]) >= 60
     assert client.get("/api/documents/NOPE").status_code == 404
+
+
+def test_document_chunks_endpoint(client):
+    """I0 新增：按文档列 chunks（替代前端 deterministic 枚举规避方案）。"""
+    resp = client.get("/api/documents/M04/chunks")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["document_id"] == "M04"
+    assert body["total"] == body["chunk_count"] > 50
+    chunks = body["chunks"]
+    ids = [c["id"] for c in chunks]
+    assert len(ids) == len(set(ids))
+    first = chunks[0]
+    assert {"id", "document_id", "section_id", "ordinal", "content_type",
+            "evidence_level", "start_line", "end_line", "plain_text"} <= set(first)
+    assert all(c["document_id"] == "M04" for c in chunks)
+    # 与 document 详情的 chunk_count 一致
+    one = client.get("/api/documents/M04").json()
+    assert body["total"] == one["chunk_count"]
+    assert client.get("/api/documents/NOPE/chunks").status_code == 404
 
 
 def test_chunk_endpoint(client):
@@ -93,7 +143,7 @@ def test_open_original_path_security(client):
 
 def test_index_status_and_jobs(client):
     status = client.get("/api/index/status").json()
-    assert status["counts"]["documents"] >= 10
+    assert status["counts"]["documents"] >= 3
     assert status["consistent"] is True
     jobs = client.get("/api/index/jobs").json()
     assert "jobs" in jobs

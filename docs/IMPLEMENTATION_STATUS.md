@@ -1,8 +1,23 @@
 # Implementation Status
 
 ## Current Milestone
-M0-M11 完成。**项目路线变更（2026-08-29）**：原独立 M12/M13 取消，进入
-Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
+M0-M11 完成；**I0 Full Corpus Gate + Integration Contract 完成（2026-08-30）**。
+项目处于 Integration 路线 I0-I6（AI Research OS），下一步 I1（Cognition Retrieval Proxy，
+从 I1 起才允许修改 cognition-app，先 git init）。
+
+## I0 交付摘要（2026-08-30，详见 docs/FULL_CORPUS_REPORT.md）
+- **Full Corpus Index**：189 篇终版（v2 策略 ADR-013）/ 8828 sections / 9780 chunks；
+  Failed 0、Encoding 0；排除 6970 全带 Exclusion Reason（DIR 6413/NON_FINAL 339/PROCESS 191/DUP 27）
+- **一致性 Gate PASS**：chunks=fts_terms=fts_trigram=qdrant_points=9780（repair 清除 347 孤儿点）
+- **人工抽样 100/100 PASS**（seed=20260829 可复现，full_corpus_sample.py）
+- **全库 Golden Regression PASS**：Hit@5 0.920 / MRR 0.765 / NDCG 0.801（阈值 0.90/0.75/0.80），
+  Exact/Semantic 1.00（full_corpus_regression.py，对生产索引非临时语料）
+- **API/契约**：新增 GET /api/documents/{id}/chunks；health 增加 index_generation + gpu_worker；
+  服务故障错误体 503 语义；INTEGRATION_CONTRACT.md + EvidenceReference V1 落地
+  （D:\AI知识整合体系\docs\）
+- **配置机制（ADR-015）**：KE_CONFIG/--config；config.yaml=生产全量，config.dev.yaml=dev 留档
+- **解析器修复（ADR-014）**：复合中文数字（第十一章 曾解析为 ch0 撞名）+ section_id 撞名兜底
+- **全量索引管线补 sections 向量**（M10 教训闭环）：随 chunks 同批嵌入 + 删除级联
 
 ## 交接机制
 - `docs/HANDOFF_PROTOCOL.md`：多窗口交接流程（含 Integration 阶段补充约束）
@@ -26,7 +41,14 @@ Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
 - [x] M11 React Frontend（2026-08-29，前端窗口交付）
 
 ## In Progress
-- [ ] I0 Full Corpus Gate + Integration Contract（整合窗口接手中）
+- （无）
+
+## I0 完成登记
+- [x] I0 Full Corpus Gate + Integration Contract（2026-08-30，本窗口交付）
+- 产物：docs/FULL_CORPUS_REPORT.md、data/full_corpus_{stats,failures,sample,preflight,regression}.json、
+  backend/scripts/full_corpus_{preflight,report,sample,regression}.py、
+  backend/app/indexing/docid_policy.py、D:\AI知识整合体系\docs\{INTEGRATION_READINESS,INTEGRATION_CONTRACT}.md
+- I1 契约：docs/HANDOFF_I1.md（I1 才允许修改 cognition-app，先 git init + 初始 commit）
 
 ## M11 交付物（frontend/）
 - 技术栈：React 18 + TypeScript + Vite 5 + React Router 6 + TanStack Query 5 + Ant Design 5（spec §43）
@@ -131,7 +153,8 @@ Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
 - 16 条 Mini Eval A/B：Hit@1 0.625->0.750，NDCG 0.719->0.845
 
 ## Tests（最新）
-- pytest: 102 passed（M11 窗口复跑确认，基线未变）
+- pytest: **114 passed**（I0 窗口：102 基线 + docid_policy 9 + 解析器回归 2 + chunks 端点 1）
+- 全库 Golden Regression: GATE PASS（见 docs/FULL_CORPUS_REPORT.md §4）
 
 ## Known Issues
 1. 核显/HIP device 0 崩溃：device.py + worker 进程隔离双重规避（M0/M7）。
@@ -150,6 +173,14 @@ Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
    `export PATH="$PWD/.tools/node:$PATH"` 后执行 npm 命令。
 10. （M11）后端缺「按文档列 chunks」端点，前端以 chunk_id 探针法枚举
     （见上方 M11 契约缺口备忘）；文档打开需 ~N+m 次本地请求，量级可接受。
+    （I0 已补 GET /api/documents/{id}/chunks，前端可择机替换探针实现）
+11. （I0）kb_sections_full_v1 含 159 个 v1 策略残段（chunks 已 repair 干净；
+    sections 不在四方 Gate 内）——I1 前按 document_id 清理一次。
+12. （I0）收录策略收紧后 rescan 不会自动删除被新策略排除的已索引文档
+    （本次清库重扫解决）；策略调整需人工评估 catalog 增删。
+13. （I0）全库稀释下 hybrid_rerank MRR 0.765 距阈值余量小（0.75）；
+    NDCG 0.801 余量小（0.80）。C03/R01/X01 三条排序下降可作后续调参候选
+    （禁止无 A/B 调参，主计划 §58）。
 
 ## Decisions
 - ADR-001 依赖管理：pip + pyproject.toml + requirements-lock.txt；torch 经 AMD 索引单独安装。
@@ -169,3 +200,9 @@ Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
   Qdrant 失败由 repair 兜底；RENAMED 零重嵌入；watcher 推迟至 M10。
 - ADR-012 Golden Set 标注采用 heading_contains 锚定（对 section_id 规则变化稳健）；
   grade 3/2 二级即可支撑 NDCG。
+- ADR-013 全量语料收录与 doc_id 策略（v2 仅终版）：EXCLUDED_DIR/NON_FINAL/PROCESS/
+  DUPLICATE 四类排除全留档；doc_id 规则 report_code > M 系 stem 回退 > 主题目录名 > stem，
+  同 id 异内容 sha8 消歧。见 backend/app/indexing/docid_policy.py。
+- ADR-014 解析器复合中文数字支持：_cn_to_int 一~九十九；section_id 撞名 :x{n} 兜底。
+- ADR-015 配置切换：KE_CONFIG 环境变量 + reindex --config；config.yaml=生产全量
+  （roots→D:/AI深度报告归档、catalog_full.db、kb_*_full_v1），config.dev.yaml=dev 留档。

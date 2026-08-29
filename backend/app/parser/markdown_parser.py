@@ -69,6 +69,14 @@ def parse_markdown(text: str) -> ParsedDocument:
         ordinal += 1
         parent_id = parent.section_id if parent else None
         sid = section_id_for(level, heading, parent_id, ordinal)
+        used = {x.section_id for x in raw_sections}
+        if sid in used:
+            # 真实语料兜底（I0）：编号规则未覆盖的标题可能撞名，
+            # 追加全局序号后缀保证文档内唯一（chunk_id 确定性不受影响）。
+            base, n = sid, 0
+            while sid in used:
+                n += 1
+                sid = f"{base}:x{n}"
         raw_sections.append(
             Section(
                 level=level,

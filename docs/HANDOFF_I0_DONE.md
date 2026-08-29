@@ -140,3 +140,14 @@ KE 的 IMPLEMENTATION_STATUS.md 同步登记 I0 状态。
 按 `HANDOFF_PROTOCOL.md` 结束流程收尾：更新两个 IMPLEMENTATION_STATUS、
 归档本契约（HANDOFF_I0_DONE.md）、编写 I1（Cognition Retrieval Proxy）交接契约
 ——I1 开始才允许修改 cognition-app（先 git init，见 §0）。
+
+---
+
+## 完成登记（2026-08-30，I0 窗口归档）
+
+I0 Gate 全部满足（见 docs/FULL_CORPUS_REPORT.md §5 与 D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md）。
+对 §0 就绪性风险的处置结果：
+1. cognition-app 无 git → 保持未动（I0 未修改 Cognition App），I1 首步 git init；
+2. catalog 策略 → 独立 catalog_full.db + kb_*_full_v1 collections（ADR-015），完成后
+   config.yaml 已切换为全量生产配置，dev 留档 config.dev.yaml。
+偏差记录：收录策略经用户决策从初版 480 篇收紧为 v2 仅终版 189 篇（ADR-013 v2）。

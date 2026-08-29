@@ -84,3 +84,30 @@ graph TD; A-->B;
     code_sec = next(s for s in doc.sections if s.heading == "图节")
     types = [b.block_type for b in code_sec.blocks]
     assert "code" in types and "mermaid" in types
+
+
+# ---- I0 全量语料回归：复合中文数字与 section_id 撞名兜底 ----
+
+def test_cn_numeral_compound():
+    from app.parser.heading_tree import _cn_to_int
+
+    assert _cn_to_int("十一") == 11
+    assert _cn_to_int("十三") == 13
+    assert _cn_to_int("二十三") == 23
+    assert _cn_to_int("十") == 10
+    assert _cn_to_int("三") == 3
+    assert _cn_to_int("100") == 100
+
+
+def test_section_id_collision_fallback():
+    from app.parser.markdown_parser import parse_markdown
+
+    text = "\n".join(
+        ["# 文档"]
+        + [f"## 第{n}章 主题" for n in ("一", "十一", "十二")]  # 修复前 十一/十二 -> ch0 撞名
+        + ["内容"]
+    )
+    doc = parse_markdown(text)
+    ids = [s.section_id for s in doc.sections]
+    assert len(ids) == len(set(ids)), ids
+    assert "ch11" in ids and "ch12" in ids

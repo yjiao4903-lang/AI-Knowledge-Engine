@@ -5,6 +5,7 @@ from __future__ import annotations
 
 class AppError(Exception):
     code = "APP_ERROR"
+    http_status = 400  # 服务故障类子类覆盖为 503（I0 Error Model）
 
     def __init__(self, message: str, *, detail: dict | None = None) -> None:
         super().__init__(message)
@@ -25,18 +26,22 @@ class MarkdownParseError(AppError):
 
 class SqliteError(AppError):
     code = "SQLITE_ERROR"
+    http_status = 503  # RETRIEVAL_UNAVAILABLE（Integration Contract V1）
 
 
 class QdrantError(AppError):
     code = "QDRANT_ERROR"
+    http_status = 503  # RETRIEVAL_UNAVAILABLE（Integration Contract V1）
 
 
 class GpuError(AppError):
     code = "GPU_ERROR"
+    http_status = 503  # RETRIEVAL_UNAVAILABLE（Integration Contract V1）
 
 
 class EmbeddingError(AppError):
     code = "EMBEDDING_ERROR"
+    http_status = 503  # RETRIEVAL_UNAVAILABLE（Integration Contract V1）
 
 
 class RerankError(AppError):

@@ -9,7 +9,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from app.core.config import Config
+from app.chunking.chunk_models import CHUNKER_VERSION
+from app.core.config import LEXICAL_VERSION, SCHEMA_VERSION, Config
 from app.inference.device import torch_info
 from app.storage.migrations import check_fts_capability
 from app.storage.qdrant import QdrantStore
@@ -24,6 +25,32 @@ def _runtime_profile(data_dir: Path) -> dict:
         except Exception:
             return {}
     return {}
+
+
+def _index_generation(cfg: Config) -> dict:
+    """I0：catalog 世代信息（schema/parser/chunker 版本 + 最近全量扫描）。"""
+    try:
+        conn = connect(cfg.sqlite.path, read_only=True)
+        try:
+            row = conn.execute(
+                "SELECT COUNT(*) AS n, MIN(parser_version) AS pv, "
+                "MIN(chunker_version) AS cv, MIN(schema_version) AS sv FROM documents"
+            ).fetchone()
+            from app.storage.migrations import get_meta
+
+            last_scan = get_meta(conn, "last_full_scan")
+        finally:
+            conn.close()
+        return {
+            "documents": row["n"] or 0,
+            "schema_version": row["sv"] or SCHEMA_VERSION,
+            "parser_version": row["pv"] or "0.1.0",
+            "chunker_version": row["cv"] or CHUNKER_VERSION,
+            "lexical_version": LEXICAL_VERSION,
+            "last_full_scan": last_scan,
+        }
+    except Exception:
+        return {"documents": 0, "status": "error"}
 
 
 def collect_health(cfg: Config) -> dict:
@@ -65,4 +92,5 @@ def collect_health(cfg: Config) -> dict:
         "embedding": {"model": cfg.embedding.model, **{k: inference_status.get(k) for k in ("device",)}},
         "reranker": {"model": cfg.reranker.model, **{k: inference_status.get(k) for k in ("device",)}},
         "inference": inference_status,
+        "index_generation": _index_generation(cfg),
     }
