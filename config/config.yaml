@@ -80,3 +80,8 @@ indexing:
   startup_scan: true
   periodic_reconcile_seconds: 300
   watcher_enabled: true
+
+inference:
+  preferred_device: "auto"      # auto | cpu
+  preferred_gpu_name: "RX 7900 XTX"
+  force_device: null            # 如 "cuda:1"；优先级最高

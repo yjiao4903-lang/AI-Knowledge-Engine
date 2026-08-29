@@ -108,6 +108,17 @@ class IndexingConfig(BaseModel):
     watcher_enabled: bool = True
 
 
+class InferenceConfig(BaseModel):
+    """显式推理设备配置（Addendum §17）。
+
+    优先级：force_device > preferred_gpu_name > 最大显存 > CPU fallback。
+    """
+
+    preferred_device: str = "auto"  # auto | cpu
+    preferred_gpu_name: str = "RX 7900 XTX"
+    force_device: str | None = None  # 如 "cuda:1"
+
+
 class Config(BaseModel):
     app: AppConfig = Field(default_factory=AppConfig)
     knowledge_base: KnowledgeBaseConfig = Field(default_factory=KnowledgeBaseConfig)
@@ -120,6 +131,7 @@ class Config(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     fusion: FusionConfig = Field(default_factory=FusionConfig)
     indexing: IndexingConfig = Field(default_factory=IndexingConfig)
+    inference: InferenceConfig = Field(default_factory=InferenceConfig)
 
 
 def load_config(path: str | Path | None = None) -> Config:

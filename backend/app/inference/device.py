@@ -89,3 +89,55 @@ def device_kind(device_str: str) -> str:
         return "cpu"
     info = torch_info()
     return "rocm" if info.get("hip_version") else "cuda"
+
+
+def get_inference_device(
+    force_device: str | None = None,
+    preferred_device: str = "auto",
+    preferred_gpu_name: str = "RX 7900 XTX",
+    fallback: str = "cpu",
+) -> tuple[str, str]:
+    """统一推理设备入口（Addendum §16/17）。业务代码禁止裸写 .cuda()。
+
+    优先级：force_device > preferred_gpu_name > 最大显存 > CPU fallback。
+    返回 (device_str, reason)，device_str 形如 "cuda:1" 或 "cpu"。
+    """
+    info = torch_info()
+    if not info["available"]:
+        return fallback, f"TORCH_NOT_AVAILABLE: {info.get('error')}"
+
+    try:
+        import torch
+
+        if not torch.cuda.is_available():
+            return fallback, "CUDA/HIP Runtime 不可用"
+
+        count = torch.cuda.device_count()
+
+        # 1) force_device：显式指定，校验存在性
+        if force_device:
+            if force_device == "cpu":
+                return "cpu", "force_device=cpu"
+            if force_device.startswith("cuda:"):
+                idx = int(force_device.split(":")[1])
+                if idx < count:
+                    return force_device, f"force_device 指定: {torch.cuda.get_device_name(idx)}"
+            return fallback, f"force_device={force_device} 无效（devices={count}），回退"
+
+        # 2) preferred_device=cpu
+        if preferred_device == "cpu":
+            return "cpu", "preferred_device=cpu"
+
+        # 3) preferred_gpu_name：按名称匹配
+        if preferred_gpu_name:
+            for i in range(count):
+                if preferred_gpu_name.lower() in torch.cuda.get_device_name(i).lower():
+                    reason = f"按 preferred_gpu_name 匹配: {torch.cuda.get_device_name(i)} (cuda:{i})"
+                    if count > 1:
+                        reason += "；其余设备（含 iGPU）已排除"
+                    return f"cuda:{i}", reason
+
+        # 4) 最大显存兜底
+        return select_device("rocm", fallback)
+    except Exception as exc:
+        return fallback, f"GPU 探测失败: {type(exc).__name__}: {exc}"

@@ -7,8 +7,17 @@ import re
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})\s*([\w+-]*)\s*$")
 TABLE_ROW_RE = re.compile(r"^\s*\|.*\|\s*$")
 FORMULA_BLOCK_RE = re.compile(r"^\s*\$\$\s*$")
+HR_RE = re.compile(r"^\s*(-{3,}|\*{3,}|_{3,})\s*$")  # 水平分隔线，不产生内容块
 MERMAID_HINT_RE = re.compile(r"(graph|flowchart|sequenceDiagram|erDiagram|gantt|stateDiagram)", re.I)
 ASCII_ART_HINT_RE = re.compile(r"[─│┌┐└┘├┤┬┴┼═║╔╗╚╝▲▼──►◀]", re.I)
+HTML_TAG_RE = re.compile(r"</?[a-zA-Z][^>]*/?>")  # 如 <a id="ch1"></a> 锚点行（可含开闭标签对）
+
+
+def _is_html_only(text: str) -> bool:
+    """剥离全部 HTML 标签后无剩余文本（锚点等），不构成知识内容。"""
+    if not text.strip():
+        return False
+    return not HTML_TAG_RE.sub("", text).strip()
 
 
 def detect_blocks(lines: list[str], start: int, end: int) -> list:
@@ -23,12 +32,17 @@ def detect_blocks(lines: list[str], start: int, end: int) -> list:
         nonlocal para_start
         if para_start is not None and upto > para_start:
             text = "\n".join(lines[para_start:upto]).strip()
-            if text:
+            if text and not _is_html_only(text):
                 blocks.append(Block("prose", para_start + 1, upto, text))
         para_start = None
 
     while i < end:
         line = lines[i]
+
+        if HR_RE.match(line) and not TABLE_ROW_RE.match(line):
+            flush_para(i)  # 水平线仅作分隔，不入任何块
+            i += 1
+            continue
 
         m = FENCE_RE.match(line)
         if m:  # code / mermaid fence
@@ -43,7 +57,8 @@ def detect_blocks(lines: list[str], start: int, end: int) -> list:
                 block_type = "mermaid"
             elif lang is None and ASCII_ART_HINT_RE.search(body):
                 block_type = "ascii_diagram"
-            blocks.append(Block(block_type, i + 1, j + 1, body, lang=lang))
+            # raw 文本包含 fence 定界符，保证 raw_markdown 保真
+            blocks.append(Block(block_type, i + 1, min(j + 1, end), "\n".join(lines[i : min(j + 1, end)]), lang=lang))
             i = j + 1
             continue
 
@@ -61,7 +76,8 @@ def detect_blocks(lines: list[str], start: int, end: int) -> list:
             j = i + 1
             while j < end and not FORMULA_BLOCK_RE.match(lines[j]):
                 j += 1
-            blocks.append(Block("formula", i + 1, min(j + 1, end), "\n".join(lines[i + 1 : j])))
+            close = min(j, end - 1)
+            blocks.append(Block("formula", i + 1, close + 1, "\n".join(lines[i : close + 1])))
             i = j + 1
             continue
 
