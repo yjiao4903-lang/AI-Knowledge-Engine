@@ -6,7 +6,7 @@ app:
 
 knowledge_base:
   roots:
-    - "D:/AI深度报告归档"
+    - "D:/AI-Knowledge-Engine/data/dev_kb"  # dev 语料（10 篇）；切全量归档改回 D:/AI深度报告归档 后运行 reindex.py scan
   read_only: true
   extensions:
     - ".md"

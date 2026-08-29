@@ -12,12 +12,13 @@ from pathlib import Path
 from app.core.errors import SqliteError
 
 
-def connect(path: str | Path, *, read_only: bool = False) -> sqlite3.Connection:
+def connect(path: str | Path, *, read_only: bool = False,
+            check_same_thread: bool = True) -> sqlite3.Connection:
     p = Path(path)
     if not read_only:
         p.parent.mkdir(parents=True, exist_ok=True)
     try:
-        conn = sqlite3.connect(p)
+        conn = sqlite3.connect(p, check_same_thread=check_same_thread)
         conn.row_factory = sqlite3.Row
         if read_only:
             conn.execute("PRAGMA query_only=ON")
