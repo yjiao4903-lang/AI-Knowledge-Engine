@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Data & indexes (generated at runtime)
+data/
+index/
+*.db-wal
+*.db-shm
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
