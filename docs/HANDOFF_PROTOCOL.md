@@ -1,6 +1,26 @@
 # 窗口交接机制（Handoff Protocol）
 
 > 本文件定义多窗口协作的交接流程。任何新窗口接手开发前必须先读本文件。
+> 2026-08-29 更新：项目进入 **Integration 阶段（I0-I6）**，原独立 M12/M13 路线
+> 由《AI 研究知识体系整合：开发实施方案 V1.0》（`D:\AI知识整合体系\docs\`）取代。
+
+## 0. Integration 阶段补充约束（优先级高于后续各节）
+
+1. **双仓库**：`D:\AI-Knowledge-Engine`（本仓库）与
+   `E:\CODEX\AI深度研究\cognition-app` 保持独立，禁止合并（注意：实测
+   cognition-app 尚无 git，首次修改前须 init + 初始 commit）；
+2. **评估副本 ≠ 真实项目**：`D:\AI知识整合体系\docs\项目整合评估资料_V0.2.md`
+   只可阅读；修改/测试/启动 cognition-app 必须进入真实目录，入口 start.bat；
+3. **集成工作区**：`D:\AI知识整合体系\`（docs/runtime/config/logs）；
+   集成事实源为该目录下 `docs\IMPLEMENTATION_STATUS.md`；
+4. **永久职责边界**：Cognition App 拥有唯一认知写入权（Proposal Gate）；
+   Knowledge Engine 对认知数据只读；两库禁止合并，跨系统只走 HTTP API；
+5. **路线**：I0（Full Corpus+Contract）→ I1 Proxy → I2 Reports 融合 →
+   I3 Evidence Bridge → I4 Unified Runtime → I5 Backup/Hardening → I6；
+6. 每阶段任务契约：`HANDOFF_I0.md`（当前）、后续 HANDOFF_I1.md...；
+   里程碑统一交付格式见主计划 §64。
+
+---
 
 ## 1. 事实源（Single Source of Truth）
 

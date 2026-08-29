@@ -1,17 +1,32 @@
 # Implementation Status
 
 ## Current Milestone
-M11 完成 —— React 前端交付（P0 三页 + P1 两页，真机验证通过）。下一里程碑未定义，待用户下发契约。
+M0-M11 完成。**项目路线变更（2026-08-29）**：原独立 M12/M13 取消，进入
+Integration 路线 I0-I6（AI Research OS）。I0 已交接至整合开发窗口
 
 ## 交接机制
-- `docs/HANDOFF_PROTOCOL.md`：多窗口交接流程（事实源/接手流程/结束流程/硬约束）
-- `docs/HANDOFF_M11_DONE.md`：M11 前端任务契约（已完成归档，含 API 契约与验收 Gate 记录）
-- `docs/PROMPT_NEW_WINDOW_M11.md`：M11 启动提示词（历史存档）
+- `docs/HANDOFF_PROTOCOL.md`：多窗口交接流程（含 Integration 阶段补充约束）
+- `docs/HANDOFF_M11_DONE.md`：M11 契约归档（前端窗口已交付）
+- `docs/HANDOFF_I0.md`：**I0 任务契约**（Full Corpus Gate + Integration Contract，
+  含交接方实测资产状态与工程要点）
+- `docs/PROMPT_NEW_WINDOW_I0.md`：I0 新窗口启动提示词（用户复制即用）
+- 主计划：`D:\AI知识整合体系\docs\AI研究知识体系整合_开发实施方案_V1.0.md`
+
+## 路线变更说明
+- 原独立 M12（Windows 打包）并入 I4 Unified Runtime；原 M13（Backup/Hardening）
+  并入 I5（按数据价值重新分 Tier，见主计划 §43）；
+- 两个系统不合并代码库/数据库：Cognition App = 认知控制平面（唯一写入权），
+  AI Knowledge Engine = Evidence Engine（对认知数据只读），API 为唯一整合边界；
+- 已核实就绪性风险：cognition-app 尚无 git 仓库（首次修改前须 init）；
+  KE 当前索引为 dev 语料（10 篇），全量索引为 I0 首要任务。
 
 ## Completed
 - [x] M0-M9 全部完成（2026-08-29；M9 Retrieval Quality Gate 5/5 PASS）
 - [x] M10 FastAPI Productization（2026-08-29，API 11 项测试全过 + 真机冒烟）
 - [x] M11 React Frontend（2026-08-29，前端窗口交付）
+
+## In Progress
+- [ ] I0 Full Corpus Gate + Integration Contract（整合窗口接手中）
 
 ## M11 交付物（frontend/）
 - 技术栈：React 18 + TypeScript + Vite 5 + React Router 6 + TanStack Query 5 + Ant Design 5（spec §43）
