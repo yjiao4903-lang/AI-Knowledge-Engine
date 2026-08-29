@@ -1,0 +1,43 @@
+{
+  "date": "2026-08-29T16:06:15",
+  "checks": [
+    {
+      "step": "torch_import",
+      "ok": true,
+      "available": true,
+      "torch_version": "2.9.1+rocm7.13.0",
+      "hip_version": "7.13.99004-3309c611",
+      "cuda_version": null,
+      "is_rocm": true
+    },
+    {
+      "step": "embedding_smoke",
+      "ok": true,
+      "model": "D:/AI-Models/Qwen3-Embedding-0.6B",
+      "dim": 1024,
+      "shape_ok": true,
+      "finite_ok": true,
+      "query_norm": 1.0,
+      "norm_ok": true,
+      "doc_batch_ms": 24006.2,
+      "query_ms": 26612.2
+    },
+    {
+      "step": "reranker_smoke",
+      "ok": true,
+      "model": "D:/AI-Models/Qwen3-Reranker-0.6B",
+      "scores": [
+        0.9985,
+        0.0
+      ],
+      "finite_ok": true,
+      "expected_order_ok": true,
+      "pair_batch1_ms": 58361.1
+    }
+  ],
+  "fallback_used": false,
+  "device": "cpu",
+  "device_kind": "cpu",
+  "device_reason": "GPU_PROVIDER_FAILED -> cpu: preferred_device=cpu，按要求跳过 GPU",
+  "ok": true
+}

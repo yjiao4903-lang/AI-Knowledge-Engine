@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-08-29T16:08:22",
+  "inference_device": "cuda:1",
+  "device_kind": "rocm",
+  "device_reason": "GPU 可用: AMD Radeon RX 7900 XTX (device 1/2)；多设备 {0: 'AMD Radeon(TM) Graphics', 1: 'AMD Radeon RX 7900 XTX'}，已按最大显存选择，iGPU 已排除",
+  "fallback_used": false,
+  "embedding": {
+    "model": "D:/AI-Models/Qwen3-Embedding-0.6B",
+    "dimension": 1024,
+    "dtype_gpu": "float16",
+    "batch_size_gpu": 8,
+    "batch_size_cpu": 2
+  },
+  "reranker": {
+    "model": "D:/AI-Models/Qwen3-Reranker-0.6B",
+    "dtype_gpu": "float16",
+    "safe_batch_gpu": 1,
+    "candidate_k": 24
+  },
+  "torch": {
+    "available": true,
+    "torch_version": "2.9.1+rocm7.13.0",
+    "hip_version": "7.13.99004-3309c611",
+    "cuda_version": null,
+    "is_rocm": true
+  }
+}

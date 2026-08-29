@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-08-29T16:06:15",
+  "inference_device": "cpu",
+  "device_kind": "cpu",
+  "device_reason": "GPU_PROVIDER_FAILED -> cpu: preferred_device=cpu，按要求跳过 GPU",
+  "fallback_used": false,
+  "embedding": {
+    "model": "D:/AI-Models/Qwen3-Embedding-0.6B",
+    "dimension": 1024,
+    "dtype_gpu": "float16",
+    "batch_size_gpu": 2,
+    "batch_size_cpu": 2
+  },
+  "reranker": {
+    "model": "D:/AI-Models/Qwen3-Reranker-0.6B",
+    "dtype_gpu": "float16",
+    "safe_batch_gpu": 1,
+    "candidate_k": 24
+  },
+  "torch": {
+    "available": true,
+    "torch_version": "2.9.1+rocm7.13.0",
+    "hip_version": "7.13.99004-3309c611",
+    "cuda_version": null,
+    "is_rocm": true
+  }
+}

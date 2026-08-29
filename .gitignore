@@ -10,8 +10,8 @@ __pycache__/
 .env.*
 !.env.example
 
-# Data & indexes (generated at runtime)
-data/
+# Data & indexes (generated at runtime)；诊断 JSON 保留入库
+data/*
 !data/*.json
 index/
 *.db-wal

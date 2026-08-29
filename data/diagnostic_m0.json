@@ -1,0 +1,52 @@
+{
+  "date": "2026-08-29T16:08:22",
+  "checks": [
+    {
+      "step": "torch_import",
+      "ok": true,
+      "available": true,
+      "torch_version": "2.9.1+rocm7.13.0",
+      "hip_version": "7.13.99004-3309c611",
+      "cuda_version": null,
+      "is_rocm": true
+    },
+    {
+      "step": "gpu_matmul",
+      "ok": true,
+      "device": "cuda:1",
+      "shape": [
+        256,
+        256
+      ]
+    },
+    {
+      "step": "embedding_smoke",
+      "ok": true,
+      "model": "D:/AI-Models/Qwen3-Embedding-0.6B",
+      "dim": 1024,
+      "shape_ok": true,
+      "finite_ok": true,
+      "query_norm": 1.0001,
+      "norm_ok": true,
+      "doc_batch_ms": 696.1,
+      "query_ms": 37.3
+    },
+    {
+      "step": "reranker_smoke",
+      "ok": true,
+      "model": "D:/AI-Models/Qwen3-Reranker-0.6B",
+      "scores": [
+        0.9985,
+        0.0
+      ],
+      "finite_ok": true,
+      "expected_order_ok": true,
+      "pair_batch1_ms": 54.2
+    }
+  ],
+  "fallback_used": false,
+  "device": "cuda:1",
+  "device_kind": "rocm",
+  "device_reason": "GPU 可用: AMD Radeon RX 7900 XTX (device 1/2)；多设备 {0: 'AMD Radeon(TM) Graphics', 1: 'AMD Radeon RX 7900 XTX'}，已按最大显存选择，iGPU 已排除",
+  "ok": true
+}
