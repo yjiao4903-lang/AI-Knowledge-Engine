@@ -12,9 +12,13 @@ __pycache__/
 
 # Data & indexes (generated at runtime)
 data/
+!data/*.json
 index/
 *.db-wal
 *.db-shm
+
+# Logs
+logs/
 
 # IDE / OS
 .idea/

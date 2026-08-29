@@ -1,0 +1,49 @@
+[project]
+name = "ai-knowledge-engine-backend"
+version = "0.1.0"
+description = "AI 深度报告本地知识检索系统 - Backend"
+requires-python = ">=3.12,<3.13"
+
+# 注意：torch 不在此声明。
+# Windows + AMD ROCm 的 torch 必须从 AMD 官方索引安装：
+#   pip install --index-url https://stable.repo.amd.com/rocm/whl-next/ "torch[device-gfx1100]"
+# 必须先装 torch（ROCm），再安装本文件依赖，避免 pip 从 PyPI 拉入 CUDA 版 torch。
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "PyYAML>=6.0",
+    "qdrant-client>=1.12",
+    "sentence-transformers>=3.0",
+    "transformers>=4.51",
+    "tokenizers>=0.20",
+    "huggingface-hub>=0.30",
+    "jieba>=0.42",
+    "markdown-it-py>=3.0",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-timeout>=2.3",
+    "ruff>=0.6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+timeout = 300
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
