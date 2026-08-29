@@ -1,0 +1,73 @@
+# 技术词词典（M4）。ASCII Identifier 与中文专业词。
+# 以 # 开头为注释。ASCII 行标识符用于 Tokenizer 保护与查询识别；
+# 中文词条会注册进 jieba，保证专业词不被切碎。
+
+# --- 半导体 / 先进封装 ---
+CoWoS-L
+CoWoS-S
+CoWoS-R
+High-NA
+EXE:5000
+EXE:5200
+HBM4
+HBM4E
+HBM3E
+MR-MUF
+TC-NCF
+N3E
+N3B
+N5
+N2
+A16
+A14
+CFET
+BSPDN
+GAA
+FinFET
+EUV
+DUV
+SAQP
+SADP
+DIBL
+SRAM
+DRAM
+TSV
+RDL
+EMIB
+FOPLP
+2.5D
+3D-IC
+60mV/dec
+429mm²
+858mm²
+SoC
+Interposer
+Hybrid Bonding
+混合键合
+先进封装
+先进制程
+中介层
+光罩拼接
+视场减半
+背面供电
+ 玻尔兹曼暴政
+
+# --- 跨领域专业词（M4 中文查询集）---
+散热良率
+铜互连
+资本开支
+推理算力
+电网瓶颈
+半导体周期
+算力基础设施
+蛋白质结构
+生成式精准医疗
+状态空间模型
+液冷革命
+量化投资
+台积电
+三星电子
+海力士
+英伟达
+阿斯麦
+台积电 N3E

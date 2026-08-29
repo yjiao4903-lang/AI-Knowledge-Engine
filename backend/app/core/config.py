@@ -150,4 +150,4 @@ def load_config(path: str | Path | None = None) -> Config:
 
 # 版本常量（写入 meta 表，供 reindex 判断，见 spec §48）
 SCHEMA_VERSION = "1.0.0"
-LEXICAL_VERSION = "1.0.0"
+LEXICAL_VERSION = "4.0.0"  # M4: NFKC + identifier 保护 + jieba + tech_terms

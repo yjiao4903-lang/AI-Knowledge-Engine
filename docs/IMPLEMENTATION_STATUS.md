@@ -1,30 +1,49 @@
 # Implementation Status
 
 ## Current Milestone
-M4 Chinese Lexical / SQLite FTS5（下一步）
+M5 Qwen3 Dense Retrieval（下一步）
 
 ## Completed
 - [x] M0 环境与硬件验证（2026-08-29）
 - [x] M1 项目骨架与 Storage（2026-08-29）
 - [x] M2 Markdown Parser（2026-08-29）
 - [x] M3 Semantic Chunker（2026-08-29，Gate 六项全 0）
+- [x] M4 Chinese Lexical / SQLite FTS5（2026-08-29，Exact Hit@5 = 1.000）
 
 ## In Progress
-- [ ] M4
+- [ ] M5
 
-## M3 交付物
-- `app/chunking/chunk_models.py`：Chunk 模型（三文本 + 稳定 chunk_id
-  `{document_id}:{section_id}:{ordinal:04d}` + content_hash + oversized）
-- `app/chunking/semantic_chunker.py`：规则引擎，严格消费 M2 Section+Block
-  （prose 贪心打包 target 900/soft 1400/hard 2200 + 段落级 overlap；
-  特殊块整体成 Chunk；公式附带紧邻短解释；不跨 Section；根 section 跳过元数据
-  blockquote；body 子节继承 reference/audit 父节类型）
-- `app/chunking/plain_text.py`：Markdown 适度清洗，技术词/数字/公式/单位保留
-- `app/chunking/embedding_text.py`：Document/Domain/Section/Content Type/Evidence 上下文模板
-- `app/chunking/qa.py`：统计 + 六项硬性 Gate 校验
-- `backend/scripts/m3_stats.py`：M04 统计 + 人工抽样输出（data/m3_sample_review.md）
-- inference 显式配置（Addendum §17）：`config.inference`（force_device >
-  preferred_gpu_name > 最大显存 > CPU），`device.get_inference_device()`
+## M4 交付物
+- `app/lexical/normalizer.py`：NFKC 规范化 + IDENT_RE（首类含 `+` 量词修复），
+  Identifier Protector 保证 CoWoS-L/EXE:5000/60mV/dec/A16+ 等整体保留
+- `app/lexical/tokenizer.py`：jieba + tech_terms 预注册 + 占位符保护回填 +
+  轻量停用词 -> lexical_text；`config/tech_terms.txt`（ASCII + 中文专业词）
+- `app/lexical/query_parser.py`：统一 Safe Query Parser（标识符/词项全部双引号
+  包裹，杜绝 column filter / operator 误解析）
+- `app/lexical/fts_search.py`：LexicalSearcher（terms / trigram / combined RRF）
+  + timing
+- `app/retrieval/fusion.py`：weighted_rrf（M6 复用）
+- `app/lexical/corpus.py`：5 篇跨领域 fixture 语料构建（407 chunks 入库+FTS 同步）
+- Chunk 模型新增 lexical_text + to_db_dict()；LEXICAL_VERSION=4.0.0
+- 新增 fixtures：M06（AI 基础设施/能源）、M09（AI 模型）、M14（宏观）、M18（生物医疗）
+
+## M4 验收结果（docs/M4_EVALUATION.md）
+- 索引一致性：chunks 407 = fts_terms 407 = fts_trigram 407 PASS
+- Exact Hit@5：**15/15 = 1.000**（>= 0.95 PASS）
+- Chinese Hit@5：7/7 = 1.000（3 个词组语料无原文匹配已跳过）
+- 延迟：Terms P50 0.21ms / Trigram P50 0.29ms / Combined P50 0.45ms（亚毫秒级）
+- 特殊字符 - : / + . _ 全部无 FTS 语法错误
+- pytest：59 passed
+
+## Tests
+- pytest: 59 passed（lexical 6、fts_search 8，新增 14 项）
+
+## M3 交付物（摘要）
+- `app/chunking/`：chunk_models（三文本 + 稳定 chunk_id + content_hash + oversized）、
+  semantic_chunker（prose 贪心打包 900/1400/2200 + 段落级 overlap；特殊块整体保全；
+  公式附紧邻解释；不跨 Section；body 继承 reference/audit 父类型）、
+  plain_text / embedding_text / qa（六项 Gate）；`backend/scripts/m3_stats.py`
+- inference 显式配置（Addendum §17）：`config.inference` + `get_inference_device()`
 
 ## M3 验收结果（M04 fixture，816 行 -> 81 chunks）
 - Chunk Length Distribution（plain_text chars）：
@@ -40,8 +59,9 @@ M4 Chinese Lexical / SQLite FTS5（下一步）
   fence 保真、行号与原文一致
 
 ## Tests
-- pytest: 45 passed（chunker 11、m04 chunker 3、metadata 4、heading 3、m04 parser 6、
-  migrations 5、repositories 6、qdrant 1、health 2、sqlite capability 4）
+- pytest: 59 passed（lexical 6、fts_search 8、chunker 11、m04 chunker 3、
+  metadata 4、heading 3、m04 parser 6、migrations 5、repositories 6、
+  qdrant 1、health 2、sqlite capability 4）
 
 ## Known Issues
 1. **核显导致 GPU kernel 崩溃**：Ryzen 7600X3D 核显被 HIP 枚举为 device 0，
@@ -52,13 +72,16 @@ M4 Chinese Lexical / SQLite FTS5（下一步）
 2. **rocm-sdk 10.0.0（stable index whl-next）Windows 回归**：kernel launch 段错误
    （amdhip64_7.dll，见 TheRock issue #4958）。已锁定 7.13.0。
    升级前必须重跑 `scripts/run_m0_smoke.ps1`（Addendum §18）。
-3. **FTS5 查询语法**：含 `-` / `:` 的标识符（CoWoS-L、EXE:5000）必须用双引号包裹，
-   否则被解析为 column filter。M4 必须实现统一 Query Parser（Addendum §21-22）。
+3. FTS5 查询语法问题已由统一 Query Parser 解决（M4 落地，单测固化）。
 4. rocm-sdk test 的 hipconfig 控制台脚本存在 GBK 编码报错，不影响运行时。
 5. 表格前的短引导句（如 41 字符"……三次重大空间升维："）成为独立小 chunk，
-   未并入表格 chunk。检索影响预计有限（P50 447），留待 Golden Set 评估后决定
-   是否增加"表前引导段附加"规则。
-6. GPU Worker 进程隔离（Addendum §19）按计划推迟到 M5/M7 阶段实现。
+   未并入表格 chunk。检索影响预计有限，留待 M9 Golden Set 评估后决定
+   是否增加"表前引导段附加"规则（Addendum §65）。
+6. GPU Worker 进程隔离（Addendum §19/30/46）：M5 先实现 Provider 最小版本，
+   Worker 进程隔离在 M7 必须完成。
+7. 中文查询集"铜互连/推理算力/电网瓶颈"在 5 篇语料中无逐字匹配
+   （plain_text 不含该完整词组），ground truth 需在 M9 Golden Set 中用
+   章节级标注解决，而非词面匹配。
 
 ## Decisions
 - ADR-001 依赖管理：pip + pyproject.toml + requirements-lock.txt；不引入 poetry/uv，

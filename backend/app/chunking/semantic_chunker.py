@@ -17,6 +17,7 @@ from app.chunking.chunk_models import CHUNKER_VERSION, Chunk, build_chunk_id
 from app.chunking.embedding_text import build_embedding_text
 from app.chunking.plain_text import to_plain_text
 from app.core.config import ChunkingConfig
+from app.lexical.tokenizer import build_lexical_text
 from app.parser.evidence import extract_evidence_levels
 from app.parser.models import Block, ParsedDocument, Section
 
@@ -222,6 +223,7 @@ class SemanticChunker:
         plain = to_plain_text(raw)
         levels = extract_evidence_levels(raw) or extract_evidence_levels(section.raw_text)
         heading_path = " > ".join(section.heading_path)
+        lexical_text = build_lexical_text(plain)
         chunk = Chunk(
             chunk_id=build_chunk_id(document_id, section.section_id, ordinal),
             document_id=document_id,
@@ -235,6 +237,7 @@ class SemanticChunker:
                 document_title, domain, heading_path, content_type,
                 min(levels) if levels else None, plain,
             ),
+            lexical_text=lexical_text,
             start_line=min(b.start_line for b in blocks),
             end_line=max(b.end_line for b in blocks),
             evidence_level=min(levels) if levels else None,
