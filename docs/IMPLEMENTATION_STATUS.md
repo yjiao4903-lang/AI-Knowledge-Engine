@@ -48,7 +48,12 @@ M0-M11 完成；**I0 Full Corpus Gate + Integration Contract 完成（2026-08-30
 - 产物：docs/FULL_CORPUS_REPORT.md、data/full_corpus_{stats,failures,sample,preflight,regression}.json、
   backend/scripts/full_corpus_{preflight,report,sample,regression}.py、
   backend/app/indexing/docid_policy.py、D:\AI知识整合体系\docs\{INTEGRATION_READINESS,INTEGRATION_CONTRACT}.md
-- I1 契约：docs/HANDOFF_I1.md（I1 才允许修改 cognition-app，先 git init + 初始 commit）
+- I1-I3 由本窗口（Window C）连续完成（ cognition-app @ 7828306）：
+  I1 Retrieval Proxy / I2 Reports 融合 / I3 Evidence Bridge，KE 侧零改动；
+  记录见 D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md
+- HANDOFF_I1.md 已归档为 docs/HANDOFF_I1_DONE.md（含 I2/I3 完成记录）
+- 下一阶段：I4 Unified Runtime（Window D），契约 docs/HANDOFF_I4.md，
+  启动提示词 docs/PROMPT_NEW_WINDOW_I4.md
 
 ## M11 交付物（frontend/）
 - 技术栈：React 18 + TypeScript + Vite 5 + React Router 6 + TanStack Query 5 + Ant Design 5（spec §43）

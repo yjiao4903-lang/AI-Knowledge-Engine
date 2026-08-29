@@ -59,3 +59,14 @@ cognition-app 实测无 git（HANDOFF_I0 §0）；修改前必须先快照原始
 
 按 HANDOFF_PROTOCOL 收尾：更新两份 IMPLEMENTATION_STATUS、git checkpoint、
 本契约归档为 HANDOFF_I1_DONE.md、编写 I2 契约（Reports 页面融合 + Legacy fallback GUI 验证）。
+
+---
+
+## 完成登记（2026-08-30，Window C / I0-I3 归档）
+
+HANDOFF_I1.md 覆盖的 I1 已完成；随后同窗口连续完成 I2（Reports 融合）与 I3（Evidence Bridge）：
+- cognition-app：`0a950f1`(I1) → `b2e60f6`(I2) → `7828306`(I3)，分支 integration/research-os-v1
+- 回归基线：unit 64/64、E2E 15/0、跨系统黑盒 10/10（D:\AI知识整合体系\integration_tests\run.js）
+- 详细交付记录：D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md（I1/I2/I3 交付摘要）
+- 补充方案 §42 的 I1 交付要求全部满足；I2 Gate 七项 GUI 冒烟、I3 Gate 八项验证均 PASS
+- 交接偏差：I1 契约 §5 要求的 I2 契约未单独成文（I2/I3 由补充方案细化路线直接承接）
