@@ -51,6 +51,12 @@ reranker:
   dtype_gpu: "float16"
   max_tokens: 3072
   candidate_k: 24
+  enabled: true
+  instruction: >
+    Given a query for a private research knowledge base, judge whether the
+    document passage is highly relevant and useful for answering the query.
+  cpu_max_candidates: 8
+  batch_size: 2               # M7 真实文档 benchmark: 2 最优（24 docs 808ms；batch8 因 padding 反而 1056ms）
 
 chunking:
   target_chars: 900
@@ -88,3 +94,6 @@ inference:
   preferred_device: "auto"      # auto | cpu
   preferred_gpu_name: "RX 7900 XTX"
   force_device: null            # 如 "cuda:1"；优先级最高
+  worker_timeout_seconds: 120
+  worker_start_timeout_seconds: 300
+  max_consecutive_crashes: 2

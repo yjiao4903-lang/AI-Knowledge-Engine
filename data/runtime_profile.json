@@ -23,5 +23,11 @@
     "hip_version": "7.13.99004-3309c611",
     "cuda_version": null,
     "is_rocm": true
+  },
+  "worker": {
+    "fallback_to_cpu": false,
+    "total_restarts": 1,
+    "consecutive_crashes": 0,
+    "updated_at": "2026-08-29T19:55:14"
   }
 }

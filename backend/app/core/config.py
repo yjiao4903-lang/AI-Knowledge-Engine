@@ -73,6 +73,14 @@ class RerankerConfig(BaseModel):
     dtype_gpu: str = "float16"
     max_tokens: int = 3072
     candidate_k: int = 24
+    enabled: bool = True
+    batch_size: int = 8  # M7 benchmark 选定：24 docs 252ms，全 finite
+    instruction: str = (
+        "Given a query for a private research knowledge base, judge whether the "
+        "document passage is highly relevant and useful for answering the query."
+    )
+    # CPU 设备下 rerank 极慢（fp32 ~30s/对），候选数上限
+    cpu_max_candidates: int = 8
 
 
 class ChunkingConfig(BaseModel):
@@ -121,6 +129,9 @@ class InferenceConfig(BaseModel):
     preferred_device: str = "auto"  # auto | cpu
     preferred_gpu_name: str = "RX 7900 XTX"
     force_device: str | None = None  # 如 "cuda:1"
+    worker_timeout_seconds: float = 120.0
+    worker_start_timeout_seconds: float = 300.0
+    max_consecutive_crashes: int = 2  # 连续崩溃后转 CPU fallback（Addendum §17）
 
 
 class Config(BaseModel):

@@ -10,6 +10,7 @@ Section Parent Boost（轻量 prior，非硬过滤）-> Metadata 过滤 -> Top-K
 from __future__ import annotations
 
 import json
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -21,6 +22,8 @@ from app.core.config import Config
 from app.lexical.fts_search import LexicalSearcher
 from app.retrieval.dense import DenseRetriever
 from app.retrieval.fusion import weighted_rrf
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,11 +42,13 @@ class Candidate:
 
 
 class SearchEngine:
-    def __init__(self, cfg: Config, conn: sqlite3.Connection, dense: DenseRetriever) -> None:
+    def __init__(self, cfg: Config, conn: sqlite3.Connection, dense: DenseRetriever,
+                 reranker: "RerankerService | None" = None) -> None:
         self.cfg = cfg
         self.conn = conn
         self.dense = dense
         self.lexical = LexicalSearcher(conn)
+        self.reranker = reranker
 
     # ---- 主入口 ----
     def search(
@@ -54,6 +59,7 @@ class SearchEngine:
         top_k: int | None = None,
         filters: dict | None = None,
         debug: bool = False,
+        rerank: bool = False,
     ) -> dict[str, Any]:
         cfg = self.cfg
         t_start = time.perf_counter()
@@ -147,13 +153,50 @@ class SearchEngine:
         ordered = ordered[:fused_k]
         timing["filter_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-        # 6) 组装结果（snippet 从 SQLite 取）
+        # 6) 组装结果（snippet/title 从 SQLite 取；rerank 可选）
         final_k = top_k or cfg.retrieval.final_k
+        rows = self._fetch_rows([c.chunk_id for c in ordered])
+        rows_by_id = {r["id"]: r for r in rows}
+        timing_rerank = 0.0
+        rerank_trace: list[dict] | None = None
+        pre_rank_map: dict[str, int] = {}
+        score_by_id: dict[str, float] = {}
+
+        if rerank and self.reranker is not None and ordered:
+            t0 = time.perf_counter()
+            rerank_candidates = []
+            for c in ordered:
+                r = rows_by_id.get(c.chunk_id)
+                if r is None:
+                    continue
+                rerank_candidates.append({
+                    "chunk_id": c.chunk_id, "title": r["title"],
+                    "heading_path": r["heading_path"], "content_type": r["content_type"],
+                    "evidence_level": r["evidence_level"], "plain_text": r["plain_text"],
+                })
+            try:
+                reranked = self.reranker.rerank(query, rerank_candidates)
+                pre_rank_map = {c.chunk_id: i for i, c in enumerate(ordered, 1)}
+                score_by_id = {x["chunk_id"]: x["reranker_score"] for x in reranked}
+                # 重排：reranker 分数降序；未送入 rerank 的候选沉底（-inf）
+                ordered = sorted(
+                    ordered,
+                    key=lambda c: score_by_id.get(c.chunk_id, float("-inf")),
+                    reverse=True,
+                )
+                timing_rerank = round((time.perf_counter() - t0) * 1000, 2)
+                if debug:
+                    rerank_trace = [
+                        {"chunk_id": x["chunk_id"], "reranker_score": round(x["reranker_score"], 4),
+                         "pre_rerank_rank": pre_rank_map.get(x["chunk_id"])}
+                        for x in reranked
+                    ]
+            except Exception as exc:
+                logger.warning("rerank 失败，退回 RRF 排序: %s", exc)
+
         results = []
         for rank, c in enumerate(ordered[:final_k], 1):
-            row = self.conn.execute(
-                "SELECT document_id, heading_path, content_type, evidence_level, plain_text, "
-                "start_line, end_line FROM chunks WHERE id = ?", (c.chunk_id,)).fetchone()
+            row = rows_by_id.get(c.chunk_id)
             if row is None:
                 continue  # 索引与 catalog 不同步（M8 reconcile 处理）
             snippet = _make_snippet(row["plain_text"], query)
@@ -161,7 +204,8 @@ class SearchEngine:
                 "rank": rank,
                 "chunk_id": c.chunk_id,
                 "document_id": row["document_id"],
-                "title": None,  # documents 表 join 在 API 层完成
+                "title": row["title"],
+                "section_id": row["section_id"],
                 "heading_path": row["heading_path"],
                 "content_type": row["content_type"],
                 "evidence_level": row["evidence_level"],
@@ -175,9 +219,12 @@ class SearchEngine:
                     "rrf": round(c.rrf_score, 6),
                     "section_boost": c.section_boost,
                     "final": round(c.final_score, 6),
+                    "reranker": round(score_by_id[c.chunk_id], 4) if rerank and score_by_id.get(c.chunk_id) is not None else None,
+                    "pre_rerank_rank": pre_rank_map.get(c.chunk_id) if rerank else None,
                 },
             })
 
+        timing["rerank_ms"] = timing_rerank
         timing["total_ms"] = round((time.perf_counter() - t_start) * 1000, 2)
         resp: dict[str, Any] = {"query": query, "mode": mode, "results": results, "timing_ms": timing}
         if debug:
@@ -186,8 +233,22 @@ class SearchEngine:
                 {"chunk_id": c.chunk_id, "ranks": c.ranks, "rrf": round(c.rrf_score, 6),
                  "boost": c.section_boost} for c in ordered[:20]]
             debug_trace["filters"] = filters or {}
+            if rerank_trace is not None:
+                debug_trace["rerank"] = rerank_trace
             resp["debug"] = debug_trace
         return resp
+
+    def _fetch_rows(self, chunk_ids: list[str]) -> list[sqlite3.Row]:
+        if not chunk_ids:
+            return []
+        marks = ",".join("?" * len(chunk_ids))
+        return self.conn.execute(
+            f"SELECT c.id, c.document_id, c.section_id, c.heading_path, c.content_type, "
+            f"c.evidence_level, c.plain_text, c.start_line, c.end_line, d.title "
+            f"FROM chunks c LEFT JOIN documents d ON d.id = c.document_id "
+            f"WHERE c.id IN ({marks})",
+            chunk_ids,
+        ).fetchall()
 
     def _apply_filters(self, candidates: list[Candidate], filters: dict) -> list[Candidate]:
         """按 chunks 表列过滤（document_ids/domains/evidence_levels/content_types/date）。"""
