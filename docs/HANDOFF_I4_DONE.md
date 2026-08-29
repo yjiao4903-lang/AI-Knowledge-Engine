@@ -1,9 +1,23 @@
-# I4 交接契约：Unified Runtime（Window D）
+# I4 交接契约：Unified Runtime（Window D）【已完成】
 
-> 交接日期：2026-08-30 ｜ 交接方：Window C（I0-I3 Integration Lead）
+> 状态：**DONE（2026-08-30）** ｜ 交接方：Window C（I0-I3 Integration Lead）→ 执行方：Window D
 > 依据：主计划 §38-42、补充方案 §31-33；I0-I3 已全部完成并归档
 > 新窗口首读：本文件 → `D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md` →
 > `D:\AI知识整合体系\docs\INTEGRATION_CONTRACT.md`
+
+## 完成记录（Window D，2026-08-30）
+
+- 交付：`D:\AI知识整合体系\runtime\{common,start,stop,health}.ps1 + README.md + pids.json + config.integration-cpu.yaml`；
+  两 Core 零改动；集成工作区（docs/runtime/integration_tests）首次入 git。
+- **I4 Gate 全 PASS**：冷启动（Docker 已启 + Docker 未启两场景）、stop 干净不误杀（记录 PID 与
+  端口发现两路径）、health 三态（PASS/WARN/FAIL）、GPU→CPU 降级演练（force_device=cpu → health WARN、
+  产品可用）、Cognition 基线（unit 64/E2E 15/黑盒 10/10）、KE pytest dev 配置 114 passed。
+- **发现的非回归问题**：KE 生产配置下 3 条 M5/M6 陈旧断言失败（dev 配置 114 全过；Golden 与 I0 逐位一致；
+  见整合 Known Issues #14，I5+ ADR 候选）；CPU 降级 hybrid_rerank 超认知 5s 超时走 legacy fallback
+  （设计内行为，见 #15）。**I4 Gate 判为完成**——两处均非 I4 改动引入，且按合约 I4 不改两 Core。
+- 收尾：契约归档为本文件；I5 契约 `docs/HANDOFF_I5.md` + 启动提示词 `docs/PROMPT_NEW_WINDOW_I5.md`。
+
+---
 
 ## 0. 继承资产与基线（已验证，勿重做）
 
