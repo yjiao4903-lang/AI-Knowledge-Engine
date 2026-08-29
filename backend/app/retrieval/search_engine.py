@@ -43,12 +43,19 @@ class Candidate:
 
 class SearchEngine:
     def __init__(self, cfg: Config, conn: sqlite3.Connection, dense: DenseRetriever,
-                 reranker: "RerankerService | None" = None) -> None:
+                 reranker: "RerankerService | None" = None, *,
+                 chunks_collection: str | None = None,
+                 sections_collection: str | None = None,
+                 section_boost_enabled: bool = True) -> None:
         self.cfg = cfg
         self.conn = conn
         self.dense = dense
         self.lexical = LexicalSearcher(conn)
         self.reranker = reranker
+        # I6：独立 collection 覆盖（cognition 用独立 collection，禁止与报告混用）
+        self.chunks_collection = chunks_collection or cfg.qdrant.chunks_collection
+        self.sections_collection = sections_collection or cfg.qdrant.sections_collection
+        self.section_boost_enabled = section_boost_enabled
 
     # ---- 主入口 ----
     def search(
@@ -75,7 +82,8 @@ class SearchEngine:
         if mode in ("hybrid", "dense"):
             t0 = time.perf_counter()
             dense_hits, embed_ms = self.dense.search(
-                query, k=cfg.retrieval.dense_k, filters=filters)
+                query, k=cfg.retrieval.dense_k, filters=filters,
+                collection=self.chunks_collection)
             timing["embed_ms"] = embed_ms
             timing["dense_ms"] = round((time.perf_counter() - t0) * 1000 - embed_ms, 2)
             ranked_lists["dense"] = [h["payload"]["chunk_id"] for h in dense_hits]
@@ -123,11 +131,16 @@ class SearchEngine:
         timing["fusion_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
         # 4) Section Parent Boost（spec §19：轻量 prior，禁止硬过滤）
-        if mode == "hybrid" and cfg.fusion.parent_boost_enabled and "dense" in ranked_lists:
+        if (mode == "hybrid" and cfg.fusion.parent_boost_enabled
+                and self.section_boost_enabled and "dense" in ranked_lists):
             t0 = time.perf_counter()
-            section_hits, _ = self.dense.search(
-                query, k=cfg.fusion.parent_boost_sections_k,
-                collection=cfg.qdrant.sections_collection)
+            try:
+                section_hits, _ = self.dense.search(
+                    query, k=cfg.fusion.parent_boost_sections_k,
+                    collection=self.sections_collection)
+            except Exception:
+                logger.warning("section boost 查询失败，退回 RRF 排序", exc_info=True)
+                section_hits = []
             # section_id(doc 无前缀) -> chunk_id 前缀匹配（M04:ch3-2:xxxx）
             boost_prefixes = {
                 f"{h['payload']['document_id']}:{h['payload']['section_id']}:" for h in section_hits

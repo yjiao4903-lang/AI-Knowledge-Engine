@@ -59,6 +59,45 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         logger.info("inference worker ready: %s (%s)", app.state.manager.device,
                     app.state.manager.device_kind)
 
+        # I6：Cognition 只读语义检索（独立 collection + 独立 catalog；失败不拖垮报告侧）
+        app.state.cognition = {"enabled": False}
+        if cfg.cognition.enabled:
+            try:
+                from app.cognition.pipeline import CognitionPipeline
+
+                cog_conn = connect(cfg.cognition.catalog_path, check_same_thread=False)
+                init_schema(cog_conn)
+                cog_engine = SearchEngine(
+                    cfg, cog_conn, dense, reranker,
+                    chunks_collection=cfg.cognition.chunks_collection,
+                    section_boost_enabled=False)
+                cog_pipeline = CognitionPipeline(
+                    cfg, cog_conn, EmbedderAdapter(cfg, app.state.manager))
+                app.state.cognition = {
+                    "enabled": True, "engine": cog_engine,
+                    "pipeline": cog_pipeline, "conn": cog_conn,
+                }
+                logger.info("cognition retrieval ready: collection=%s",
+                            cfg.cognition.chunks_collection)
+            except Exception:
+                logger.exception("cognition 初始化失败，cognition 检索禁用（报告检索不受影响）")
+
+        def _sync_cognition():
+            cog = getattr(app.state, "cognition", None)
+            if cog is None or not cog.get("enabled"):
+                return
+            try:
+                from app.cognition.scanner import scan as cog_scan
+
+                result = cog_scan(cfg, cog["conn"])
+                if result.has_changes:
+                    stats = cog["pipeline"].apply_scan(result)
+                    logger.info("cognition reconcile: %s", stats)
+                else:
+                    logger.info("cognition reconcile: no changes")
+            except Exception:
+                logger.exception("cognition reconcile 失败")
+
         if cfg.indexing.startup_scan:
             def _startup_reconcile():
                 with app.state.index_lock:
@@ -71,6 +110,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                             logger.info("startup reconcile: no changes")
                     except Exception:
                         logger.exception("startup reconcile 失败")
+                    _sync_cognition()
 
             threading.Thread(target=_startup_reconcile, daemon=True, name="startup-reconcile").start()
 
@@ -90,6 +130,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                         logger.exception("periodic reconcile 失败")
                     finally:
                         app.state.index_lock.release()
+                    _sync_cognition()
 
             state["watcher_thread"] = threading.Thread(
                 target=_watcher, daemon=True, name="index-watcher")
@@ -101,6 +142,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         state["watcher_stop"].set()
         app.state.manager.shutdown()
         app.state.conn.close()
+        cog = getattr(app.state, "cognition", None)
+        if cog and cog.get("conn") is not None:
+            cog["conn"].close()
         logger.info("shutdown complete")
 
     app = FastAPI(title=cfg.app.name, version="0.1.0", lifespan=lifespan)

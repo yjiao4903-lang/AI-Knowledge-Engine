@@ -69,6 +69,25 @@ def collect_health(cfg: Config) -> dict:
     # qdrant
     qdrant_status = QdrantStore(cfg.qdrant).health()
 
+    # I6：cognition 只读语义检索状态（独立 collection + 独立 catalog）
+    cognition_status: dict = {"enabled": cfg.cognition.enabled}
+    if cfg.cognition.enabled:
+        try:
+            cog_conn = connect(cfg.cognition.catalog_path, read_only=True)
+            try:
+                cognition_status["catalog_documents"] = cog_conn.execute(
+                    "SELECT count(*) FROM documents").fetchone()[0]
+            finally:
+                cog_conn.close()
+            info = QdrantStore(cfg.qdrant).client.get_collection(
+                cfg.cognition.chunks_collection)
+            cognition_status["collection"] = cfg.cognition.chunks_collection
+            cognition_status["points_count"] = info.points_count
+            cognition_status["status"] = "ok"
+        except Exception as exc:
+            cognition_status["status"] = "error"
+            cognition_status["error"] = str(exc)
+
     # inference（来自 M0 runtime_profile；模型未加载时不做实际推理）
     profile = _runtime_profile(Path(cfg.paths.data_dir))
     torch = torch_info()
@@ -89,6 +108,7 @@ def collect_health(cfg: Config) -> dict:
         "status": overall,
         "sqlite": sqlite_status,
         "qdrant": qdrant_status,
+        "cognition": cognition_status,
         "embedding": {"model": cfg.embedding.model, **{k: inference_status.get(k) for k in ("device",)}},
         "reranker": {"model": cfg.reranker.model, **{k: inference_status.get(k) for k in ("device",)}},
         "inference": inference_status,

@@ -46,6 +46,31 @@ class QdrantConfig(BaseModel):
     sections_collection: str = "kb_sections_v1"
 
 
+class CognitionConfig(BaseModel):
+    """I6：Cognition 第二类 Source（只读语义检索）。
+
+    独立 collection 与独立 catalog（与报告物理隔离，禁止混用）；
+    include_dirs 为顶层子目录白名单（默认索引对象），白名单之外（候选/收件箱/
+    模板/系统/归档）一律不索引（主计划 §49）。
+    """
+
+    enabled: bool = True
+    root: str = "E:/CODEX/AI深度研究/cognition"
+    catalog_path: str = str(PROJECT_ROOT / "data" / "catalog_cognition.db")
+    chunks_collection: str = "kb_cognition_chunks_v1"
+    include_dirs: list[str] = Field(default_factory=lambda: [
+        "02_来源与阅读",   # Reading Record
+        "03_问题池",       # Question
+        "04_判断台账",     # Judgment
+        "05_主题页",       # Topic
+        "06_研究项目",     # Project
+        "07_复盘",         # Review
+    ])
+    startup_scan: bool = True
+    periodic_reconcile_seconds: int = 300
+    docid_prefix: str = "cog"
+
+
 class EmbeddingConfig(BaseModel):
     model: str = "Qwen/Qwen3-Embedding-0.6B"
     local_path: str = "D:/AI-Models/Qwen3-Embedding-0.6B"
@@ -141,6 +166,7 @@ class Config(BaseModel):
     paths: PathsConfig = Field(default_factory=PathsConfig)
     sqlite: SqliteConfig = Field(default_factory=SqliteConfig)
     qdrant: QdrantConfig = Field(default_factory=QdrantConfig)
+    cognition: CognitionConfig = Field(default_factory=CognitionConfig)
     embedding: EmbeddingConfig = Field(default_factory=EmbeddingConfig)
     reranker: RerankerConfig = Field(default_factory=RerankerConfig)
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)

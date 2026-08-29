@@ -25,6 +25,24 @@ qdrant:
   chunks_collection: "kb_chunks_v1"
   sections_collection: "kb_sections_v1"
 
+# I6：Cognition 第二类 Source（只读语义检索）—— 示例配置
+cognition:
+  enabled: true
+  root: "E:/CODEX/AI深度研究/cognition"
+  catalog_path: "D:/AI-Knowledge-Engine/data/catalog_cognition.db"
+  chunks_collection: "kb_cognition_chunks_v1"
+  # 白名单（默认索引对象）；候选/收件箱/模板/系统/归档自动排除
+  include_dirs:
+    - "02_来源与阅读"
+    - "03_问题池"
+    - "04_判断台账"
+    - "05_主题页"
+    - "06_研究项目"
+    - "07_复盘"
+  startup_scan: true
+  periodic_reconcile_seconds: 300
+  docid_prefix: "cog"
+
 embedding:
   model: "Qwen/Qwen3-Embedding-0.6B"
   local_path: "D:/AI-Models/Qwen3-Embedding-0.6B"
