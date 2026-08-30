@@ -1,13 +1,14 @@
 # Implementation Status
 
 ## Current Milestone
-M0-M11 完成；**I0-I6 全部完成（2026-08-30）**：I0 Full Corpus Gate + Integration Contract、
+M0-M11 完成；**I0-I7 全部完成（2026-08-30）**：I0 Full Corpus Gate + Integration Contract、
 I1-I3（Cognition Retrieval Proxy / Reports 融合 / Evidence Bridge）、I4 Unified Runtime、
-I5 Backup/Restore/Hardening、I6 Cognition Read-only Semantic Search（可选阶段，已启动完成）。
-项目处于 Integration 路线 I0-I6（AI Research OS）。**整合事实源
+I5 Backup/Restore/Hardening、I6 Cognition Read-only Semantic Search、I7 Post-Integration Stabilization
+（外部审计任务书：测试语料解耦 / Qdrant 自动恢复 / Cognition 增量同步 / Cognition Golden / Search Scope UI / E2E 口径 / Exclusion Audit）。
+项目处于 Integration 路线 I0-I7（AI Research OS）。**整合事实源
 `D:\AI知识整合体系\docs\IMPLEMENTATION_STATUS.md` 为唯一进度来源**，本文件为 KE 侧镜像；
-I4-I6 交付摘要与 Known Issues #14-24 见整合事实源。
-I6 契约已归档 docs/HANDOFF_I6_DONE.md（KE @ aa1ae4a + cognition-app @ 6ef655b）。
+I4-I7 交付摘要与 Known Issues #14-27 见整合事实源。
+I6 契约已归档 docs/HANDOFF_I6_DONE.md；I7 文档：docs/I7_EVALUATION.md、docs/COGNITION_GOLDEN_EVALUATION.md、docs/EXCLUSION_AUDIT.md。
 
 ## I0 交付摘要（2026-08-30，详见 docs/FULL_CORPUS_REPORT.md）
 - **Full Corpus Index**：189 篇终版（v2 策略 ADR-013）/ 8828 sections / 9780 chunks；
