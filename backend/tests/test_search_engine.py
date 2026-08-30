@@ -1,39 +1,18 @@
-"""M6 集成测试：Hybrid 引擎、RRF 融合、去重、Parent Boost、Debug Trace（Addendum §33-41）。"""
+"""M6 集成测试：Hybrid 引擎、RRF 融合、去重、Parent Boost、Debug Trace（Addendum §33-41）。
+
+P0-1 解耦：使用 tests/fixtures 独立语料（conftest fixture_retrieval），
+Qdrant collection + SQLite 均独立，断言基于 fixture 内容可复现，不依赖
+dev/prod 的生产 corpus 与具体文档排名。
+"""
 
 import pytest
 
-from app.core.config import load_config
-from app.lexical.corpus import build_corpus_db
-from app.retrieval.dense import DenseRetriever
-from app.retrieval.search_engine import SearchEngine
-
-
-def _engine_ready() -> tuple[SearchEngine, object] | None:
-    try:
-        import tempfile
-        from pathlib import Path
-
-        cfg = load_config()
-        info_names = {c.name for c in __import__("app.storage.qdrant", fromlist=["QdrantStore"]).QdrantStore(cfg.qdrant).client.get_collections().collections}
-        if cfg.qdrant.chunks_collection not in info_names:
-            return None
-        dense = DenseRetriever(cfg)
-        points = dense.store.collection_info(cfg.qdrant.chunks_collection)["points_count"]
-        if not points:
-            return None
-        tmp = Path(tempfile.mkdtemp())
-        conn, _ = build_corpus_db(tmp / "corpus.db")
-        return SearchEngine(cfg, conn, dense)
-    except Exception:
-        return None
-
 
 @pytest.fixture(scope="module")
-def engine():
-    e = _engine_ready()
-    if e is None:
-        pytest.skip("Qdrant 无索引（先运行 backend/scripts/m5_index.py）")
-    return e
+def engine(fixture_retrieval):
+    if fixture_retrieval is None:
+        pytest.skip("fixture 语料不可用")
+    return fixture_retrieval["engine"]
 
 
 def test_hybrid_results_shape_and_timing(engine):
@@ -74,7 +53,7 @@ def test_search_modes(engine):
 
 
 def test_filter_through_hybrid(engine):
-    resp = engine.search("先进制程 成本", filters={"document_ids": ["M06"]}, top_k=10)
+    resp = engine.search("数据中心", filters={"document_ids": ["M06"]}, top_k=10)
     assert resp["results"]
     assert all(r["document_id"] == "M06" for r in resp["results"])
 

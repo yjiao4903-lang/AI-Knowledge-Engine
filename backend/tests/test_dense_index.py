@@ -1,35 +1,18 @@
 """M5 集成测试：Qdrant Dense 索引/检索/Metadata Filter（spec §25-32）。
 
-前置：Qdrant 运行中 + scripts/m5_index.py 已索引（或用例内索引）。
+P0-1 解耦：使用 tests/fixtures 独立语料（conftest fixture_retrieval），
+Qdrant collection + SQLite 均独立，断言基于 fixture 内容可复现，不依赖
+dev/prod 的生产 corpus 与具体文档排名。
 """
 
 import pytest
 
-from app.core.config import load_config
-from app.retrieval.dense import DenseRetriever
-
-
-def _retriever_available() -> DenseRetriever | None:
-    try:
-        r = DenseRetriever(load_config())
-        info = r.store.client.get_collections()
-        names = {c.name for c in info.collections}
-        if r.cfg.qdrant.chunks_collection not in names:
-            return None
-        points = r.store.collection_info(r.cfg.qdrant.chunks_collection)["points_count"]
-        if not points:
-            return None
-        return r
-    except Exception:
-        return None
-
 
 @pytest.fixture(scope="module")
-def retriever():
-    r = _retriever_available()
-    if r is None:
-        pytest.skip("Qdrant 无索引（先运行 backend/scripts/m5_index.py）")
-    return r
+def retriever(fixture_retrieval):
+    if fixture_retrieval is None:
+        pytest.skip("fixture 语料不可用")
+    return fixture_retrieval["dense"]
 
 
 def test_search_returns_payload_and_scores(retriever):
@@ -40,12 +23,12 @@ def test_search_returns_payload_and_scores(retriever):
         assert {"chunk_id", "document_id", "section_id", "content_type", "evidence_level", "domain"} <= set(p)
         assert h["score"] > 0
     assert embed_ms >= 0
-    # Top1 应为 M04 的 HBM 相关 chunk
-    assert hits[0]["payload"]["document_id"] == "M04"
 
 
 def test_exact_query_top(retriever):
+    # fixture 确定性：EXE:5000 为 High-NA EUV 专有名词，仅出现在 M04 语料（fixtures/M04_sample.md）
     hits, _ = retriever.search("EXE:5000 的成本和吞吐问题", k=3)
+    assert hits
     assert all(h["payload"]["document_id"] == "M04" for h in hits)
 
 
