@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api import documents, evaluation, index, search, settings
+from app.api import documents, evaluation, index, search, settings, synthesis
 from app.core.config import Config, load_config
 from app.core.errors import AppError
 from app.core.health import collect_health
@@ -47,6 +47,24 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.index_lock = threading.Lock()
         app.state.conn = connect(cfg.sqlite.path, check_same_thread=False)
         init_schema(app.state.conn)
+
+        # L1 (V3.0)：TaskPack 外部模型工作流——合成为 Optional Capability。
+        # Builder/Importer 只做本地文件编排，不启动任何内部文本 LLM（方案 §31/§43）。
+        app.state.taskpack_builder = None
+        app.state.taskpack_importer = None
+        if cfg.taskpack.enabled:
+            from app.taskpack.builder import TaskPackBuilder
+            from app.taskpack.importer import TaskPackImporter
+
+            cog_conn_tp = None
+            if cfg.cognition.enabled:
+                try:
+                    cog_conn_tp = connect(cfg.cognition.catalog_path, check_same_thread=False)
+                    init_schema(cog_conn_tp)
+                except Exception:
+                    logger.exception("taskpack cognition catalog 初始化失败，退化为仅 report 证据")
+            app.state.taskpack_builder = TaskPackBuilder(cfg, app.state.conn, cog_conn_tp)
+            app.state.taskpack_importer = TaskPackImporter(cfg, app.state.conn, cog_conn_tp)
 
         logger.info("starting inference worker...")
         app.state.manager = InferenceManager(cfg)
@@ -171,6 +189,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(index.router)
     app.include_router(evaluation.router)
     app.include_router(settings.router)
+    app.include_router(synthesis.router)
 
     @app.get("/api/health")
     def health() -> dict:

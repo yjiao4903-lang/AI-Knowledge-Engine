@@ -1,6 +1,19 @@
 """TaskPack V1：KE 与外部 Worker 工作流的本地实现（V3.0 方案 §31/§66）。"""
 
 from app.taskpack.builder import CreatedTask, TaskPackBuilder
+from app.taskpack.importer import (
+    ARCHIVED,
+    COMPLETED,
+    FAILED,
+    IMPORTED,
+    INVALID_RESULT,
+    PROCESSING,
+    READY,
+    ImportFailure,
+    ImportReport,
+    TaskInfo,
+    TaskPackImporter,
+)
 from app.taskpack.manifest import build_manifest, sha256_file
 from app.taskpack.schemas import (
     DEFAULT_PROMPT_VERSION,
@@ -25,8 +38,19 @@ __all__ = [
     "DEFAULT_PROMPT_VERSION",
     "RESULT_SCHEMA_VERSION",
     "TASKPACK_VERSION",
+    "READY",
+    "PROCESSING",
+    "COMPLETED",
+    "FAILED",
+    "INVALID_RESULT",
+    "IMPORTED",
+    "ARCHIVED",
     "CreatedTask",
     "TaskPackBuilder",
+    "TaskPackImporter",
+    "ImportFailure",
+    "ImportReport",
+    "TaskInfo",
     "build_manifest",
     "sha256_file",
     "AdditionalEvidenceNeeded",
