@@ -22,8 +22,6 @@ def syn_cfg(tmp_path):
     from app.core.config import Config
 
     cfg = Config()
-    cfg.synthesis.enabled = True
-    cfg.synthesis.provider = "mock"
     cfg.paths.data_dir = str(tmp_path / "data")
     return cfg
 
@@ -43,10 +41,3 @@ def seeded(syn_conn, syn_cfg):
     resolver = EvidenceResolver(syn_cfg, syn_conn, None)
     return {"conn": syn_conn, "cfg": syn_cfg, "resolver": resolver,
             "chunk_ids": ["M04:ch1:0001", "M04:ch1:0002"], "hashes": [ha, hb]}
-
-
-class NoopResolver:
-    """用于仅关注 provider/retry/fallback 的单元测试：不解析证据。"""
-
-    def resolve(self, *args, **kwargs):  # noqa: ANN001
-        return []

@@ -116,17 +116,12 @@ inference:
   worker_start_timeout_seconds: 300
   max_consecutive_crashes: 2
 
-# L1：Evidence-grounded Synthesis（Optional Capability）—— 示例配置
-synthesis:
+# L1：TaskPack 外部模型工作流（V3.0 方案：不再运行内部文本 LLM）—— 示例配置
+taskpack:
   enabled: true
-  provider: "ollama"          # ollama | mock（mock 仅供测试/离线 harness）
-  base_url: "http://127.0.0.1:11434/v1"
-  model: "qwen3:14b"
-  fallback_model: "qwen3:8b"
-  temperature: 0.2
-  max_tokens: 3000
-  timeout_seconds: 360
-  prompt_version: "v1.1"
+  root_dir: "D:/AI知识整合体系/taskpacks"
+  prompt_version: "taskpack-synthesis-v1"
   max_evidence: 20
   evidence_max_chars: 900
-  max_invalid_retries: 2
+  max_claims: 12
+  periodic_scan_seconds: 0   # 0 = 仅 API 调用时扫描（on-demand）
