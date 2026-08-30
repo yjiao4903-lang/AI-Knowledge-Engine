@@ -1,7 +1,7 @@
 // TanStack Query hooks：数据获取与缓存。
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import type { ChunkDetail, Section, SearchRequest } from './types';
+import type { ChunkDetail, CreateTaskRequest, Section, SearchRequest } from './types';
 
 export function useDocuments() {
   return useQuery({
@@ -84,6 +84,58 @@ export function useReindexDocument() {
 export function useOpenOriginal() {
   return useMutation({
     mutationFn: (id: string) => api.openOriginal(id),
+  });
+}
+
+// ---------------- TaskPack Synthesis（V3.0 外部 Worker 工作流） ----------------
+
+export function useTasks() {
+  return useQuery({
+    queryKey: ['synthesisTasks'],
+    queryFn: () => api.listTasks(),
+    refetchInterval: 15_000, // Task Center 轮询（§43：前端轮询触发 scan）
+  });
+}
+
+export function useCreateTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (req: CreateTaskRequest) => api.createTask(req),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['synthesisTasks'] });
+    },
+  });
+}
+
+export function useRescanTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.rescanTask(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['synthesisTasks'] });
+    },
+  });
+}
+
+export function useArchiveTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.archiveTask(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['synthesisTasks'] });
+    },
+  });
+}
+
+export function useOpenTaskFolder() {
+  return useMutation({
+    mutationFn: (id: string) => api.openTaskFolder(id),
+  });
+}
+
+export function useTaskPrompt() {
+  return useMutation({
+    mutationFn: (id: string) => api.taskPrompt(id),
   });
 }
 

@@ -188,6 +188,91 @@ export interface EvaluationLatest {
 
 export type SettingsPayload = Record<string, unknown>;
 
+export type TaskStatus =
+  | 'READY'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'INVALID_RESULT'
+  | 'IMPORTED'
+  | 'ARCHIVED';
+
+export type TaskType = 'summary' | 'comparison' | 'causal_synthesis' | 'tension_extraction';
+
+export interface TaskInfo {
+  task_id: string;
+  task_path: string;
+  status: TaskStatus;
+  task_type: TaskType | null;
+  query: string | null;
+  created_at: string | null;
+  evidence_count: number | null;
+  worker: string | null;
+  model: string | null;
+  completed_at: string | null;
+  stale: boolean;
+  error: string | null;
+}
+
+export interface TaskListResponse {
+  tasks: TaskInfo[];
+  count: number;
+}
+
+export interface CreateTaskRequest {
+  task_type: TaskType;
+  query: string;
+  evidence_refs: EvidenceRefInput[];
+  cognition_context?: string[];
+}
+
+export interface EvidenceRefInput {
+  source_type: 'report' | 'cognition';
+  document_id: string;
+  section_id?: string | null;
+  chunk_id: string;
+  content_hash?: string | null;
+  title?: string | null;
+  heading_path?: string | null;
+  start_line?: number | null;
+  end_line?: number | null;
+  evidence_level?: number | null;
+  excerpt?: string | null;
+}
+
+export interface CreateTaskResponse {
+  task_id: string;
+  status: TaskStatus;
+  task_path: string;
+}
+
+export interface GateDetail {
+  name: string;
+  passed: boolean;
+  failure: string | null;
+}
+
+export interface RescanResponse {
+  task_id: string;
+  passed: boolean;
+  status: TaskStatus;
+  gates: GateDetail[];
+  stale: boolean;
+  citation_coverage: number | null;
+  unsupported_claim_rate: number | null;
+}
+
+export interface TaskDetail extends TaskInfo {
+  result?: unknown;
+}
+
+export interface PromptResponse {
+  task_id: string;
+  file: string;
+  content: string;
+  sha256: string;
+}
+
 export interface JobInfo {
   job_id: string;
   kind: string;

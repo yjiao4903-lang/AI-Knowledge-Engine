@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
@@ -165,6 +166,54 @@ def archive_task(task_id: str, request: Request) -> dict:
         raise HTTPException(status_code=404, detail=f"任务不存在: {task_id}")
     target = importer.archive_task(task_id)
     return {"task_id": task_id, "status": ARCHIVED, "task_path": str(target)}
+
+
+@router.post("/tasks/{task_id}/open-folder")
+def open_task_folder(task_id: str, request: Request) -> dict:
+    """"打开任务目录"（§39）：白名单校验根目录内路径后调用系统文件管理器。
+
+    复用 KE 既有 open-original 的受控打开思想，但校验基准是 TaskPack 根目录
+    （cfg.taskpack.root_dir），而非知识库 roots。禁止任意路径执行。
+    """
+    cfg = getattr(request.app.state, "cfg", None)
+    _, importer = _require_taskpack(request)
+    pack = importer.locate(task_id)
+    if pack is None:
+        raise HTTPException(status_code=404, detail=f"任务不存在: {task_id}")
+    root = importer.root.resolve()
+    resolved = pack.resolve()
+    try:
+        relative = resolved.relative_to(root)
+    except ValueError:
+        raise HTTPException(status_code=403, detail="path outside taskpack root") from None
+    if ".." in relative.parts or not resolved.is_dir():
+        raise HTTPException(status_code=403, detail="path outside taskpack root")
+    os.startfile(str(resolved))  # noqa: S606 - 本地单用户系统，路径已过白名单校验
+    return {"opened": True, "path": str(resolved)}
+
+
+@router.get("/tasks/{task_id}/prompt")
+def get_task_prompt(task_id: str, request: Request) -> dict:
+    """复制启动提示词（§38）：返回 AGENT_INSTRUCTION.md 明文。
+
+    纯只读；提示词必须与任务目录内实际文件一致（prompt_sha Gate 校验对象）。
+    """
+    pack, _ = _require_task(request, task_id)
+    instr = pack / "AGENT_INSTRUCTION.md"
+    if not instr.exists():
+        raise HTTPException(status_code=404, detail="AGENT_INSTRUCTION.md 缺失")
+    return {
+        "task_id": task_id,
+        "file": "AGENT_INSTRUCTION.md",
+        "content": instr.read_text(encoding="utf-8"),
+        "sha256": sha256_file_wrapper(instr),
+    }
+
+
+def sha256_file_wrapper(path: Path) -> str:
+    from app.taskpack.manifest import sha256_file
+
+    return sha256_file(path)
 
 
 # 明文标记：废弃端点不再注册（保留符号以便定位，不挂路由）

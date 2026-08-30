@@ -202,3 +202,35 @@ def test_archive_task(client, taskpack_root):
 
 def test_archive_missing_404(client):
     assert client.post("/api/synthesis/tasks/NOPE/archive").status_code == 404
+
+
+def test_open_folder_succeeds_for_outbox_task(client, taskpack_root):
+    created = client.post("/api/synthesis/tasks", json={
+        "task_type": "summary", "query": SEED_QUERY, "evidence_refs": _evidence()}).json()
+    resp = client.post(f"/api/synthesis/tasks/{created['task_id']}/open-folder")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["opened"] is True
+    assert f"taskpacks{chr(92)}outbox" in body["path"] or "/taskpacks/outbox/" in body["path"]
+
+
+def test_open_folder_missing_404(client):
+    assert client.post("/api/synthesis/tasks/NOPE/open-folder").status_code == 404
+
+
+def test_task_prompt_returns_instruction(client, taskpack_root):
+    created = client.post("/api/synthesis/tasks", json={
+        "task_type": "summary", "query": SEED_QUERY, "evidence_refs": _evidence()}).json()
+    task_id = created["task_id"]
+    resp = client.get(f"/api/synthesis/tasks/{task_id}/prompt")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["file"] == "AGENT_INSTRUCTION.md"
+    assert body["content"]
+    assert len(body["sha256"]) == 64
+    pack = Path(created["task_path"])
+    assert body["content"] == (pack / "AGENT_INSTRUCTION.md").read_text(encoding="utf-8")
+
+
+def test_task_prompt_missing_404(client):
+    assert client.get("/api/synthesis/tasks/NOPE/prompt").status_code == 404

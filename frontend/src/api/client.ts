@@ -2,14 +2,20 @@
 // 错误兼容两种格式：AppError {"error","message","detail"} 与 FastAPI HTTPException {"detail"}。
 import type {
   ChunkDetail,
+  CreateTaskRequest,
+  CreateTaskResponse,
   DocumentDetail,
   DocumentsResponse,
   EvaluationLatest,
   IndexStatus,
+  PromptResponse,
+  RescanResponse,
   SearchRequest,
   SearchResponse,
   SectionsResponse,
   SettingsPayload,
+  TaskDetail,
+  TaskListResponse,
 } from './types';
 
 export class ApiError extends Error {
@@ -81,4 +87,21 @@ export const api = {
 
   settings: () => request<SettingsPayload>('/api/settings'),
   evaluationLatest: () => request<EvaluationLatest>('/api/evaluation/latest'),
+
+  // TaskPack Synthesis（V3.0：外部 Worker 工作流，§34-§39）
+  createTask: (req: CreateTaskRequest) => post<CreateTaskResponse>('/api/synthesis/tasks', req),
+  listTasks: () => request<TaskListResponse>('/api/synthesis/tasks'),
+  task: (id: string) => request<TaskDetail>(`/api/synthesis/tasks/${encodeURIComponent(id)}`),
+  rescanTask: (id: string) =>
+    post<RescanResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/rescan`),
+  archiveTask: (id: string) =>
+    post<{ task_id: string; status: string; task_path: string }>(
+      `/api/synthesis/tasks/${encodeURIComponent(id)}/archive`,
+    ),
+  openTaskFolder: (id: string) =>
+    post<{ opened: boolean; path: string }>(
+      `/api/synthesis/tasks/${encodeURIComponent(id)}/open-folder`,
+    ),
+  taskPrompt: (id: string) =>
+    request<PromptResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/prompt`),
 };
