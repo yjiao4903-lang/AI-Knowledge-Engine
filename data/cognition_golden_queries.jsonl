@@ -1,0 +1,25 @@
+{"id":"cog-g01","type":"judgment","query":"资本开支高速增长必然带来投资回报率的改善吗","targets":["capex 增长不等于回报改善"]}
+{"id":"cog-g02","type":"judgment","query":"capex 扩张周期中股东回报与资本效率的关系","targets":["capex 扩张","capex 增长"]}
+{"id":"cog-g03","type":"judgment","query":"为什么资本开支高峰后两到三年 ROIC 会见顶回落","targets":["capex 增长不等于回报改善"]}
+{"id":"cog-g04","type":"judgment","query":"垄断型公司大举 capex 扩张能否同时维持高资本回报","targets":["capex 扩张","capex 增长"]}
+{"id":"cog-g05","type":"judgment","query":"判断 capex 口径必须归一化的证据立场","targets":["AI产业革命投资研究"]}
+{"id":"cog-g06","type":"question","query":"变压器交付周期是否可能比 GPU 供应更慢","targets":["变压器瓶颈"]}
+{"id":"cog-g07","type":"question","query":"变压器瓶颈是否构成 capex 前置约束","targets":["变压器瓶颈"]}
+{"id":"cog-g08","type":"question","query":"GPU 供应链之外还存在哪些第二重前置约束","targets":["变压器瓶颈"]}
+{"id":"cog-g09","type":"question","query":"算力基础设施扩张中变压器交付周期的前置风险","targets":["变压器瓶颈"]}
+{"id":"cog-g10","type":"topic","query":"AI 算力、芯片、能源和基础设施这一主题的一句话认识","targets":["AI 算力、芯片、能源和基础设施"]}
+{"id":"cog-g11","type":"topic","query":"算力库存与能源硬约束如何影响数据中心建","targets":["AI 算力、芯片、能源和基础设施"]}
+{"id":"cog-g12","type":"topic","query":"技术革命、资本周期与资产定价的核心视角","targets":["技术革命、资本周期与资产定价"]}
+{"id":"cog-g13","type":"topic","query":"历史产业周期类比与宏观资产定价含义","targets":["技术革命、资本周期与资产定价"]}
+{"id":"cog-g14","type":"topic","query":"AI 对组织、就业和社会结构的长期影响","targets":["AI 对组织、就业和社会结构的影响"]}
+{"id":"cog-g15","type":"reading","query":"AI 产业革命投资研究深度报告的核心结论是什么","targets":["AI产业革命投资研究"]}
+{"id":"cog-g16","type":"reading","query":"大模型参数量与蒸馏推理成本的产业竞争含义","targets":["大模型参数"]}
+{"id":"cog-g17","type":"reading","query":"AI 产业发展对就业和政治经济格局的影响综述","targets":["AI产业发展对就业"]}
+{"id":"cog-g18","type":"reading","query":"AI 资本周期、商业化临界点与中美两套路径对比","targets":["AI资本周期"]}
+{"id":"cog-g19","type":"reading","query":"产业周期差异的深度研究报告要点","targets":["产业周期差异","技术革命、资本周期与资产定价"]}
+{"id":"cog-g20","type":"review","query":"本周（08-24~08-30）周复盘真正改变的三个认识","targets":["周复盘"]}
+{"id":"cog-g21","type":"review","query":"对本周认知的理解与记忆测试回放","targets":["理解测试"]}
+{"id":"cog-g22","type":"cross","query":"变压器前置约束与 capex 回报不改善的联动判断","targets":["变压器瓶颈"]}
+{"id":"cog-g23","type":"cross","query":"算力时代的能源硬约束如何映射到资本周期与资产定价","targets":["技术革命、资本周期与资产定价"]}
+{"id":"cog-g24","type":"cross","query":"AI 技术革命颠覆组织结构并重塑就业结构的证据","targets":["AI 对组织、就业和社会结构的影响","AI产业发展对就业"]}
+{"id":"cog-g25","type":"cross","query":"大模型推理成本竞争如何影响科技公司资本开支决策","targets":["大模型参数"]}
