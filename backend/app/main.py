@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api import documents, evaluation, index, search, settings
+from app.api import documents, evaluation, index, search, settings, synthesis
 from app.core.config import Config, load_config
 from app.core.errors import AppError
 from app.core.health import collect_health
@@ -81,6 +81,25 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                             cfg.cognition.chunks_collection)
             except Exception:
                 logger.exception("cognition 初始化失败，cognition 检索禁用（报告检索不受影响）")
+
+        # L1：Synthesis（Optional Capability §39）——初始化失败/不可用仅为 WARN，不拖垮 V1 Core
+        app.state.synthesis = None
+        if cfg.synthesis.enabled:
+            try:
+                from app.synthesis.grounding import EvidenceResolver
+                from app.synthesis.provider import get_provider
+                from app.synthesis.service import SynthesisService
+
+                cog_conn = None
+                cog = getattr(app.state, "cognition", None)
+                if cog and cog.get("enabled"):
+                    cog_conn = cog.get("conn")
+                resolver = EvidenceResolver(cfg, app.state.conn, cog_conn)
+                app.state.synthesis = SynthesisService(cfg, get_provider(cfg.synthesis), resolver)
+                logger.info("synthesis ready: provider=%s model=%s",
+                            cfg.synthesis.provider, cfg.synthesis.model)
+            except Exception:
+                logger.exception("synthesis 初始化失败（Optional capability，不影响 V1 Core）")
 
         def _sync_cognition():
             cog = getattr(app.state, "cognition", None)
@@ -171,6 +190,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(index.router)
     app.include_router(evaluation.router)
     app.include_router(settings.router)
+    app.include_router(synthesis.router)
 
     @app.get("/api/health")
     def health() -> dict:
@@ -186,6 +206,14 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             }
         else:
             body["gpu_worker"] = {"alive": False}
+        # L1：Synthesis（Optional §39）—— provider 不可用报 available=False，但系统不 FAIL
+        svc = getattr(app.state, "synthesis", None)
+        body["synthesis"] = {
+            "enabled": svc is not None,
+            "provider": svc.provider.provider_name if svc else None,
+            "available": bool(svc is not None and cfg.synthesis.enabled
+                              and svc.provider.is_available()),
+        }
         return body
 
     @app.exception_handler(AppError)

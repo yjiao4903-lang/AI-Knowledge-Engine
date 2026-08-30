@@ -54,3 +54,30 @@ class IndexInconsistencyError(AppError):
 
 class ApiValidationError(AppError):
     code = "API_VALIDATION_ERROR"
+
+
+# ---- L1 Synthesis（生成式，Optional Capability §39）----
+class SynthesisUnavailableError(AppError):
+    """Provider 不可用 / 超时。Synthesis 是 Optional Capability，不影响 V1 Core。"""
+
+    code = "SYNTHESIS_UNAVAILABLE"
+    http_status = 503
+
+
+class SynthesisInvalidError(AppError):
+    """生成输出 schema 校验失败（含无限重试后仍无效）。"""
+
+    code = "SYNTHESIS_INVALID"
+    http_status = 422
+
+
+class EvidenceNotFoundError(AppError):
+    code = "EVIDENCE_NOT_FOUND"
+    http_status = 404
+
+
+class EvidenceStaleError(AppError):
+    """content_hash 不一致：引用时与当前 catalog 不同（契约 §3）。"""
+
+    code = "EVIDENCE_STALE"
+    http_status = 409

@@ -1,0 +1,902 @@
+[
+  {
+    "index": 1,
+    "task_type": "summary",
+    "query": "总结 HBM4 相比前几代 HBM 在接口位宽与引脚速率上的演进要点。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M04",
+        "chunk_id": "M04:ch3-2:o1:0040"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M05",
+        "chunk_id": "M05:ch2-2:o2:0026"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_0acfa8a6ac",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 2,
+    "task_type": "summary",
+    "query": "总结冷板式与浸没式液冷在热力学与换热上的差异要点。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-2:o2:0008"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-1:0039"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_11af1eb2fe",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 3,
+    "task_type": "summary",
+    "query": "总结测试时计算标度律（Test-Time Compute Scaling Law）的核心结论。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M09",
+        "chunk_id": "M09:ch5-3:o56:0069"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_f412ce9520",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 4,
+    "task_type": "summary",
+    "query": "总结模型全生命周期推理总拥有成本（Inference TCO）的形式化构成。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M10",
+        "chunk_id": "M10:ch1-3-1:0013"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_3c8aa95eaa",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 5,
+    "task_type": "summary",
+    "query": "总结 DPO（Direct Preference Optimization）相比传统方法的核心要点。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M10",
+        "chunk_id": "M10:ch2-2-2:0020"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_2580868017",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 6,
+    "task_type": "summary",
+    "query": "总结 MoE 模型在总损失中引入辅助加载平衡损失的作用。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M09",
+        "chunk_id": "M09:ch4-2:o43:0053"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_efe5536d41",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 7,
+    "task_type": "summary",
+    "query": "总结全球数据中心用电的规模与增速数据。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_fd1042a4ea",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 8,
+    "task_type": "summary",
+    "query": "总结为什么 5nm 是 FinFET 工艺的终点。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "5nm制程_最终报告",
+        "chunk_id": "5nm制程_最终报告:ch2-6:0033"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_caf25a8631",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "inference"
+    ]
+  },
+  {
+    "index": 9,
+    "task_type": "comparison",
+    "query": "比较单相浸没式与两相浸没式液冷在热力学与供应链上的差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-1:0039"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-2:0042"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_44bdf41667",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 10,
+    "task_type": "comparison",
+    "query": "比较冷板式（DLC）与浸没式液冷的热力学换热模型差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-2:o2:0008"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-1:0039"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_0ef98b327e",
+    "claims_count": 2,
+    "schema_valid": true,
+    "factual_claims": 2,
+    "citation_coverage": 0.0,
+    "unsupported_claim_rate": 1.0,
+    "citation_invalid": [
+      "GPU产业技术源流与投资机会_最终报告:ch5-2:0024",
+      "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+    ],
+    "epistemic": [
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 11,
+    "task_type": "comparison",
+    "query": "比较直流输电与高压交流输电在网络拓扑与降本机制上的差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M02",
+        "chunk_id": "M02:ch1-3:0015"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M02",
+        "chunk_id": "M02:ch1-3-2:0017"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_19e6e0cdae",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 12,
+    "task_type": "comparison",
+    "query": "对比 HBM4 采用混合键合与定制逻辑 Base Die 相对前代结构的主要变化。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M05",
+        "chunk_id": "M05:ch2-2:o2:0026"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M04",
+        "chunk_id": "M04:ch3-2:o1:0040"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_e0bbbcbdb0",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 0.6666666666666666,
+    "unsupported_claim_rate": 0.3333333333333333,
+    "citation_invalid": [
+      "GPU产业技术源流与投资机会_最终报告:ch5-2:0024",
+      "GPU产业技术源流与投资机会_最终报告:ch5-2:0024",
+      "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+    ],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 13,
+    "task_type": "comparison",
+    "query": "比较 200G EML 与薄膜铌酸锂（TFLN）在光模块中的角色差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M05",
+        "chunk_id": "M05:ch5-2:o40:0057"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_f90e22e866",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "inference"
+    ]
+  },
+  {
+    "index": 14,
+    "task_type": "comparison",
+    "query": "比较四轮价值链中租金归属与集中度的差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch5-3:0062"
+      },
+      {
+        "source_type": "report",
+        "document_id": "四次技术革命比较解剖_最终报告",
+        "chunk_id": "四次技术革命比较解剖_最终报告:ch2:o22:0028"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_65da2dde6f",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 15,
+    "task_type": "comparison",
+    "query": "对比 GPU 供应链中先进制程与先进封装/互连两类约束。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_9b6c43cfb5",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 16,
+    "task_type": "comparison",
+    "query": "比较四次工业革命在动力源与基础设施维度的差异。",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch5-1:0055"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M02",
+        "chunk_id": "M02:ch1-3-2:0017"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_a8df6f04f3",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "inference",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 17,
+    "task_type": "causal_synthesis",
+    "query": "为什么接口位宽提高会进一步推高先进封装的系统价值量？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M05",
+        "chunk_id": "M05:ch2-2:o2:0026"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_7f4aebbdcf",
+    "claims_count": 2,
+    "schema_valid": true,
+    "factual_claims": 2,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "inference"
+    ]
+  },
+  {
+    "index": 18,
+    "task_type": "causal_synthesis",
+    "query": "AI 算力扩张推升液冷需求的因果机制是什么？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-2:o2:0008"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-1:0039"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_d6515e96ae",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "inference"
+    ]
+  },
+  {
+    "index": 19,
+    "task_type": "causal_synthesis",
+    "query": "为什么 PFAS 禁令会冲击两相浸没式液冷的供应链？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-2:0042"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_46474cf495",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported"
+    ]
+  },
+  {
+    "index": 20,
+    "task_type": "causal_synthesis",
+    "query": "为什么数据中心电力会构成算力扩张的物理硬约束？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch6-2-1:0069"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-1:0005"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_7d6ed50c72",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 21,
+    "task_type": "causal_synthesis",
+    "query": "变压器升压如何从拓扑维度带来输电经济性？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M02",
+        "chunk_id": "M02:ch1-3-2:0017"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_2247f62a13",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 22,
+    "task_type": "causal_synthesis",
+    "query": "推理总拥有成本对模型部署选型的影响机制是什么？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M10",
+        "chunk_id": "M10:ch1-3-1:0013"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_6cf233778d",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported"
+    ]
+  },
+  {
+    "index": 23,
+    "task_type": "causal_synthesis",
+    "query": "自然长度如何通过短沟道效应限制 5nm 之后 FinFET 的微缩？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "5nm制程_最终报告",
+        "chunk_id": "5nm制程_最终报告:ch2-6:0033"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_bd7c5814fb",
+    "claims_count": 4,
+    "schema_valid": true,
+    "factual_claims": 4,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 24,
+    "task_type": "causal_synthesis",
+    "query": "为什么技术爆发初期底层硬件与核心设备制造商会获得暴利？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch5-3:0062"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_2f49417d1d",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported"
+    ]
+  },
+  {
+    "index": 25,
+    "task_type": "tension_extraction",
+    "query": "HBM 迭代带来封装价值提升与供应链集中瓶颈之间是否存在证据张力？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M04",
+        "chunk_id": "M04:ch3-2:o1:0040"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_900ea13b5e",
+    "claims_count": 2,
+    "schema_valid": true,
+    "factual_claims": 2,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 26,
+    "task_type": "tension_extraction",
+    "query": "两相浸没式液冷的物理优雅与 PFAS 环保死结之间存在哪些张力？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-1:0039"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M07",
+        "chunk_id": "M07:ch4-2:0042"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_616b4e38a1",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported"
+    ]
+  },
+  {
+    "index": 27,
+    "task_type": "tension_extraction",
+    "query": "数据中心用电强增长与液冷能效提升两条证据方向是否相互矛盾？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-2:o2:0008"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_fcaa43d851",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "inference"
+    ]
+  },
+  {
+    "index": 28,
+    "task_type": "tension_extraction",
+    "query": "电力扩张需求与电网/选址约束之间存在哪些张力证据？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch6-2-1:0069"
+      },
+      {
+        "source_type": "report",
+        "document_id": "M06",
+        "chunk_id": "M06:ch1-1:0005"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_118f38373d",
+    "claims_count": 3,
+    "schema_valid": true,
+    "factual_claims": 3,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 29,
+    "task_type": "tension_extraction",
+    "query": "先进制程供应能力与算力能耗约束之间是否存在矛盾证据？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_f8a44a8575",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "inference"
+    ]
+  },
+  {
+    "index": 30,
+    "task_type": "tension_extraction",
+    "query": "价值捕获终局在底层设备与网络分发之间是否存在证据张力？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M01",
+        "chunk_id": "M01:ch5-3:0062"
+      },
+      {
+        "source_type": "report",
+        "document_id": "四次技术革命比较解剖_最终报告",
+        "chunk_id": "四次技术革命比较解剖_最终报告:ch2:o22:0028"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_9a030fec90",
+    "claims_count": 2,
+    "schema_valid": true,
+    "factual_claims": 2,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "supported",
+      "supported"
+    ]
+  },
+  {
+    "index": 31,
+    "task_type": "tension_extraction",
+    "query": "200G EML 的结构性短缺与 TFLN 量产替代之间存在哪些张力？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "M05",
+        "chunk_id": "M05:ch5-2:o40:0057"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_bba34aea4e",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "inference"
+    ]
+  },
+  {
+    "index": 32,
+    "task_type": "tension_extraction",
+    "query": "FinFET 物理终点与先进封装/异构集成持续性能提升之间是否存在张力？",
+    "evidence_refs": [
+      {
+        "source_type": "report",
+        "document_id": "5nm制程_最终报告",
+        "chunk_id": "5nm制程_最终报告:ch2-6:0033"
+      },
+      {
+        "source_type": "report",
+        "document_id": "GPU产业技术源流与投资机会_最终报告",
+        "chunk_id": "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"
+      }
+    ],
+    "status": "ok",
+    "draft_id": "synthesis_b74111a16d",
+    "claims_count": 1,
+    "schema_valid": true,
+    "factual_claims": 1,
+    "citation_coverage": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "citation_invalid": [],
+    "epistemic": [
+      "inference"
+    ]
+  }
+]

@@ -116,3 +116,18 @@ inference:
   worker_timeout_seconds: 120
   worker_start_timeout_seconds: 300
   max_consecutive_crashes: 2
+
+# L1：Evidence-grounded Synthesis（Optional Capability，provider 不可用不影响 V1 Core）
+synthesis:
+  enabled: true
+  provider: "ollama"          # ollama | mock（mock 仅供测试/离线 harness）
+  base_url: "http://127.0.0.1:11434/v1"
+  model: "qwen3:14b"
+  fallback_model: "qwen3:8b"
+  temperature: 0.2
+  max_tokens: 3000
+  timeout_seconds: 360
+  prompt_version: "v1.1"
+  max_evidence: 20
+  evidence_max_chars: 900
+  max_invalid_retries: 2

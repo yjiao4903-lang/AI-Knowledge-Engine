@@ -160,6 +160,32 @@ class InferenceConfig(BaseModel):
     max_consecutive_crashes: int = 2  # 连续崩溃后转 CPU fallback（Addendum §17）
 
 
+class SynthesisConfig(BaseModel):
+    """L1：Evidence-grounded Synthesis Provider 配置（主计划 §13/§40）。
+
+    - provider 抽象化了真实 LLM 后端；L1A 当前实现为 Ollama（OpenAI 兼容
+      /v1/chat/completions）。
+    - 主模型 + fallback 模型：主模型失败/超时后按需尝试 fallback（§40）。
+    - Synthesis 为 Optional Capability（§39）：provider 不可用时，Research OS
+      V1 Core 必须仍完全可用，仅 health 报 WARN。
+    - prompt_version 记录在 SynthesisDraft.generator 中（§36）。
+    """
+
+    enabled: bool = True
+    provider: str = "ollama"  # ollama | mock（mock 仅供测试/离线 harness）
+    base_url: str = "http://127.0.0.1:11434/v1"
+    model: str = "qwen3:14b"          # 主模型
+    fallback_model: str = "qwen3:8b"  # fallback（可为空字符串表示不启用）
+    temperature: float = 0.2
+    max_tokens: int = 4096
+    timeout_seconds: float = 180.0
+    retry_interval_seconds: float = 3.0
+    prompt_version: str = "v1.1"
+    max_evidence: int = 20          # Context Envelope 单次最多注入的 Evidence 条数
+    evidence_max_chars: int = 1200  # 每条 Evidence 注入的最大字符数（截断正文）
+    max_invalid_retries: int = 2    # 无效 Schema 的自动重试次数（§38）
+
+
 class Config(BaseModel):
     app: AppConfig = Field(default_factory=AppConfig)
     knowledge_base: KnowledgeBaseConfig = Field(default_factory=KnowledgeBaseConfig)
@@ -174,6 +200,7 @@ class Config(BaseModel):
     fusion: FusionConfig = Field(default_factory=FusionConfig)
     indexing: IndexingConfig = Field(default_factory=IndexingConfig)
     inference: InferenceConfig = Field(default_factory=InferenceConfig)
+    synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
 
 
 def load_config(path: str | Path | None = None) -> Config:
