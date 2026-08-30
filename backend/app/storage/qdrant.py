@@ -22,14 +22,48 @@ class QdrantStore:
     def __init__(self, cfg: QdrantConfig, embedding_dimension: int = 1024) -> None:
         self.cfg = cfg
         self.dimension = embedding_dimension
-        self.client = QdrantClient(url=cfg.url, timeout=10)
+        self._client_invalid = False
+        self._recoveries = 0
+        self._last_error: str | None = None
+        self._client = self._new_client()
+
+    def _new_client(self) -> QdrantClient:
+        return QdrantClient(url=self.cfg.url, timeout=10)
+
+    @property
+    def client(self) -> QdrantClient:
+        """当前 client；若被标记失效则懒重建（供检索/health 自动恢复，无需重启 KE）。"""
+        if self._client_invalid:
+            self._recover()
+        return self._client
+
+    def _recover(self) -> None:
+        self._client = self._new_client()
+        self._client_invalid = False
+        self._recoveries += 1
+        logger.warning("Qdrant client recreated (recoveries=%s, last_error=%s)",
+                       self._recoveries, self._last_error)
+
+    def mark_invalid(self, exc: Exception) -> None:
+        """连接类失败时标记 client 失效；下次访问经 @property 自动重建。"""
+        self._client_invalid = True
+        self._last_error = str(exc)
+
+    def recover(self) -> None:
+        """立即重建 client（供检索路径失败后原地重试）。"""
+        self._recover()
 
     def health(self) -> dict:
+        # 单次探活即返回，不做慢速 recover 重试（避免 qdrant down 时 health 超时）。
+        # 真正的恢复由检索路径（dense.search 失败->重建重试）与 client @property 懒重建承担；
+        # health 每次新建实例本就携带新 client，恢复后下次调用自动返回 ok。
+        base = {"url": self.cfg.url, "recoveries": self._recoveries}
         try:
-            ok = self.client.get_collections() is not None
-            return {"status": "ok" if ok else "error", "url": self.cfg.url}
+            self.client.get_collections()
+            return {"status": "ok", **base}
         except Exception as exc:
-            return {"status": "error", "url": self.cfg.url, "error": str(exc)}
+            self.mark_invalid(exc)
+            return {"status": "error", "error": str(exc), **base}
 
     def ensure_collections(self) -> None:
         """幂等创建 chunks / sections 两个 collection。"""

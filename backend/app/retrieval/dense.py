@@ -121,13 +121,25 @@ class DenseRetriever:
             for i in range(0, len(points), 64):
                 self.store.client.upsert(collection_name=collection, points=points[i : i + 64], wait=True)
         except Exception as exc:
-            raise QdrantError(f"Qdrant upsert 失败: {collection}", detail={"error": str(exc)}) from exc
+            self.store.mark_invalid(exc)
+            # P0-2：Qdrant 连接失效 -> 重建 client 原地重试一次（自动恢复，无需重启 KE）
+            self.store.recover()
+            try:
+                for i in range(0, len(points), 64):
+                    self.store.client.upsert(collection_name=collection, points=points[i : i + 64], wait=True)
+            except Exception as exc2:
+                raise QdrantError(f"Qdrant upsert 失败: {collection}", detail={"error": str(exc2)}) from exc2
 
     def delete_document(self, document_id: str) -> None:
         """按 document_id 删除 chunks 与 sections 两 collection 的点（M8 复用）。"""
         flt = qm.Filter(must=[qm.FieldCondition(key="document_id", match=qm.MatchValue(value=document_id))])
         for collection in (self.cfg.qdrant.chunks_collection, self.cfg.qdrant.sections_collection):
-            self.store.client.delete(collection_name=collection, points_selector=qm.FilterSelector(filter=flt))
+            try:
+                self.store.client.delete(collection_name=collection, points_selector=qm.FilterSelector(filter=flt))
+            except Exception as exc:
+                self.store.mark_invalid(exc)
+                self.store.recover()
+                self.store.client.delete(collection_name=collection, points_selector=qm.FilterSelector(filter=flt))
 
     # ---- 检索 ----
     def search(
@@ -150,9 +162,10 @@ class DenseRetriever:
             raise EmbeddingError(f"查询向量化失败: {exc}") from exc
 
         qfilter = build_qdrant_filter(filters)
+        resolved_collection = collection or self.cfg.qdrant.chunks_collection
         try:
             resp = self.store.client.query_points(
-                collection_name=collection or self.cfg.qdrant.chunks_collection,
+                collection_name=resolved_collection,
                 query=qvec,
                 using="dense",
                 limit=k,
@@ -160,7 +173,20 @@ class DenseRetriever:
                 with_payload=True,
             )
         except Exception as exc:
-            raise QdrantError(f"Qdrant 检索失败: {exc}") from exc
+            # P0-2：Qdrant 连接失效 -> 重建 client 原地重试一次（自动恢复，无需重启 KE）
+            self.store.mark_invalid(exc)
+            self.store.recover()
+            try:
+                resp = self.store.client.query_points(
+                    collection_name=resolved_collection,
+                    query=qvec,
+                    using="dense",
+                    limit=k,
+                    query_filter=qfilter,
+                    with_payload=True,
+                )
+            except Exception as exc2:
+                raise QdrantError(f"Qdrant 检索失败: {exc2}", detail={"error": str(exc2)}) from exc2
 
         hits = [
             {"payload": dict(p.payload or {}), "score": float(p.score)}
