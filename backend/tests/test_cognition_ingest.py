@@ -201,3 +201,18 @@ def test_modify_and_delete_incremental(env):
     assert conn.execute(
         "SELECT count(*) FROM document_tombstones WHERE document_id LIKE '%变压器瓶颈问题%'"
     ).fetchone()[0] == 1
+
+    # I7 P0-3：no orphan Qdrant point（modify 后新词可检索、delete 后被删文档的点被清除）
+    col = env["cfg"].cognition.chunks_collection
+    cat_chunks = conn.execute("SELECT count(*) FROM chunks").fetchone()[0]
+    info = env["dense"].store.collection_info(col)
+    assert info["points_count"] == cat_chunks, (info["points_count"], cat_chunks)
+    # modify 生效：新标记词在 qdrant 可检索
+    hits, _ = env["dense"].search("GAMMA88", k=5, collection=col)
+    assert hits and any(h["payload"]["document_id"].endswith("capex 扩张不等于回报改善")
+                        for h in hits)
+    # delete 生效：被删文档（变压器瓶颈问题）的 qdrant point 已清除
+    deleted_id = "cog:03_问题池/变压器瓶颈问题"
+    hits, _ = env["dense"].search(
+        "变压器", k=10, collection=col, filters={"document_ids": [deleted_id]})
+    assert not hits, "被删文档仍有 qdrant 残留点 (orphan)"

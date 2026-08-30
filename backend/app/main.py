@@ -136,6 +136,24 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 target=_watcher, daemon=True, name="index-watcher")
             state["watcher_thread"].start()
 
+        # I7 P0-3：独立 Cognition watcher（用 cognition 专属周期，可配置 60-300s）。
+        # READ ONLY：仅 scan + apply_scan（索引清洗/刷新），无任何认知写路径。
+        if cfg.cognition.enabled and cfg.cognition.periodic_reconcile_seconds > 0:
+            def _cog_watcher():
+                interval = cfg.cognition.periodic_reconcile_seconds
+                while not state["watcher_stop"].wait(interval):
+                    if not app.state.index_lock.acquire(blocking=False):
+                        continue
+                    try:
+                        _sync_cognition()
+                    except Exception:
+                        logger.exception("cognition periodic reconcile 失败")
+                    finally:
+                        app.state.index_lock.release()
+            state["cog_watcher_thread"] = threading.Thread(
+                target=_cog_watcher, daemon=True, name="cognition-watcher")
+            state["cog_watcher_thread"].start()
+
         yield
 
         # ---- shutdown ----
