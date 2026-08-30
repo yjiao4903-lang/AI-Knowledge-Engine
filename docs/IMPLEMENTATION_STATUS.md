@@ -10,6 +10,18 @@ I5 Backup/Restore/Hardening、I6 Cognition Read-only Semantic Search、I7 Post-I
 I4-I7 交付摘要与 Known Issues #14-27 见整合事实源。
 I6 契约已归档 docs/HANDOFF_I6_DONE.md；I7 文档：docs/I7_EVALUATION.md、docs/COGNITION_GOLDEN_EVALUATION.md、docs/EXCLUSION_AUDIT.md。
 
+## L1 TaskPack 外部模型工作流（V3.0，2026-08-30，本窗口交付）
+架构决策（V3.0）：**Research OS 取消内部文本 LLM 运行时**，改为 TaskPack 外部 Worker 工作流
+（`D:\AI知识整合体系\taskpacks` 目录契约）。主体完成（详见 docs/TASKPACK_PROTOCOL_V1.md）：
+- Task 1 移除生产 LLM runtime；Task 2 TaskPack V1 Schema；Task 3+4 Builder+模板落盘；
+  Task 5+6 API `/api/synthesis/tasks*` + Importer/Watcher 八步 Gate + 状态机；
+  Task 7 Task Center 前端（KE frontend `/tasks`，含 open-folder/prompt）；
+  Task 8 32 Golden → Golden TaskPack + taskpack_eval.py（无模型评估）。
+- 交付文档：docs/TASKPACK_PROTOCOL_V1.md、docs/TASKPACK_WORKER_GUIDE.md、
+  docs/L1A_TASKPACK_EVALUATION.md、docs/L1A_MIGRATION_FROM_LOCAL_LLM.md。
+- **待外部执行**：Task 9（32 golden external run，用户选外部工具）+ Task 10（评估，或自动）。
+- commit：4a52308 / b081fb3 / 0f4712d / a90f641 / 48ddff1。
+
 ## I0 交付摘要（2026-08-30，详见 docs/FULL_CORPUS_REPORT.md）
 - **Full Corpus Index**：189 篇终版（v2 策略 ADR-013）/ 8828 sections / 9780 chunks；
   Failed 0、Encoding 0；排除 6970 全带 Exclusion Reason（DIR 6413/NON_FINAL 339/PROCESS 191/DUP 27）
