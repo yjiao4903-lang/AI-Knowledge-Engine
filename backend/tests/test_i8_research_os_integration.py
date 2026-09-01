@@ -1,11 +1,15 @@
+from pathlib import Path
+from types import SimpleNamespace
+
+from app.api import synthesis as synthesis_api
 from app.contracts.cognition import CognitionContextItem
 from app.integration.proposals import build_cognition_proposal_payload
-from app.synthesis.schemas import Claim, SynthesisRequest
+from app.synthesis.schemas import Claim, SynthesisRequest, Tension
+from app.taskpack.importer import COMPLETED
 from app.taskpack.schemas import (
     AdditionalEvidenceNeeded,
     ResultEnvelope,
     TaskPackEvidence,
-    Tension,
     WorkerInfo,
 )
 
@@ -23,6 +27,39 @@ def _evidence(chunk_id: str = "M04:ch1:o1:0001") -> TaskPackEvidence:
         start_line=10,
         end_line=20,
         excerpt="HBM4 evidence snapshot",
+    )
+
+
+def _result(task_id: str = "task_001", chunk_id: str = "M04:ch1:o1:0001") -> ResultEnvelope:
+    return ResultEnvelope(
+        task_id=task_id,
+        task_type="causal_synthesis",
+        query="AI CAPEX 如何影响现金流？",
+        summary="summary",
+        claims=[
+            Claim(
+                id="claim_001",
+                text="CAPEX 上升会压低短期自由现金流。",
+                epistemic_state="supported",
+                evidence_refs=[chunk_id],
+            )
+        ],
+        tensions=[
+            Tension(
+                id="tension_001",
+                text="投资扩张与短期现金流之间存在张力。",
+                evidence_refs=[chunk_id],
+            )
+        ],
+        open_questions=["收入增速能否覆盖折旧增长？"],
+        additional_evidence_needed=[
+            AdditionalEvidenceNeeded(
+                question="需要哪些未来收入数据？",
+                reason="现有固定证据没有覆盖未来收入兑现。",
+            )
+        ],
+        worker=WorkerInfo(tool="codex", model="gpt"),
+        generated_at="2026-09-01T12:00:00+08:00",
     )
 
 
@@ -54,38 +91,7 @@ def test_synthesis_request_accepts_structured_cognition_context():
 
 def test_taskpack_result_converts_to_conservative_cognition_proposal():
     chunk_id = "M04:ch1:o1:0001"
-    result = ResultEnvelope(
-        task_id="task_001",
-        task_type="causal_synthesis",
-        query="AI CAPEX 如何影响现金流？",
-        summary="summary",
-        claims=[
-            Claim(
-                id="claim_001",
-                text="CAPEX 上升会压低短期自由现金流。",
-                epistemic_state="supported",
-                evidence_refs=[chunk_id],
-            )
-        ],
-        tensions=[
-            Tension(
-                id="tension_001",
-                text="投资扩张与短期现金流之间存在张力。",
-                evidence_refs=[chunk_id],
-            )
-        ],
-        open_questions=["收入增速能否覆盖折旧增长？"],
-        additional_evidence_needed=[
-            AdditionalEvidenceNeeded(
-                question="需要哪些未来收入数据？",
-                reason="现有固定证据没有覆盖未来收入兑现。",
-            )
-        ],
-        worker=WorkerInfo(tool="codex", model="gpt"),
-        generated_at="2026-09-01T12:00:00+08:00",
-    )
-
-    payload, warnings = build_cognition_proposal_payload(result, [_evidence(chunk_id)])
+    payload, warnings = build_cognition_proposal_payload(_result(chunk_id=chunk_id), [_evidence(chunk_id)])
 
     assert warnings == []
     assert payload["origin_type"] == "external_llm"
@@ -126,3 +132,32 @@ def test_missing_evidence_snapshot_returns_warning_not_fake_source():
     payload, warnings = build_cognition_proposal_payload(result, [])
     assert warnings
     assert "未找到快照" in payload["items"][0]["sections"]["支持证据"]
+
+
+def test_proposal_candidate_endpoint_is_read_only_and_postable_shape(tmp_path, monkeypatch):
+    pack = Path(tmp_path) / "task_001"
+    result_dir = pack / "result"
+    result_dir.mkdir(parents=True)
+    result_dir.joinpath("result.json").write_text(
+        _result().model_dump_json(),
+        encoding="utf-8",
+    )
+    pack.joinpath("evidence.jsonl").write_text(
+        _evidence().model_dump_json() + "\n",
+        encoding="utf-8",
+    )
+
+    importer = SimpleNamespace(
+        _make_task_info=lambda _pack: SimpleNamespace(status=COMPLETED)
+    )
+    monkeypatch.setattr(
+        synthesis_api,
+        "_require_task",
+        lambda _request, _task_id: (pack, importer),
+    )
+
+    response = synthesis_api.get_proposal_candidates("task_001", SimpleNamespace())
+    assert response["auto_apply"] is False
+    assert response["source_status"] == COMPLETED
+    assert response["proposal_payload"]["origin_ref"] == "task_001"
+    assert response["proposal_payload"]["items"]
