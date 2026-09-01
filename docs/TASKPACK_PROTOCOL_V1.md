@@ -80,7 +80,7 @@ taskpacks/
 
 详见 `TASKPACK_WORKER_GUIDE.md`。
 
-## 7. Importer 八步 Gate（§46）
+## 7. Importer 八步核心 Gate + stale 检查（§46/§48）
 
 KE `TaskPackImporter` 对每个带 `result/DONE` 的任务按序校验：
 
@@ -92,7 +92,7 @@ KE `TaskPackImporter` 对每个带 `result/DONE` 的任务按序校验：
 6. **citation_invalid**：无引用未提供证据（复用 `validate_draft`）
 7. **citation_coverage**：事实性 claim 绑定有效证据比例 ≥ 95%（§22, Gate）
 8. **unsupported_claim**：事实性 claim 无证据比例 ≤ 5%（§24, Gate）
-9. **stale**：evidence content_hash 与 catalog 当前一致（§48；仅标注，不自动改写）
+附加 stale 检查（不计入上述八步）：evidence content_hash 与 catalog 当前一致（§48；不自动改写原 TaskPack）。当前 Importer 实现会把 stale 失败作为 `INVALID_RESULT` 的阻断原因；报告中须单独记录 stale，不得把它混入八步计数。
 
 任何失败 → 标记 `INVALID_RESULT`，**不进入 Viewer**。
 

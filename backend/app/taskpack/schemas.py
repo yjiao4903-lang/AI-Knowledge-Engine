@@ -44,6 +44,19 @@ def _check_task_id(value: str) -> str:
     return v
 
 
+def is_safe_task_id(value: str) -> bool:
+    """Return whether a value is valid for both a TaskPack ID and directory name.
+
+    Importer callers are not all HTTP routes, so path safety must be enforced at
+    the filesystem boundary as well as by the request schema.
+    """
+    try:
+        _check_task_id(value)
+    except (AttributeError, ValueError):
+        return False
+    return True
+
+
 def _check_sha256(value: str) -> str:
     v = value.strip().lower()
     if not _SHA256_RE.fullmatch(v):

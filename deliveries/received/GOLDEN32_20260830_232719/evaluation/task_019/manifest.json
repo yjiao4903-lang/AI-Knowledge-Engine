@@ -1,0 +1,14 @@
+{
+  "taskpack_version": "1.0",
+  "task_id": "20260830_180538_pfas",
+  "created_at": "2026-08-30T18:05:38+08:00",
+  "files": {
+    "task.yaml": "8198245d2981174f77c8ba2872feccc977df53d4af3fc70c99e9da90b6e31e22",
+    "AGENT_INSTRUCTION.md": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+    "evidence.jsonl": "914d8132243241f9ed229b1c3a2f97f4fbcf0f28f7a3a4c729ae2dc940b36f0b",
+    "output_schema.json": "5ec56fc7d23e6494cbdd1c89216677bf1cf41f6fe04d74b13a41ff52ecd9b499",
+    "README.md": "141cab779df4e46180354b492b435314fd840ac376cb04646a2343ba825c2bea"
+  },
+  "evidence_count": 1,
+  "cognition_context_count": 0
+}

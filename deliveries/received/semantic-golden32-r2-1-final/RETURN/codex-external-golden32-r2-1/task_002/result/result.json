@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "summary",
+  "query": "总结冷板式与浸没式液冷在热力学与换热上的差异要点。",
+  "summary": "冷板式（DLC）以芯片级液体冷却为核心，证据给出其液体工质热容/换热系数、微通道二维对流-扩散模型、150~200 kW 机架密度与 PUE 1.05~1.15 等定量参数，并指出其废热经冷却水回路依赖机械制冷或冷却塔排向大气；浸没式液冷仅有整机浸泡于不导电介电液体的定性描述，定量热力学参数缺失，二者差异主要体现在换热路径与覆盖范围。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "报告称工业界被迫全面迁移至直接芯片液体冷却（Direct-to-Chip Liquid Cooling, DLC）或相变浸没式液冷（Immersion Cooling）两类方案。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "原文直接表述，保留'被迫/全面迁移'口径。"
+    },
+    {
+      "id": "claim_002",
+      "text": "冷板式所用液体冷却液（去离子水/乙二醇溶液）的体积热容约为空气的 3,500 倍，对流换热系数约 5,000~15,000 W/(m²·K)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "原文直接给出的工质与换热参数，保留'约'口径。"
+    },
+    {
+      "id": "claim_003",
+      "text": "微通道冷板（Microchannel Cold Plate）的传热微分方程遵循二维对流-扩散方程（报告给出的物理模型表述）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "转述报告给出的传热模型方程形式。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告称冷板换热使得数据中心能够承受高达 150 kW~200 kW 的单机架密度，并将 PUE 压制在 1.05~1.15 的区间。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "原文直接陈述的性能区间，保留'高达/压制在'口径。"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告指出冷却系统并未消灭热量，只是将高密度的热流转移至冷却水回路；为将 35°C~45°C 的温水废热排放至大气，机械制冷压缩机会消耗巨大的压缩电能，蒸发冷却塔则会引发水资源消耗硬约束（WUE 危机）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "原文直接陈述的排热路径与代价，保留原文限定。"
+    },
+    {
+      "id": "claim_006",
+      "text": "浸没式液冷将整台服务器主板、CPU、GPU、内存及供电模块完全浸泡在不导电的绝缘介电液体（Dielectric Fluid）中。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M07:ch4-1:0039"],
+      "rationale": "原文对浸没式液冷的直接定义。"
+    },
+    {
+      "id": "claim_007",
+      "text": "结合两段证据，冷板式以芯片层面（Direct-to-Chip）的接触换热为核心对象，浸没式以整机浸泡扩大换热接触面为核心特点，两者在换热路径与接触范围上可能存在差异。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-2:o2:0008", "M07:ch4-1:0039"],
+      "rationale": "由'直接芯片级液体冷却'与'整台服务器完全浸泡'两种定义推断，用'可能'限定。"
+    },
+    {
+      "id": "claim_008",
+      "text": "冷板式的废热需经冷却水回路并借助机械制冷压缩机或蒸发冷却塔向大气排放，表明其系统级换热模型包含外部排热环节及其能耗/水耗代价。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "由'将热流转移至冷却水回路'与'排放至大气需 Chiller/冷却塔'的原文推断系统级排热环节，用'表明'限定。"
+    },
+    {
+      "id": "claim_009",
+      "text": "浸没式液冷的定量热力学指标（换热系数、机架密度、PUE）在本任务证据中缺失，无法与冷板式做数值层面的比较。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M07:ch4-1:0039"],
+      "rationale": "证据仅给出浸没式整机浸泡的定性描述，定量参数缺失，标 uncertain。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "浸没式液冷在本任务证据中仅有整机浸泡的定性描述，缺乏换热系数/PUE/机架密度等定量指标",
+    "M06 中'相变浸没式液冷'与 M07 对浸没式的通用定义（未限定相变）口径不一致，本证据未区分浸没式子类"
+  ],
+  "open_questions": [
+    "浸没式液冷与冷板式在废热回收与排放路径上的系统级差异",
+    "'相变浸没式'的界定及单相/两相的分类依据"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "浸没式液冷的热力学定量参数（换热系数、PUE、机架密度）",
+      "reason": "当前证据仅给出'整机浸泡于介电液体'的定性描述，无法量化对比"
+    },
+    {
+      "question": "冷板式与浸没式在废热排放与水资源消耗上的对比数据",
+      "reason": "证据仅详述冷板式排热路径（Chiller/冷却塔），浸没式侧缺失"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:50:35+08:00"
+}

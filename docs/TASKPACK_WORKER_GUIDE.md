@@ -44,6 +44,7 @@ task.yaml → evidence.jsonl → [cognition_context.jsonl] → output_schema.jso
 | `contradicted` | Evidence 明确冲突（可同时用 tensions） |
 
 - 证据不足 → 写 `additional_evidence_needed`（question + reason），**禁止用包外知识补洞**（§17）。
+- `supported` 不适用于预测、估算、目标、情景、市场份额预期或未来年份（如 2026E/2027E）；必须保留原文限定词和来源口径，按证据强度使用 `inference`/`hypothesis`/`uncertain`。没有直接因果证据时，不得把相关性或时间顺序改写成强因果。不要用关键词机械判定，须结合上下文和证据强度。
 
 ## 5. 输出文件
 

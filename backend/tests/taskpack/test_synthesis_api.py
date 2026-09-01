@@ -204,14 +204,24 @@ def test_archive_missing_404(client):
     assert client.post("/api/synthesis/tasks/NOPE/archive").status_code == 404
 
 
-def test_open_folder_succeeds_for_outbox_task(client, taskpack_root):
+@pytest.mark.parametrize("task_id", ["..", "..%5Coutside", "bad%2Fid"])
+def test_task_routes_reject_unsafe_task_id(client, task_id):
+    """Every task-id route must reject traversal before accessing taskpack files."""
+    assert client.post(f"/api/synthesis/tasks/{task_id}/archive").status_code == 404
+    assert client.post(f"/api/synthesis/tasks/{task_id}/open-folder").status_code == 404
+
+
+def test_open_folder_succeeds_for_outbox_task(client, taskpack_root, monkeypatch):
     created = client.post("/api/synthesis/tasks", json={
         "task_type": "summary", "query": SEED_QUERY, "evidence_refs": _evidence()}).json()
+    opened = []
+    monkeypatch.setattr("app.api.synthesis.os.startfile", opened.append)
     resp = client.post(f"/api/synthesis/tasks/{created['task_id']}/open-folder")
     assert resp.status_code == 200
     body = resp.json()
     assert body["opened"] is True
     assert f"taskpacks{chr(92)}outbox" in body["path"] or "/taskpacks/outbox/" in body["path"]
+    assert opened == [body["path"]]
 
 
 def test_open_folder_missing_404(client):

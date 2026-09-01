@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "summary",
+  "query": "总结全球数据中心用电的规模与增速数据。",
+  "summary": "报告汇集数据称全球数据中心用电 2024 年 415 TWh（占全球约 1.5%）、2025 年 485 TWh（同比 +17%），并预计 2030 年约 950 TWh（约占 3%）；同时给出美国电网负荷余量预计 2027 年转负、2030 年数据中心需求 84 GW 对电网年增约 15 GW、变压器交期 3–4 年、GPU TDP 演进与液冷渗透率等数据。2030 年及以后数字、渗透率等预期类数字均标 uncertain。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "报告汇集 IEA 数据称，全球数据中心用电 2024 年为 415 TWh（约占全球用电 1.5%）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "原文直接给出的 2024 年历史数据。"
+    },
+    {
+      "id": "claim_002",
+      "text": "报告称全球数据中心用电 2025 年为 485 TWh，同比增长 17%。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "原文直接给出的 2025 年数据与增速（+17%），为已发生年份口径。"
+    },
+    {
+      "id": "claim_003",
+      "text": "报告称 2030 年全球数据中心用电约 950 TWh，约占全球用电约 3%（未来年份预测，保留'约'口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "2030 为未来年份且带'约'限定，按规则标 uncertain。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告引述 SemiAnalysis Energy 称变压器交期为 3–4 年。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "原文直接给出的供应链现状数据。"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告称美国电网可承载新增负荷余量预计 2027 年转负；2030 年数据中心需求为 84 GW，而电网年增约 15 GW（预测口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "含'预计 2027 年转负'与 2030 年 84 GW 等未来/预测数字，标 uncertain。"
+    },
+    {
+      "id": "claim_006",
+      "text": "报告列示 GPU TDP 演进：A100 400W、H100 700W、B200 1,000W。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "已发布产品的直接列示。"
+    },
+    {
+      "id": "claim_007",
+      "text": "报告预计 Rubin 的 TDP 约 1,800W 以上（未来产品估算，保留'约'）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "未来产品 TDP 估算，保留'约/以上'限定，标 uncertain。"
+    },
+    {
+      "id": "claim_008",
+      "text": "报告称风冷 40–50 kW/机架失效。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "原文对风冷散热能力约束的直接陈述。"
+    },
+    {
+      "id": "claim_009",
+      "text": "报告称液冷渗透率由 2024 年的 14% 升至 2025 年的 33%（渗透率类数字，按 R2-1 规则不标 supported）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "渗透率为预期类数字类别，标 uncertain。"
+    },
+    {
+      "id": "claim_010",
+      "text": "报告（引述外部引爆者观点）称电力是短期交付约束，算法效率（蒸馏/小模型）、SMR 核电、低功耗架构为替代轴，并以 1973 年石油危机'增长极限'被核能/效率/材料替代反复突破作类比；'绝对上限'叙事本身被视为行业话语（观点转述）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "对报告内观点性表述的转述，保留来源归属（外部引爆者）。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "2030 年约 950 TWh、2027 年电网余量转负、Rubin TDP 约 1,800W+、液冷渗透率 33% 均为预测/估算数字",
+    "IEA 与 SemiAnalysis 为不同来源，统计口径未统一说明",
+    "数据中心用电的统计口径（是否含 AI/加密货币等分类）未说明"
+  ],
+  "open_questions": [
+    "全球数据中心用电统计口径与分类明细"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "2030 年数据中心用电预测的模型假设与口径",
+      "reason": "证据仅给出结果数字'约 950 TWh（约 3%）'，无预测方法与假设"
+    },
+    {
+      "question": "液冷渗透率的统计口径与数据来源",
+      "reason": "渗透率为预期类数字，且 14%/33% 的口径与来源未注明"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:51:50+08:00"
+}

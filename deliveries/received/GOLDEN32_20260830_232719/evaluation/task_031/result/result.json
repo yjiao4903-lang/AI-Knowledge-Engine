@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_200g-eml-tfln",
+  "task_type": "tension_extraction",
+  "query": "200G EML 的结构性短缺与 TFLN 量产替代之间存在哪些张力？",
+  "summary": "证据显示明显的替代时点张力：200G EML 结构性短缺（缺口 20%–30%、产能集中于 Coherent/Lumentum/Broadcom 三巨头、InP 良率瓶颈）持续于 2025–2026 年，而 TFLN 物理优势突出但处于小批量验证与良率爬坡期（刻蚀难、晶圆脆裂），预计到 3.2T 时代才成为不可替代方案——近端缺口无法被尚在爬坡的替代方案即时填补，性能-制造、近端-远端之间均存在张力。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "1.6T 光模块的核心瓶颈在于单通道 200G EML 激光器芯片，全球产能高度集中于 Coherent、Lumentum 与 Broadcom 三巨头。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "claim_002",
+      "text": "由于 InP 外延生长缺陷控制与高温老化良率问题，2025–2026 年全球高端光芯片缺口长期维持在 20%–30%（【L2 统计证实】口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "claim_003",
+      "text": "TFLN 利用铌酸锂晶体的线性电光效应（Pockels Effect），电光响应速度快达飞秒级，无载流子吸收复合损耗，能够实现 >100 GHz 的超高电光带宽与 <1.5 V 的极低驱动电压（【L1 因果证实】口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "claim_004",
+      "text": "TFLN 的产业化瓶颈在于微纳刻蚀加工极难（铌酸锂化学惰性极强，容易产生侧壁粗糙度导致光散射损耗）以及大尺寸晶圆（6/8 英寸）的机械脆裂。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "claim_005",
+      "text": "2026 年 TFLN 处于小批量验证与良率爬坡期，预计在 3.2T 时代成为不可替代的核心方案（“预计”口径，保留期限与程度限定）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "“预计”为预测口径，标 uncertain。"
+    },
+    {
+      "id": "claim_006",
+      "text": "推断：EML 的瓶颈在产能与良率（结构性短缺、三巨头集中、InP 缺陷），TFLN 的瓶颈在制造工艺（刻蚀、晶圆脆裂、良率爬坡）——两条路径的约束维度不同，表明 TFLN 作为替代方案在短期内可能难以填补 EML 缺口，其“不可替代”承诺指向 3.2T 时代（预测口径）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "综合两个产品的瓶颈维度与时间表述推导，使用“可能/表明”限定。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "近端短缺与远端替代之间构成时点张力：200G EML 结构性缺口 20%–30% 持续于 2025–2026 年，而 TFLN 2026 年仍处于小批量验证与良率爬坡期、预计 3.2T 时代才成为不可替代方案——当前需求缺口无法被尚在爬坡的替代方案即时填补。",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "tension_002",
+      "text": "TFLN 自身存在性能-制造张力：物理优势突出（>100 GHz 带宽、<1.5 V 驱动电压、飞秒级响应）与工程困难并存（化学惰性致刻蚀极难、侧壁粗糙度致散射损耗、大尺寸晶圆机械脆裂）——优势性能的兑现受制于制造工艺成熟度。",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "tension_003",
+      "text": "供给集中与短缺并存构成悖论式张力：200G EML 产能高度集中于三巨头，但高端光芯片缺口仍长期维持 20%–30%——产能集中并未消除短缺，反而与 InP 良率瓶颈共同构成供给刚性，即集中化供给结构未能匹配需求弹性。",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    }
+  ],
+  "uncertainties": [
+    "缺口 20%–30% 为 2025–2026 年区间的统计口径（L2），缺口演变趋势未给出。",
+    "TFLN “3.2T 时代不可替代”为预计性判断。",
+    "TFLN 当前实际良率与产能的定量数据未给出。"
+  ],
+  "open_questions": [
+    "TFLN 良率爬坡的具体进度与量产时间表是什么？",
+    "EML 三巨头（Coherent/Lumentum/Broadcom）的产能扩张计划能否在 2026 年前后缓解缺口？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "TFLN 量产良率与产能的定量数据是什么？",
+      "reason": "证据仅定性描述“小批量验证与良率爬坡期”，无良率与产能数字。"
+    },
+    {
+      "question": "EML 三巨头 2026 年前后的产能扩张计划是什么？",
+      "reason": "证据未提供供给端扩产信息，无法判断缺口收敛时点。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:10:23+08:00"
+}

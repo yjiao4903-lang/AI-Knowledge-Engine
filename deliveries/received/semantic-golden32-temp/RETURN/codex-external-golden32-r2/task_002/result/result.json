@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "summary",
+  "query": "总结冷板式与浸没式液冷在热力学与换热上的差异要点。",
+  "summary": "冷板式（DLC）通过微通道冷板以液体冷却液直接冷却芯片，参数详尽；浸没式将整台服务器浸泡于不导电介电液体。证据对冷板侧重描述换热参数，浸没侧仅给出物理定义。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "冷板式液冷属于直接芯片液体冷却（Direct-to-Chip Liquid Cooling, DLC），其液体冷却液（去离子水/乙二醇溶液）的体积热容约为空气的 3,500 倍，对流换热系数约 5,000~15,000 W/(m²·K)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_002",
+      "text": "微通道冷板（Microchannel Cold Plate）的传热微分方程遵循二维对流-扩散方程。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_003",
+      "text": "冷板换热使得数据中心能够承受高达 150~200 kW 的单机架密度，并将 PUE 压制在 1.05~1.15 的区间。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_004",
+      "text": "冷却系统并未消灭热量，只是将高密度的热流转移至冷却水回路中（热力学第二定律的表现）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_005",
+      "text": "为将 35~45°C 的温水废热排放至大气，若采用机械制冷压缩机（Chiller）将消耗巨大的压缩电能；若采用蒸发冷却塔则会引发惊人的水资源消耗硬约束（WUE 危机）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_006",
+      "text": "浸没式液冷将整台服务器主板、CPU、GPU、内存及供电模块完全浸泡在不导电的绝缘介电液体（Dielectric Fluid）中。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M07:ch4-1:0039"]
+    },
+    {
+      "id": "claim_007",
+      "text": "冷板式液冷使用去离子水/乙二醇类冷却液（流经冷板回路），而浸没式液冷使用不导电的绝缘介电液体直接浸泡整机，两者在换热工质与接触方式上存在差异，可能带来不同的换热与电气安全特性。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-2:o2:0008", "M07:ch4-1:0039"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "现有证据对冷板式的热力学参数描述较详细，但未给出浸没式液冷在相同量级下的换热/能效参数，无法直接量化对比二者的换热性能差异。"
+  ],
+  "open_questions": [
+    "浸没式液冷可实现多大的单机架密度与 PUE 区间？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "浸没式液冷的热力学换热模型与能效参数（单机架密度、PUE、传热系数）",
+      "reason": "现有证据仅包含浸没式的物理定义与冷板式的详细换热参数，缺少浸没式侧的对等量化数据"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

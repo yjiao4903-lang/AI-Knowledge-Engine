@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api import documents, evaluation, index, search, settings, synthesis
+from app.api import documents, evaluation, index, search, settings, synthesis, taskpack_runs
 from app.core.config import Config, load_config
 from app.core.errors import AppError
 from app.core.health import collect_health
@@ -190,6 +190,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(evaluation.router)
     app.include_router(settings.router)
     app.include_router(synthesis.router)
+    app.include_router(taskpack_runs.router)
 
     @app.get("/api/health")
     def health() -> dict:

@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_200g-eml-tfln",
+  "task_type": "comparison",
+  "query": "比较 200G EML 与薄膜铌酸锂（TFLN）在光模块中的角色差异。",
+  "summary": "200G EML 是当前 1.6T 光模块受产能集中与良率问题制约的核心光源瓶颈；TFLN 凭借 Pockels 线性电光效应具备 >100 GHz 带宽与 <1.5V 驱动电压的物理优势，但 2026 年仍处小批量验证与良率爬坡期，被定位为 3.2T 时代的候选核心方案。未来预期（3.2T 不可替代、缺口区间）均标注为 uncertain，不夸大因果。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "200G EML 激光器芯片是 1.6T 光模块的核心瓶颈，存在单通道 200G EML 的结构性短缺。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈 1.6T 光模块核心瓶颈在于单通道 200G EML 激光器芯片。"
+    },
+    {
+      "id": "claim_002",
+      "text": "200G EML 全球产能高度集中于 Coherent、Lumentum 与 Broadcom 三家公司。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈全球产能集中于三巨头。"
+    },
+    {
+      "id": "claim_003",
+      "text": "2025-2026 年全球高端光芯片缺口据称长期维持在 20%~30%（L2 统计证实口径），其成因包括 InP 外延生长缺陷控制与高温老化良率问题。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "缺口数字为区间统计且时间跨 2025-2026（含当前/未来年份），保留原文统计口径。"
+    },
+    {
+      "id": "claim_004",
+      "text": "TFLN 利用铌酸锂晶体的线性电光效应（Pockels 效应），电光响应速度快达飞秒级，且无载流子吸收复合损耗。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈 TFLN 物理机理，为 L1 因果证实口径。"
+    },
+    {
+      "id": "claim_005",
+      "text": "TFLN 能够实现超过 100 GHz 的超高电光带宽与低于 1.5V 的极低驱动电压（L1 因果证实口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈 TFLN 的带宽与驱动电压能力。"
+    },
+    {
+      "id": "claim_006",
+      "text": "预计在 3.2T 时代 TFLN 将成为不可替代的核心方案。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "原文为预测性判断（预计），保留原文限定词，不得标 supported。"
+    },
+    {
+      "id": "claim_007",
+      "text": "2026 年 TFLN 处于小批量验证与良率爬坡期。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "涉及 2026 年时间口径的阶段性状态判断，报道时点动态状态缺乏精确量化。"
+    },
+    {
+      "id": "claim_008",
+      "text": "TFLN 的产业化瓶颈在于微纳刻蚀加工极难（铌酸锂化学惰性极强，易产生侧壁粗糙度导致光散射损耗）以及大尺寸晶圆（6/8 英寸）的机械脆裂问题。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈两项产业化瓶颈。"
+    },
+    {
+      "id": "claim_009",
+      "text": "两者角色差异：200G EML 系当前 1.6T 时代受限的成熟光源方案，TFLN 则被定位为面向 3.2T 时代的候选核心方案，二者处于不同产业化阶段。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "由证据中 200G EML 的短缺现状与 TFLN 的爬坡期/3.2T 定位综合得出。"
+    },
+    {
+      "id": "claim_010",
+      "text": "200G EML 缺口由 InP 外延生长缺陷控制与高温老化良率问题所致，报告将其描述为结构性短缺。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直陈缺口成因，保留原文因果表述。"
+    },
+    {
+      "id": "claim_011",
+      "text": "在 3.2T 时代到来前，200G EML 结构性缺口与 TFLN 尚处爬坡期并存，高端光芯片供需可能持续偏紧。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "由缺口统计与 TFLN 量产阶段综合推断，使用可能等限定词。"
+    },
+    {
+      "id": "claim_012",
+      "text": "TFLN 若克服刻蚀与晶圆脆裂瓶颈，可能在 3.2T 及以上代际承担核心方案角色，但其量产良率与产能爬坡的时间表在证据中未量化。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "基于物理优势与产业化瓶颈的对比推断，并显式声明时间量化缺口。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "报告称 TFLN 在 3.2T 时代将成为不可替代的核心方案，同时又指出其面临微纳刻蚀加工与晶圆脆裂等产业化瓶颈且 2026 年仍处小批量验证期——方案优越性与量产可得性之间存在张力。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "同一证据中优越性表述与瓶颈/爬坡状态并存，构成推断性张力。"
+    }
+  ],
+  "uncertainties": [
+    "2025-2026 年高芯片缺口 20%-30% 的时间口径与统计范围",
+    "TFLN 量产良率爬坡进度与 3.2T 时代到来的具体时间表",
+    "200G EML 扩产计划与缺口收敛时点"
+  ],
+  "open_questions": [
+    "3.2T 光模块中 TFLN 的具体角色（调制器、发射光源或其他）如何界定？",
+    "TFLN 单通道速率对应的实际产品参数（如 200G 级调制器）尚未给出"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "TFLN 量产良率与产能爬坡的量化数据",
+      "reason": "证据仅定性描述小批量验证与良率爬坡，无良率/产能数字"
+    },
+    {
+      "question": "200G EML 扩产计划与缺口收敛的量化预测",
+      "reason": "证据给出缺口区间但未提供供应商扩产与收敛路径"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:48:33+08:00"
+}

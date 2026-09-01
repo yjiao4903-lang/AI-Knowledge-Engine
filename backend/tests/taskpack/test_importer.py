@@ -122,6 +122,19 @@ def test_scan_imports_completed_with_done(tk_env, tk_imp):
     assert tk_imp.status_of(completed) == COMPLETED
 
 
+def test_import_accepts_utf8_bom_in_external_json(tk_env, tk_imp):
+    """External Windows tools may emit BOM-prefixed result and run metadata JSON."""
+    created = _create(tk_env)
+    completed = _move_to_completed(tk_env, created.task_path)
+    for name in ("result.json", "run_meta.json"):
+        path = completed / "result" / name
+        path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+
+    rep = tk_imp.import_task(completed)
+    assert rep.passed is True
+    assert all(g.passed for g in rep.gates)
+
+
 def test_scan_skips_without_done(tk_env, tk_imp):
     """§44：无 DONE 不导入（避免半写 JSON）。"""
     created = _create(tk_env)
@@ -216,6 +229,20 @@ def test_archive_moves_to_archive(tk_env, tk_imp):
     assert target.name == created.task_id
     assert tk_imp.status_of(target) == ARCHIVED
     assert tk_imp.locate(created.task_id) == target
+
+
+def test_archive_collision_is_rejected_without_moving_source(tk_env, tk_imp):
+    created = tk_env["builder"].create_task(
+        task_type="summary", query="archive collision", evidence_refs=tk_env["refs"]
+    )
+    target = tk_env["root"] / "archive" / created.task_id
+    target.mkdir(parents=True)
+    (target / "sentinel").write_text("existing", encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="归档目标已存在"):
+        tk_imp.archive_task(created.task_id)
+    assert created.task_path.is_dir()
+    assert (target / "sentinel").read_text(encoding="utf-8") == "existing"
 
 
 def test_list_tasks_includes_all_states(tk_env, tk_imp):

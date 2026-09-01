@@ -16,6 +16,8 @@ import type {
   SettingsPayload,
   TaskDetail,
   TaskListResponse,
+  ExternalRunDetail,
+  ExternalRunsResponse,
 } from './types';
 
 export class ApiError extends Error {
@@ -104,4 +106,8 @@ export const api = {
     ),
   taskPrompt: (id: string) =>
     request<PromptResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/prompt`),
+
+  externalRuns: () => request<ExternalRunsResponse>('/api/taskpack/runs'),
+  externalRun: (id: string) =>
+    request<ExternalRunDetail>(`/api/taskpack/runs/${encodeURIComponent(id)}`),
 };

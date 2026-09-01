@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_hbm",
+  "task_type": "tension_extraction",
+  "query": "HBM 迭代带来封装价值提升与供应链集中瓶颈之间是否存在证据张力？",
+  "summary": "证据显示存在明显张力：HBM 代际迭代持续提升封装价值（位宽翻倍、混合键合、逻辑 Base Die、单机成本占比高），与此同时 HBM 与先进封装供应链高度集中于少数厂商且长期处于产能瓶颈（SK 海力士/三星/美光三家、台积电 CoWoS 独占 >90%），价值提升与供给集中/瓶颈同源并存。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM 代际演进表显示：接口位宽在 HBM2E/HBM3/HBM3e 均为 1024-bit，HBM4 翻倍至 2048-bit；最大堆叠层数从 8-Hi 提升至 12-Hi/16-Hi（HBM4 容量达 48GB）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_002",
+      "text": "核心封装工艺随代际演进：HBM2E 为 Micro-bump TCB，HBM3 为 MR-MUF / TC-NCF，HBM4 为 MR-MUF / 1µm 混合键合，HBM4E 为 0.5µm Direct Bonding（HBM4E 规模商用年份标注为 2027E）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM4 的 Base Die 制造工艺为 TSMC 12nm/3nm 逻辑工艺，HBM4E 为 TSMC 3nm / Intel 18A，区别于此前各代（HBM2E–HBM3e）的 DRAM 标准工艺。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_004",
+      "text": "按报告口径，HBM 市场规模为：2023 年 44 亿美元 → 2024 年 17–18 亿美元 → 2025 年 35–36 亿美元 → 2026E 54–57 亿美元（市场规模为估算口径，2024/2025 年数值以区间给出，保留原文数量级）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "TAM 为估算口径且含 2026E 预测，保留限定词标 uncertain。"
+    },
+    {
+      "id": "claim_005",
+      "text": "2025 年 HBM 全年份额（位元出货口径）为 SK 海力士 52.3% / 三星 28.7% / 美光 19%（【A，TrendForce】），三家合计约 100%，供应链高度集中于三家。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "市场份额属规定不得标 supported 的估算口径，保留份额限定词标 uncertain。"
+    },
+    {
+      "id": "claim_006",
+      "text": "2026 年 HBM4 供应预测分歧较大（三星份额预测区间 24–37%）；UBS 预计 SK 海力士约占 HBM4 供应 70% 且仍为 Rubin 平台最大供应商（机构预测口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "机构预测与份额区间，保留“预计/约/预测分歧”限定词。"
+    },
+    {
+      "id": "claim_007",
+      "text": "B200 中 HBM 价值约 2,900 美元、占总制造成本约 45%（COGS 口径，自下而上建模估算，非实物拆解），按售价仅约 7–9%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "含“约”且为“建模估算”口径，保留限定词标 uncertain。"
+    },
+    {
+      "id": "claim_008",
+      "text": "先进封装（CoWoS）产能为 13–15K wpm（2023）→ 75–80K（2025）→ 115–140K（2026E，非台积电官方指引）；2023–2025 年为实际交付瓶颈，NVIDIA 占产能 60%+，台积电 CoWoS 独占 >90%（【A/B，TrendForce】口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "含 2026E 指引、产能占比与独占份额等估算口径，保留限定词标 uncertain。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "封装价值提升与供应链集中之间构成张力：HBM 迭代持续抬高封装价值（HBM4 位宽翻倍、引入 1µm 混合键合与 TSMC 逻辑 Base Die，B200 中 HBM 占制造成本约 45%），但 HBM 供应高度集中于三家（2025 位元出货口径 SK 海力士过半），且 UBS 预计 SK 海力士约占 HBM4 供应 70%——价值增量与供给瓶颈集中在同一批厂商。",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    },
+    {
+      "id": "tension_002",
+      "text": "供给多元化叙事与集中延续预测并存：证据称 HBM4 三供就位（三星 2026-06 通过 NVIDIA 认证、美光 HBM4 亦通过认证），但同时给出 UBS 预计 SK 海力士约占 HBM4 供应 70%、2026 年份额预测分歧大（三星 24–37% 区间）——多元化启动与集中度延续的预测之间存在张力。",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    },
+    {
+      "id": "tension_003",
+      "text": "CoWoS 先进封装作为 HBM 集成所依赖的核心封装环节，其产能 2023–2025 年为实际交付瓶颈、台积电独占 >90%，与 HBM 需求快速放量（市场规模 2023 年 44 亿美元 → 2026E 54–57 亿美元）形成供给瓶颈与需求扩张之间的张力。",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    }
+  ],
+  "uncertainties": [
+    "市场规模、份额占比、成本占比均为估算/预测口径（TrendForce、UBS、Epoch AI），2026 年预测分歧大。",
+    "B200 中 HBM 价值占比为自下而上建模估算，非实物拆解。",
+    "HBM4 规模商用年份（2026）与 HBM4E（2027E）为规格表标注的规划/预估年份，本任务证据未含实际出货验证。"
+  ],
+  "open_questions": [
+    "HBM4 时代供应链集中度是否会因三供就位而实际分散？证据显示 2026 年预测分歧大。",
+    "混合键合（HBM4 1µm / HBM4E 0.5µm）对应的良率与产能数据是多少？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4 各供应商实际供应份额的定量证据是什么？",
+      "reason": "证据仅有机构预测（UBS 预计约 70%）且 2026 年预测分歧大，无实际供货数据。"
+    },
+    {
+      "question": "混合键合与 MR-MUF 工艺的良率、产能爬坡数据是什么？",
+      "reason": "证据仅列规格与工艺名称，未含良率与产能数据，无法评估封装瓶颈的收敛时点。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:10:23+08:00"
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "task_type": "causal_synthesis",
+  "query": "为什么数据中心电力会构成算力扩张的物理硬约束？",
+  "summary": "多来源证据显示：GW 级单点负荷、PJM/ERCOT 并网排队 5–7 年、变压器交期 3–4 年（或 150–200 周）、预计 2027 年电网余量转负等共同构成电力侧交付约束；但全球数据中心用电量口径跨来源冲突（约 1,000 TWh@2025-26 对约 950 TWh@2030），需统一口径。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "全球数据中心电力消耗在 2025–2026 年突破 1,000 TWh，占全球总用电量比重由 1.5% 升至近 4.0%（M01 引用 IEA 2026/FERC 口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "该数值与其他来源口径冲突且为估计，保留来源口径标 uncertain"
+    },
+    {
+      "id": "claim_002",
+      "text": "单座十万张 GPU 级超大规模 AI 数据中心的稳态电力负荷需求高达 500 MW~1 GW，报告称相当于一座中型核反应堆或百万人口城市居民用电总和（报告标 L1 因果证实）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据直接陈述负荷量级与类比"
+    },
+    {
+      "id": "claim_003",
+      "text": "在美国 PJM 与 ERCOT，由于变压器产能短缺（大型升压变压器交期拉长至 150–200 周）与高压输电走廊环保审批冗长，新建大型数据中心的并网申请排队时间长达 5–7 年（报告标 L1 因果证实）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据直接陈述并网排队与原因"
+    },
+    {
+      "id": "claim_004",
+      "text": "10 万卡集群微观核算：单 GPU TDP 为 1,000–1,200 W，单台 GB200 NVL72 机架额定供电 120–140 kW；1,400 个此类机架 IT 净功耗约 182 MW，按 PUE=1.15 计总稳态接入负荷约 209.3 MW。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "报告给出的微观核算为直接陈述"
+    },
+    {
+      "id": "claim_005",
+      "text": "当集群规模迈向 50 万至 100 万卡，单体园区电力需求将突破 1 GW~2 GW（规划情景，L3 口径）；报告称全美乃至全球可提供 1GW 瞬态稳定高压接入的电网变电站屈指可数。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "超大园区规模为规划情景与 L3 估计口径"
+    },
+    {
+      "id": "claim_006",
+      "text": "美电网可承载新增负荷余量预计 2027 年转负；2030 年数据中心需求 84 GW 对比电网年增约 15 GW；变压器交期 3–4 年（SemiAnalysis 口径，属预测）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "2027/2030 数值为预测口径"
+    },
+    {
+      "id": "claim_007",
+      "text": "GPU TDP 由 A100 的 400W 升至 H100 的 700W、B200 的 1,000W。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "已出货产品 TDP 为直接陈述"
+    },
+    {
+      "id": "claim_008",
+      "text": "Rubin 平台 TDP 约为 1,800W 以上（发布口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "未全面量产平台数值，带约数"
+    },
+    {
+      "id": "claim_009",
+      "text": "算力中心被迫向具备富余廉价水核基荷的区位迁移（如美国西北太平洋地区、北欧、中国西部水电与光伏富集区）；缺乏本地清洁电力基荷与坚强输电网的地区正遭受算力区位惩罚。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据直接陈述区位分流与惩罚"
+    },
+    {
+      "id": "claim_010",
+      "text": "“电力是短期交付约束，绝对上限叙事本身即行业话语”为报告引用的外部视角判断，称算法效率（蒸馏/小模型）、SMR 核电与低功耗架构构成替代轴；该判断属观点而非已证实事实。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "外部视角的观点性判断"
+    },
+    {
+      "id": "claim_011",
+      "text": "多来源并列数据指向：GW 级单点负荷、5–7 年并网排队、预计 2027 年转负的电网余量与 3–4 年变压器交期共同构成电力侧交付约束，与“电力构成算力扩张物理硬约束”的表述相一致；但证据未给出统一的量化约束模型，且用电量口径跨来源不一致。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M01:ch6-2-1:0069", "M06:ch1-1:0005", "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "基于多来源并列数据的合理综合，使用相一致限定"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "全球数据中心用电规模口径冲突：M01（引 IEA 2026/FERC）称 2025–2026 年突破 1,000 TWh、占比近 4.0%；GPU 产业报告（引 IEA 2025/2026）称 2024 年 415 TWh（1.5%）、2025 年 485 TWh（+17%）、2030 年约 950 TWh（约 3%）。两者对当前规模与增速的估计不一致。",
+      "evidence_refs": ["M01:ch6-2-1:0069", "GPU产业技术源流与投资机会_最终报告:ch5-2:0024"]
+    }
+  ],
+  "uncertainties": [
+    "全球数据中心用电量规模与占比跨来源不一致，未来年份均为预测",
+    "并网排队 5–7 年为 PJM/ERCOT 区域口径",
+    "单一来源对负荷的微观核算依赖 PUE 等假设值"
+  ],
+  "open_questions": [
+    "约 1,000 TWh（2025–26）与约 950 TWh（2030）的跨来源口径差异如何解释？",
+    "电网约束对算力扩张速度的限制程度如何量化？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "全球数据中心用电量的统一口径数据",
+      "reason": "两来源对当前规模与增长率估计冲突"
+    },
+    {
+      "question": "并网排队与变压器交期的分地区最新数据",
+      "reason": "现有为特定电网运营区与年份的口径"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:15:00+08:00"
+}

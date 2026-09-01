@@ -1,0 +1,14 @@
+{
+  "taskpack_version": "1.0",
+  "task_id": "20260830_180537_200g-eml-tfln",
+  "created_at": "2026-08-30T18:05:37+08:00",
+  "files": {
+    "task.yaml": "135bb4159ced394f5157cf0f362558ca17f2a092d942f48abb697c0ee7d591f0",
+    "AGENT_INSTRUCTION.md": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+    "evidence.jsonl": "b06cfc3eb308ec3e5d32f2e784e7e75bb1f860fce4eac8879c6e26f81e09f811",
+    "output_schema.json": "5ec56fc7d23e6494cbdd1c89216677bf1cf41f6fe04d74b13a41ff52ecd9b499",
+    "README.md": "141cab779df4e46180354b492b435314fd840ac376cb04646a2343ba825c2bea"
+  },
+  "evidence_count": 1,
+  "cognition_context_count": 0
+}

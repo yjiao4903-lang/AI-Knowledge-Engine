@@ -157,6 +157,26 @@ class TaskPackBuilder:
         pack = outbox / task_id
         pack.mkdir(parents=True)  # 不用 exist_ok：目录被并发占用时显式失败
 
+        # 目录先占位以解决同秒并发冲突；在所有输入解析、模板复制和 manifest
+        # 写完之前，任何异常都必须清理占位目录，避免外部 Worker 看见半成品 READY。
+        try:
+            return self._write_task_pack(
+                pack=pack, task_id=task_id, task_type=task_type, query=query,
+                evidence_refs=evidence_refs, cognition_context=cognition_context,
+                task_specific_instruction=task_specific_instruction,
+                max_claims=max_claims, now=now,
+            )
+        except BaseException:
+            shutil.rmtree(pack, ignore_errors=True)
+            raise
+
+    def _write_task_pack(
+        self, *, pack: Path, task_id: str, task_type: str, query: str, evidence_refs: list,
+        cognition_context: list | None, task_specific_instruction: str | None,
+        max_claims: int | None, now: datetime,
+    ) -> CreatedTask:
+        """Write a reserved pack; caller removes it on any failure/interruption."""
+
         created_at = now.isoformat(timespec="seconds")
         evidence = self._resolve_evidence(evidence_refs)
         cog_items = [

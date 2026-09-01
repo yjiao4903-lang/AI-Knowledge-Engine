@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_finfet",
+  "task_type": "tension_extraction",
+  "query": "FinFET 物理终点与先进封装/异构集成持续性能提升之间是否存在张力？",
+  "summary": "证据显示 FinFET 在 5nm 后遭遇器件级物理终点（鳍宽死循环、三面栅漏电路径），而芯片性能仍通过 Chiplet/先进封装（B200 双 die 突破 reticle 极限）、低精度计算、光互联与软件协同持续提升；两者并非矛盾，而是性能增长来源从器件微缩切换至系统级集成与计算范式的并存关系。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "FinFET 微缩存在死循环：栅长缩短使短沟道效应加剧，为维持静电控制须让鳍更窄；鳍宽降至 5nm 以下时表面粗糙度散射与量子限制使载流子迁移率崩塌、阈值电压漂移（仿真显示鳍宽 5nm 时 Vth 偏移约 50mV，缩至 4nm 时陡增），驱动电流损失回到原点。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "证据直接描述死循环链条，Vth 数据保留'仿真显示'口径。"
+    },
+    {
+      "id": "claim_002",
+      "text": "FinFET 栅极仅覆盖三面，鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "证据直接陈述该结构缺陷。"
+    },
+    {
+      "id": "claim_003",
+      "text": "同等体厚下 GAA 纳米片的自然长度比 FinFET 短约 15%，行业参数对照显示 DIBL 从 FinFET 的 30–50 mV/V 降至 15–30 mV/V、SS 从 65–75 mV/dec 降至 62–68 mV/dec。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "证据直接给出对照参数区间。"
+    },
+    {
+      "id": "claim_004",
+      "text": "Chiplet/先进封装路径：B200 双 die + NV-HBI 10 TB/s（208B 晶体管突破 reticle 极限）；MI300X 采用 8×XCD 3D 混合键合。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据直接给出 B200 与 MI300X 的集成方案。"
+    },
+    {
+      "id": "claim_005",
+      "text": "低精度路径：Blackwell FP4 dense 为 9,000 TFLOPS（较 FP8 再翻倍），NVFP4 在 <1% 精度损失下节省 3.5× 显存；但 4bit 之下位宽红利枯竭。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据直接给出 FP4 性能、显存节省与枯竭边界。"
+    },
+    {
+      "id": "claim_006",
+      "text": "光互联/CPO 路径：NVLink 5 单 GPU 1.8 TB/s，Rubin（NVLink 6）为 3.6 TB/s；CPO 降功耗 3.5×、激光器少 4×。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据直接给出互联带宽与 CPO 收益倍数。"
+    },
+    {
+      "id": "claim_007",
+      "text": "Rubin 平台规格（2026 发布口径）：GPU 为 336B 晶体管、224 SM、896 Tensor Core、288GB HBM4（12-Hi）、22 TB/s 带宽、NVFP4 单 GPU 50 PF；Vera Rubin NVL72 整柜 NVFP4 推理 3,600 PFLOPS、训练 2,520 PFLOPS。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据以官方发布口径（【A，NVIDIA】）给出规格。"
+    },
+    {
+      "id": "claim_008",
+      "text": "Rubin 平台于 2026-06-22 在 ISC 正式发布（科学计算版）；证据称其 2026 H2 全面量产。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "发布事件已发生，但'2026 H2 全面量产'覆盖尚未结束的未来时段，按计划/进行时口径合并评级为不确定。"
+    },
+    {
+      "id": "claim_009",
+      "text": "软件协同路径：FlashAttention 每代需重写适配新硬件（FA3 将 H100 利用率从 35% 提升至 85%），硬件性能不再'自动'释放，需算法同步。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据直接给出软件协同与利用率数据。"
+    },
+    {
+      "id": "claim_010",
+      "text": "可推断，FinFET 在 5nm 后的器件级物理终点与先进封装/异构集成的性能提升并不矛盾：性能增长来源正从晶体管密度微缩转向系统级集成（Chiplet、混合键合）、低精度计算、光互联与软件协同，两者是不同层面的能力供给。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "由器件终点与系统级性能路径两组证据对照推导。"
+    },
+    {
+      "id": "claim_011",
+      "text": "可推断，B200 双 die 208B 晶体管突破 reticle 极限、Rubin 336B 晶体管与 HBM4 集成表明封装/异构集成正承接后 FinFET 时代的性能提升任务，器件侧则可能转向 GAA 等新结构。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023", "5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "由封装集成规模与 GAA 破局描述推导。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "FinFET 器件微缩终点（鳍宽死循环、三面栅漏电）与系统级性能继续攀升（B200/Rubin 晶体管规模、带宽、算力）并存，表明性能提升引擎已从器件微缩切换到封装集成与计算范式，而非同一路径的延伸。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "tension_002",
+      "text": "'4bit 之下位宽红利枯竭'暗示低精度路线的上限，与依赖低精度（FP4/NVFP4）维持性能增长的趋势之间存在张力：精度红利持续递减可能削弱该增长轴。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "tension_003",
+      "text": "GAA 替代 FinFET 的器件演进与 Chiplet/异构集成路径是并行叠加（器件换 GAA 的同时系统做 Chiplet）还是竞争替代，证据显示两者可能同时推进，但各自贡献比例未量化。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    }
+  ],
+  "uncertainties": [
+    "鳍宽 5nm 时 Vth 偏移约 50mV 为仿真数据，非晶圆实测。",
+    "Rubin 2026 H2 全面量产为进行中计划口径，量产完成度未确认。",
+    "FP4/NVFP4 性能为官方发布峰值口径，实际工作负载表现待验证。"
+  ],
+  "open_questions": [
+    "系统级集成（封装/互联/软件）带来的性能增长能否完全补偿器件微缩红利的递减？",
+    "GAA 量产与 Chiplet 集成的结合点在哪些产品代际上最先体现？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "是否有器件微缩红利递减与封装集成性能贡献的量化分解数据？",
+      "reason": "证据并置两条路径但未给出各自对性能提升的贡献比例。"
+    },
+    {
+      "question": "是否有 Rubin 平台 2026 H2 量产进度与良率的实际数据？",
+      "reason": "当前量产信息为厂商计划口径，缺少独立验证。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:45:17+08:00"
+}

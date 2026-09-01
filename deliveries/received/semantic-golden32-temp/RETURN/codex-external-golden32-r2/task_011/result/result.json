@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "comparison",
+  "query": "比较直流输电与高压交流输电在网络拓扑与降本机制上的差异。",
+  "summary": "证据以电气化标准战争为背景：爱迪生 110V 直流网络受欧姆损耗约束、供电半径约 1 英里、需密集建设发电厂（重资产蜂窝结构）；高压交流借变压器升压（>98% 能效）将电流与线损大幅降低，实现数百公里输电与几何级降本。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "爱迪生直流低压供电网络（110V DC）受欧姆损耗 P_loss = I²·R 约束，导线截面与电流平方成正比。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3:0015"]
+    },
+    {
+      "id": "claim_002",
+      "text": "直流低压网络的几何拓扑为供电半径极限约 1 英里，覆盖面积约 3.14 平方英里。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3:0015"]
+    },
+    {
+      "id": "claim_003",
+      "text": "为覆盖整个城市，直流方案必须每隔约 2 英里密集投资建设重型中央发电厂（重资产蜂窝结构），无法跨区域互联、无规模报酬递增。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3:0015"]
+    },
+    {
+      "id": "claim_004",
+      "text": "高压交流网络依靠基于法拉第电磁感应定律的变压器（V1/V2 = N1/N2）升高电压、降低电流。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3:0015", "M02:ch1-3-2:0017"]
+    },
+    {
+      "id": "claim_005",
+      "text": "交流系统能以高于 98% 的能效将发电端电压升高至数万伏（11,000V 至 66,000V），使输电电流下降数十至数百倍，线缆焦耳热损耗 P_loss 随之降低数千至数万倍（P_loss ∝ 1/V²）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3-2:0017"]
+    },
+    {
+      "id": "claim_006",
+      "text": "高压交流的输电半径可达数十至数百英里/数百公里，其拓扑为“巨型集中发电—超高压远距离输电—区域变电逐级降压配送”结构。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M02:ch1-3:0015", "M02:ch1-3-2:0017"]
+    },
+    {
+      "id": "claim_007",
+      "text": "降本机制对比：直流方案依赖密集分布式发电厂覆盖（重资产、无规模经济）；交流方案通过升压以小截面铜缆实现广域覆盖，章节标题将其称为“变压器升压在拓扑维度的几何级降本”。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M02:ch1-3:0015", "M02:ch1-3-2:0017"]
+    },
+    {
+      "id": "claim_008",
+      "text": "网络拓扑对比推断：直流为供电半径受限的蜂窝状分布式拓扑，交流为集中发电-超高压远距离输电-逐级降压的分层放射拓扑，两者在网络几何结构上不同。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M02:ch1-3:0015", "M02:ch1-3-2:0017"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "证据聚焦 19–20 世纪电气化标准战争的历史背景（110V 直流 vs 高压交流），未涉及现代高压直流输电（HVDC）与高压交流输电（HVAC）的当代对比。"
+  ],
+  "open_questions": [
+    "现代 HVDC 与 HVAC 在拓扑与降本机制上的对比是否与历史案例结论一致？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "现代高压直流输电（HVDC）与高压交流输电的对比证据",
+      "reason": "现有证据为爱迪生时代低压直流 vs 高压交流的历史案例，未覆盖现代直流输电技术"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

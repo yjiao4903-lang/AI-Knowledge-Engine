@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_5nm-finfet",
+  "task_type": "summary",
+  "query": "总结为什么 5nm 是 FinFET 工艺的终点。",
+  "summary": "报告以自然长度 λ 为静电控制判据：FinFET 为三面栅（λ ∝ √(t_si·t_ox/3)），GAA 四面环绕（分母为 4），同等体厚下 GAA 自然长度短约 15%。FinFET 陷入'栅长缩短→鳍更窄→迁移率崩塌/阈值漂移'的死循环，且鳍底三面栅控制不到构成关态漏电路径；GAA 以宽片堆叠+ALD 四面包裹破局，DIBL/SS 均优于 FinFET。报告将本章定位为论证'5nm 是 FinFET 的终点——而非技术终点'。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "栅极对沟道的控制能力可用自然长度 λ 刻画，λ 越短则短沟道效应越弱；对三面栅 FinFET，λ ∝ √(t_si·t_ox/3)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文对自然长度判据及其与 FinFET 关系的直接陈述。"
+    },
+    {
+      "id": "claim_002",
+      "text": "对四面环绕的 GAA 纳米片，分母中的 3 变为 4，同等体厚下 GAA 的自然长度短约 15%，换来更低的 DIBL 与更陡的亚阈值摆幅。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文对 GAA 自然长度优势的直接陈述，保留'约'。"
+    },
+    {
+      "id": "claim_003",
+      "text": "报告将 FinFET 的困境概括为死循环：栅长缩短加剧短沟道效应，为维持静电控制必须让鳍更窄，而鳍宽降至 5nm 以下时表面粗糙度散射与量子限制使载流子迁移率崩塌、阈值电压漂移（仿真显示鳍宽 5nm 时 Vth 偏移约 50mV，缩至 4nm 时陡增），驱动电流损失回到原点。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文直接给出的机制链与仿真数据，保留'仿真显示''约'等限定（该因果链为证据直接陈述，非本批次推断）。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告指出 FinFET 的栅极只覆盖三面，鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文对 FinFET 结构局限的直接陈述。"
+    },
+    {
+      "id": "claim_005",
+      "text": "GAA 的破局方式为以水平堆叠的宽片（片宽 30–50nm、厚 5–7nm、堆叠 3–4 层）取代垂直细鳍，栅极经 ALD 保形包裹全部四面，驱动电流由'片宽×堆叠层数'决定，脱离'鳍宽'死结。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文对 GAA 结构与驱动电流来源的直接陈述。"
+    },
+    {
+      "id": "claim_006",
+      "text": "行业参数对照显示，DIBL 从 FinFET 的 30–50 mV/V 降至 GAA 的 15–30 mV/V，SS 从 65–75 mV/dec 降至 62–68 mV/dec。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文给出的行业参数对照数字。"
+    },
+    {
+      "id": "claim_007",
+      "text": "综合上述物理机制，GAA 以四面栅极克服 FinFET 三面栅极的静电控制不足与鳍底漏电路径，表明在更先进节点上 GAA 可能是 FinFET 的延续方向；报告将本章定位为论证'5nm 是 FinFET 的终点——而非技术终点'（推断，基于结构对照与章节定位，无强因果断言）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "由三面/四面栅极结构对照与章节标题推断演进方向，用'表明/可能'限定，未使用'必然/导致'类强因果。"
+    },
+    {
+      "id": "claim_008",
+      "text": "鳍宽继续缩小的迁移率与阈值电压代价、以及四面栅极带来的静电控制收益相对比，可能构成先进节点从 FinFET 切换至 GAA 的物理动因（推断）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "融合两端原文（迁移率崩塌 vs 四面栅极收益）的推导，用'可能'限定。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "Vth 偏移数据（鳍宽 5nm 时约 50mV）来自仿真，非实测",
+    "DIBL/SS 行业参数对照的器件尺寸与工艺条件未说明"
+  ],
+  "open_questions": [
+    "5nm 之后 FinFET 是否存在其他变体延续（如垂直/叉形器件），本证据未讨论"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "5nm 节点 FinFET 与 GAA 的量产实测对比数据",
+      "reason": "证据中 Vth/DIBL/SS 数据来自仿真或行业对照，缺乏实测验证"
+    },
+    {
+      "question": "'5nm 是 FinFET 的终点'的产业共识来源",
+      "reason": "该定位为报告论证口径，缺乏独立来源佐证"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:52:05+08:00"
+}

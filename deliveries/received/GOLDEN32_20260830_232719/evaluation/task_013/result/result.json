@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_200g-eml-tfln",
+  "task_type": "comparison",
+  "query": "比较 200G EML 与薄膜铌酸锂（TFLN）在光模块中的角色差异。",
+  "summary": "200G EML 是 1.6T 光模块单通道激光器芯片的瓶颈（产能集中于三家厂商、缺口约 20%~30%）；TFLN 是基于线性电光效应、带宽与驱动电压指标更优但处于良率爬坡期的方案，预计在 3.2T 时代成为核心。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "200G EML 是 1.6T 光模块的核心瓶颈所在，瓶颈在于单通道 200G EML 激光器芯片，全球产能高度集中于 Coherent、Lumentum 与 Broadcom 三家厂商。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接陈述 EML 作为核心瓶颈与产能集中"
+    },
+    {
+      "id": "claim_002",
+      "text": "由于 InP 外延生长缺陷控制与高温老化良率问题，2025–2026 年全球高端光芯片缺口长期维持在 20%~30%（报告标 L2 统计证实口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "直接陈述统计区间，保留范围与来源口径"
+    },
+    {
+      "id": "claim_003",
+      "text": "TFLN 利用铌酸锂晶体的线性电光效应（Pockels Effect），电光响应速度达飞秒级，无载流子吸收复合损耗，可实现 >100 GHz 的超高电光带宽与 <1.5 V 的极低驱动电压（报告标 L1 因果证实）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接陈述 TFLN 物理指标"
+    },
+    {
+      "id": "claim_004",
+      "text": "TFLN 的产业化瓶颈包括微纳刻蚀加工极难（铌酸锂化学惰性强、侧壁粗糙度引起光散射损耗）与大尺寸晶圆（6/8 英寸）机械脆裂；2026 年 TFLN 处于小批量验证与良率爬坡期。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接陈述工程瓶颈与当前状态"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告预计 TFLN 在 3.2T 时代成为不可替代的核心方案，属未来预测口径。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "3.2T 时代为未来预测，保留预计限定词"
+    },
+    {
+      "id": "claim_006",
+      "text": "角色差异：200G EML 在证据中是 1.6T 光模块的单通道激光器芯片（光源器件），TFLN 则被描述为利用铌酸锂线性电光效应、具备高电光带宽与极低驱动电压的方案；两者在证据中的角色定位不同，EML 对应当前代瓶颈、TFLN 对应未来代核心。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据分别描述两者角色；对应关系为文本直接表述"
+    },
+    {
+      "id": "claim_007",
+      "text": "时间窗口对比：2025–2026 年 200G EML 处于结构性短缺状态，而 TFLN 同期处于小批量验证与良率爬坡期；两者状态与证据将 TFLN 定位为 3.2T 时代核心方案的表述相一致，可能表明 TFLN 主要面向更后一代的光模块演进。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "基于同一证据内不同时间口径的合理综合，使用相一致/可能限定"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "EML 缺口 20%~30% 为 2025–2026 年统计口径，其后续走向无证据",
+    "TFLN 在 3.2T 时代不可替代为预计",
+    "两者在光模块中的精确分工（如是否为光源/调制互斥关系）未被证据直接说明"
+  ],
+  "open_questions": [
+    "TFLN 在光模块中的具体应用形态及其与 EML 的分工关系？",
+    "TFLN 良率爬坡的进展时点与 3.2T 采用节奏？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "TFLN 量产爬坡的具体进展与 3.2T 采用时点",
+      "reason": "现有证据仅给出 2026 年状态与 3.2T 预期，无中间阶段数据"
+    },
+    {
+      "question": "200G EML 供需缺口的最新统计",
+      "reason": "现有缺口区间为 2025–2026 年口径，需要更新"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:15:00+08:00"
+}

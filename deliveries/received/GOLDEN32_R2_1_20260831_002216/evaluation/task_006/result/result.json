@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_moe",
+  "task_type": "summary",
+  "query": "总结 MoE 模型在总损失中引入辅助加载平衡损失的作用。",
+  "summary": "传统 MoE 在总损失中引入辅助加载平衡损失 L_aux（L_total = L_target + α_aux·L_aux，L_aux = α·E·Σ f_i·P_i）以强行拉平各专家负载。该损失与主任务目标（Next-token Prediction）存在固有冲突：α_aux 过大会破坏专家专业化学习，过小则无法抑制路由崩溃，权重设定存在两难。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "为强行拉平各个专家的负载，传统 MoE 模型在总损失函数中引入了辅助损失项 L_aux，形式为 L_total = L_target + α_aux·L_aux。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "原文对辅助损失引入目的与总损失形式的直接陈述。"
+    },
+    {
+      "id": "claim_002",
+      "text": "L_aux = α·E·Σ_{i=1}^{E} f_i·P_i，其中 f_i 为 token 被路由给专家 i 的实际接收频率，P_i 为门控网络对专家 i 的平均预测概率。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "原文给出的辅助损失公式与 f_i、P_i 定义。"
+    },
+    {
+      "id": "claim_003",
+      "text": "报告称辅助损失本质上是一个与下游真实任务目标（Next-token Prediction）冲突的人为惩罚项。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "原文对辅助损失性质缺陷的直接陈述。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告称当权重 α_aux 过大时，门控网络被迫将与数学相关的 token 强行分流给文学或代码专家，严重破坏了专家的专业化学习能力。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "原文对 α_aux 过大后果的直接陈述，保留'被迫/强行'口径为报告表述。"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告称当 α_aux 过小时，又无法抑制路由崩溃。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "原文对 α_aux 过小后果的直接陈述。"
+    },
+    {
+      "id": "claim_006",
+      "text": "辅助损失通过拉平负载来抑制路由崩溃，但其与主任务目标存在冲突，表明 MoE 训练需要在负载均衡与专家专业化之间进行权衡（推断）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "由'目的为拉平负载'与'与主任务冲突'两段原文推断权衡关系，用'表明'限定。"
+    },
+    {
+      "id": "claim_007",
+      "text": "α_aux 过小失效、过大破坏专业化的两难表明，辅助损失权重 α_aux 的设定可能对 MoE 训练效果构成关键影响（推断）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M09:ch4-2:o43:0053"],
+      "rationale": "由两端后果描述推断权重设定的关键性，用'可能'限定。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "α_aux 的推荐取值或自适应机制未给出",
+    "'路由崩溃'的量化判定标准未给出"
+  ],
+  "open_questions": [
+    "章节标题提及的'无辅助损失策略'（替代机制）的具体实现与效果"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "α_aux 的推荐取值、范围与敏感性分析",
+      "reason": "证据仅给出过大/过小两端的定性后果，无数值或自适应机制"
+    },
+    {
+      "question": "无辅助损失负载均衡策略与辅助损失的实证对比",
+      "reason": "章节标题提及替代策略但本片段未展开"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:51:35+08:00"
+}

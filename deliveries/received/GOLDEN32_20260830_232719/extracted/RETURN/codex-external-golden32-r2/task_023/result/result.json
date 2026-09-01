@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_5nm-finfet",
+  "task_type": "causal_synthesis",
+  "query": "自然长度如何通过短沟道效应限制 5nm 之后 FinFET 的微缩？",
+  "summary": "证据表明：自然长度是刻画栅控能力的物理判据，FinFET 为维持短自然长度（静电控制）不得不持续缩窄鳍宽，但鳍宽降至 5nm 以下时载流子迁移率崩塌、阈值电压漂移并存在三面栅控的固有漏电路径，从而构成 5nm 之后 FinFET 微缩的结构性限制；GAA 以四面环绕栅极打破该死结。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "栅极对沟道的控制能力可用自然长度 λ 刻画，λ 越短则短沟道效应越弱。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_002",
+      "text": "对三面栅 FinFET，自然长度 λ ∝ √(tsi·tox/3)；对四面环绕的 GAA 纳米片，分母中的 3 变为 4，即同等体厚下 GAA 的自然长度更短。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_003",
+      "text": "同等体厚下 GAA 的自然长度短约 15%（原文标注“约”），证据称其直接换来更低的 DIBL 与更陡的亚阈值摆幅。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "原文含“约”，为折算口径数值，保留限定词标 uncertain。"
+    },
+    {
+      "id": "claim_004",
+      "text": "证据描述 FinFET 的微缩死循环：栅长缩短导致短沟道效应加剧，为维持静电控制必须让鳍更窄。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_005",
+      "text": "鳍宽降至 5nm 以下时，表面粗糙度散射与量子限制使载流子迁移率崩塌、阈值电压漂移；仿真显示鳍宽 5nm 时 Vth 偏移约 50mV，缩至 4nm 时陡增。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "含“约”且为“仿真显示”口径，保留限定词标 uncertain。"
+    },
+    {
+      "id": "claim_006",
+      "text": "鳍更窄导致的驱动电流损失使 FinFET 微缩收益回到原点。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_007",
+      "text": "FinFET 的栅极只覆盖三面，鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_008",
+      "text": "GAA 纳米片把垂直细鳍换成水平堆叠的宽片（片宽 30–50nm、厚 5–7nm，堆叠 3–4 层），栅极经 ALD 保形包裹全部四面，驱动电流由“片宽 × 堆叠层数”决定。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_009",
+      "text": "行业参数对照显示 DIBL 从 FinFET 的 30–50 mV/V 降至 GAA 的 15–30 mV/V，SS 从 65–75 mV/dec 降至 62–68 mV/dec（保留“行业参数对照”口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_010",
+      "text": "综合证据机制推断：自然长度通过短沟道效应约束 FinFET 微缩路径——为维持静电控制需不断缩窄鳍（缩短 λ），而鳍宽低于 5nm 后迁移率与阈值电压劣化且存在三面栅控的漏电路径，这与“5nm 是 FinFET 终点”的章节结论相一致，表明自然长度-鳍宽权衡可能是 5nm 之后 FinFET 微缩受限的结构性原因。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "将证据中的物理判据、死循环与三面栅控局限综合为因果链条，使用“表明/可能”限定。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "证据内部存在静电控制与载流子性能的维度冲突：为维持静电控制必须让鳍更窄（缩短自然长度），但鳍宽降至 5nm 以下时表面粗糙度散射与量子限制使迁移率崩塌、阈值电压漂移，驱动电流损失回到原点——鳍宽同时是静电控制的手段与性能劣化的来源。",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "tension_002",
+      "text": "栅极三面包围与关态漏电控制之间存在结构性张力：FinFET 栅极只覆盖三面、鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路，即静电控制的结构性不足与漏电抑制要求相冲突。",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    }
+  ],
+  "uncertainties": [
+    "“GAA 自然长度短约 15%”的折算依赖特定 tsi/tox 参数口径，证据未给出参数取值。",
+    "鳍宽 5nm 时 Vth 偏移约 50mV 为“仿真显示”结果，未经实测验证；4nm 时“陡增”的具体数值未给出。",
+    "DIBL/SS 参数对照来自“行业参数对照”，其统计口径与样本范围未说明。"
+  ],
+  "open_questions": [
+    "5nm 之后 FinFET 是否在所有产品线停止使用？证据仅含物理机制，未涉厂商路线图。",
+    "鳍宽缩至 4nm 时 Vth 偏移陡增的具体数值是多少？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "鳍宽 5nm 与 4nm 时 Vth 偏移及迁移率退化的实测数据是多少？",
+      "reason": "证据仅提供“仿真显示约 50mV”与“陡增”的定性描述，缺乏量测验证。"
+    },
+    {
+      "question": "自然长度公式中 tsi/tox 对应的具体工艺节点参数取值是什么？",
+      "reason": "证据未给出参数口径，无法复核“短约 15%”的折算。"
+    },
+    {
+      "question": "具体厂商在 5nm 之后从 FinFET 转向 GAA 的节点与决策依据是什么？",
+      "reason": "证据只包含物理机制结论，未含厂商路线图的直接陈述。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:10:23+08:00"
+}

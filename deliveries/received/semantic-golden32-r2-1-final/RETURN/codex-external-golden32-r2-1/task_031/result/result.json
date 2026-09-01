@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_200g-eml-tfln",
+  "task_type": "tension_extraction",
+  "query": "200G EML 的结构性短缺与 TFLN 量产替代之间存在哪些张力？",
+  "summary": "证据显示 200G EML 因三巨头集中与良率问题在 2025–2026 年存在 20%-30% 的供给缺口，而 TFLN 虽具备飞秒级响应、>100GHz 带宽与 <1.5V 驱动电压的物理优势，却卡在刻蚀加工与晶圆脆裂的工程瓶颈，2026 年仍处小批量验证阶段、预计 3.2T 时代才成为核心方案，两者之间存在时间错配与可量产性差距的张力。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "1.6T 光模块的核心瓶颈在于单通道 200G EML 激光器芯片，全球产能高度集中于 Coherent、Lumentum 与 Broadcom 三巨头。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接陈述 200G EML 瓶颈与三巨头集中格局。"
+    },
+    {
+      "id": "claim_002",
+      "text": "由于 InP 外延生长缺陷控制与高温老化良率问题，2025–2026 年全球高端光芯片缺口长期维持在 20%~30%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "缺口的 20%-30% 为区间估计口径且覆盖进行中的 2026 年，保留原文限定。"
+    },
+    {
+      "id": "claim_003",
+      "text": "证据称 2026 年 TFLN 处于小批量验证与良率爬坡期。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "对 2026 年所处阶段的年度判断属进行时陈述，保留原文口径不做升级。"
+    },
+    {
+      "id": "claim_004",
+      "text": "证据预计 TFLN 将在 3.2T 时代成为不可替代的核心方案。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "'预计在 3.2T 时代成为...'为预测口径，保留'预计'与'不可替代'的原文限定词。"
+    },
+    {
+      "id": "claim_005",
+      "text": "TFLN 利用铌酸锂晶体的线性电光效应（Pockels Effect），电光响应速度达飞秒级、无载流子吸收复合损耗，可实现 >100 GHz 的超高电光带宽与 <1.5 V 的极低驱动电压。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接给出 TFLN 的物理特性参数。"
+    },
+    {
+      "id": "claim_006",
+      "text": "TFLN 的产业化瓶颈在于微纳刻蚀加工极难（铌酸锂化学惰性极强，侧壁粗糙度导致光散射损耗）以及大尺寸晶圆（6/8 英寸）的机械脆裂。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "证据直接陈述两项工程瓶颈。"
+    },
+    {
+      "id": "claim_007",
+      "text": "可推断，200G EML 的结构性短缺（2025–2026 年缺口 20%-30%、三巨头集中）与 TFLN 的 3.2T 时代替代预期之间存在时序张力：EML 缺口发生在当下 1.6T 代际，而 TFLN 预计更晚代际才成熟，中间窗口期仍依赖 EML 供给改善。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "由缺口时点与 TFLN 成熟代际两者对照推导。"
+    },
+    {
+      "id": "claim_008",
+      "text": "可推断，TFLN 量产的最大不确定性在加工良率与晶圆脆裂，若良率爬坡不及预期，其对 EML 替代的时间表可能延后。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "由'良率爬坡期'与工程瓶颈推导，使用'可能'限定。"
+    },
+    {
+      "id": "claim_009",
+      "text": "可推断，TFLN 的宽带宽与低驱动电压特性使其具备替代 EML 的潜力，但由于其尚处验证阶段，2025–2026 年的 EML 供给紧张短期内难以由 TFLN 缓解。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"],
+      "rationale": "由 TFLN 阶段状态与 EML 缺口时点综合推导。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "200G EML 缺口（2025–2026 年维持 20%-30%）与 TFLN 预计 3.2T 时代才成为核心方案之间存在时间错配：当前供给紧张与替代方案成熟之间存在明确窗口期。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "tension_002",
+      "text": "TFLN'不可替代'的预期（3.2T 时代）与其当前处于小批量验证、良率爬坡阶段形成张力：物理性能优势（>100 GHz、<1.5 V）与工程可量产性（刻蚀难、晶圆脆裂）之间存在现实差距。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    },
+    {
+      "id": "tension_003",
+      "text": "EML 产能集中于三巨头（Coherent、Lumentum、Broadcom）与 TFLN 加工依赖高精度微纳刻蚀同时存在，无论哪条路径，高端光芯片供给都可能继续受制于少数厂商与工艺壁垒。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch5-2:o40:0057"]
+    }
+  ],
+  "uncertainties": [
+    "高端光芯片缺口 20%-30% 为区间估计（[L2 统计证实]），口径时点未细化。",
+    "TFLN 良率爬坡的具体进度与 3.2T 时代量产时间点未给出。",
+    "TFLN 的 >100 GHz 带宽与 <1.5 V 驱动电压为器件级物理指标，模块级表现待验证。"
+  ],
+  "open_questions": [
+    "200G EML 的缺口在 2026 年后是否会因三巨头扩产而收窄？",
+    "TFLN 在 1.6T 模块中是否可能提前小规模导入以缓解 EML 缺口？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "是否有 200G EML 三大厂产能扩张计划与缺口收窄的量化时间表？",
+      "reason": "证据仅给出缺口区间，无供给改善路径的数据。"
+    },
+    {
+      "question": "是否有 TFLN 良率爬坡的实测数据及其与 EML 成本的对比？",
+      "reason": "证据只有'小批量验证与良率爬坡期'的定性描述，缺少可验证的良率与成本数据。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:45:17+08:00"
+}

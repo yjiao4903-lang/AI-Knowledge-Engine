@@ -219,6 +219,36 @@ export interface TaskListResponse {
   count: number;
 }
 
+export interface ExternalRunSummary {
+  run_id: string;
+  task_count: number;
+  path: string;
+}
+
+export interface ExternalRunTask {
+  task_id: string;
+  status: string;
+  task_type: TaskType | null;
+  query: string | null;
+  worker: string | null;
+  model: string | null;
+  completed_at: string | null;
+  claims_count: number;
+  tensions_count: number;
+}
+
+export interface ExternalRunsResponse {
+  runs: ExternalRunSummary[];
+  count: number;
+}
+
+export interface ExternalRunDetail {
+  run_id: string;
+  path: string;
+  task_count: number;
+  tasks: ExternalRunTask[];
+}
+
 export interface CreateTaskRequest {
   task_type: TaskType;
   query: string;

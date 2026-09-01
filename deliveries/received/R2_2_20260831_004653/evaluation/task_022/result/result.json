@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "task_type": "causal_synthesis",
+  "query": "推理总拥有成本对模型部署选型的影响机制是什么？",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "报告定义模型全生命周期总拥有成本 TCO(N, D, Q) = CapEx_train(N, D) + OpEx_infer(N, Q)，其中 Q 为该模型在服役期内预计处理的下游推理查询总量（Tokens）；并近似展开为 CapEx_train ≈ γ_train·(6ND)、OpEx_infer ≈ γ_infer·(2NQ)，其中 γ_train、γ_infer 分别为训练与推理阶段单 FLOP 的硬件折旧与电费成本。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据 1.3.1 节直接给出 TCO 定义式、两项近似展开及参数含义，照原文口径转述。"
+    },
+    {
+      "id": "claim_002",
+      "text": "报告指出，当模型处于云端高并发生产环境时，调用量 Q 往往达到 10^11~10^13 Tokens 级别（即 Q ≫ D），此时 TCO 方程中第二项（推理运营支出 OpEx_infer，即 2NQ 项）占绝对主导地位。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据在经济学机制推导段直接陈述该量级与主导性判断，保留原文量级口径。"
+    },
+    {
+      "id": "claim_003",
+      "text": "报告所述为压低单次推理计算量 2NQ 的决策方向：不惜大幅增加前期训练集规模 D（甚至超过 Chinchilla 最优值 10~100 倍），强行将模型参数量 N 压缩至 8B 或 70B 级别。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直接陈述该决策方向；保留“甚至超过”“10~100 倍”“8B/70B 级别”等原文量级与限定口径。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告给出 TCO 最小化的推导步骤：将 Chinchilla 最优解 D = C_train/(6N) 代入目标损失方程 E + A·N^(-α) + B·D^(-β) = L_target，对隐函数求解使全生命周期 TCO 最小的参数量 N*，即 ∂TCO/∂N = 6γ_train·(D + N·∂D/∂N) + 2γ_infer·Q = 0，得到 ∂D/∂N = -D/N - (γ_infer/(3γ_train))·(Q/N)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直接给出上述两个式子的完整推导过程，属报告陈述的数学内容转述。"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告据此推导判定：在 Q≫D（“推理即服务”高并发）条件下，过度训练（Over-training）不是对标度律的否定，而是标度律在“推理即服务”全生命周期资本配置下的演化方向（[L1] 归因，依据上述 TCO 模型推导得出的理论结论）；该判断依赖“调用量持续处于高并发水平”等前提，属模型推导结论而非对实际部署数据的直接观测事实。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "R2-2 规则 4.1：结论句为报告在 [L1] 归因下的理论推导而非观测事实，必须带条件标 inference，不得将“必然演化”整体标 supported。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "证据内部存在“训练侧计算最优”与“全生命周期 TCO 最优”两个口径之间的张力：报告一方面以 Chinchilla 最优解 D = C_train/(6N) 即计算最优训练规模为基准，并称过度训练“甚至超过 Chinchilla 最优值 10~100 倍”；另一方面又称过度训练“不是对标度律的否定，而是其必然演化 [L1]”。报告仅以模型推导（引入推理成本后最优配置偏离 Chinchilla 基准）回应二者如何并存，未提供实际部署观测数据直接验证该演化方向。",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "epistemic_state": "uncertain",
+      "rationale": "按 R2-2 规则 4.1/4.3：偏离是否真实发生、演化是否“必然”，当前证据无直接观测验证，整条 tension 标 uncertain。"
+    }
+  ],
+  "uncertainties": [
+    "“过度训练是标度律在‘推理即服务’资本配置下的必然演化”为 [L1] 归因下依据 TCO 模型推导得出的理论结论，依赖“调用量持续处于高并发水平（Q≫D）”等前提，缺少对实际部署数据的直接观测验证。",
+    "证据中的量级表述（Q 达 10^11~10^13 Tokens、D 超过 Chinchilla 最优值 10~100 倍、N 压缩至 8B/70B 级别）为报告给出的量级估计口径，并非实测数据。",
+    "“必然演化”中“必然”的程度无法由当前证据验证。"
+  ],
+  "open_questions": [
+    "在非高并发部署场景（Q 与 D 同量级或更小）下，TCO 最优选型是否仍会偏向过度训练？",
+    "8B 与 70B 等不同参数量段下，过度训练的实际收益与成本曲线如何？证据未提供实证。",
+    "“推理即服务”资本配置下过度训练与标度律的关系，是否已在真实部署数据中得到印证？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "实际模型部署中推理查询量 Q、训练数据量 D 及推理成本占比的观测数据如何？",
+      "reason": "“Q 达 10^11~10^13 Tokens、方程第二项占绝对主导”为报告量级估计，缺少实际部署观测数据验证。"
+    },
+    {
+      "question": "过度训练“必然演化”结论是否存在可验证的实证依据？",
+      "reason": "该结论为 [L1] 归因下的 TCO 模型推导结论，依赖高并发前提，证据未提供直接观测证据验证其“必然”程度。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "provider": "external",
+    "model": null
+  },
+  "generated_at": "2026-08-31T10:30:00+08:00"
+}

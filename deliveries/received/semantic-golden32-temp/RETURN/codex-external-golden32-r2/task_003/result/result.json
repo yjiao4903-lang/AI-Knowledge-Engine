@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_test-time-compute-scaling-law",
+  "task_type": "summary",
+  "query": "总结测试时计算标度律（Test-Time Compute Scaling Law）的核心结论。",
+  "summary": "测试时计算标度律显示最终推理性能同时取决于预训练计算量与推理阶段思考计算量；较小模型配最优测试时搜索预算可在特定任务上跨量级超越更大模型，推动研发范式转向推理时动态分配思考预算。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "Snell et al. (2024) 形式化确立了测试时计算标度律：基础模型的最终推理性能不仅取决于预训练阶段的计算量 C_pretrain，更取决于在推理阶段分配的思考计算量 C_test。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch5-3:o56:0069"]
+    },
+    {
+      "id": "claim_002",
+      "text": "测试时计算标度律可表示为 ErrorRate ∝ C_pretrain^{-α} · C_test^{-β}。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch5-3:o56:0069"]
+    },
+    {
+      "id": "claim_003",
+      "text": "实证数据显示：对于竞赛级数学（AIME 2024）与复杂代码综合（SWE-Bench），一个较小的 Base 模型（如 7B/32B）在配备最优的测试时搜索预算（如 MCTS 树搜索、自洽性采样 Cons@64、PRM 过程奖励模型打分）后，其任务表现能够跨量级超越比其参数大 14 倍的稠密旗舰模型。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch5-3:o56:0069"]
+    },
+    {
+      "id": "claim_004",
+      "text": "报告认为这一发现从根本上改变了基础模型的研发范式：从单纯追求训练更大参数的静态模型，转向训练模型在推理时如何高效动态分配思考预算。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch5-3:o56:0069"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "测试时计算标度律相关内容仅来自单一报告摘录（M09），原始论文的拟合参数、α/β 具体取值与适用边界未在证据中展开。"
+  ],
+  "open_questions": [
+    "标度律中 α、β 指数的具体取值及其随任务类型的变化？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "测试时计算标度律的原始论文细节与更多实证/消融数据",
+      "reason": "当前仅有一条摘录性证据，缺乏公式拟合过程、系数取值与适用边界的说明"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

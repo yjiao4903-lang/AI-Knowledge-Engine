@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_finfet",
+  "task_type": "tension_extraction",
+  "query": "FinFET 物理终点与先进封装/异构集成持续性能提升之间是否存在张力？",
+  "summary": "证据显示存在互补转移型张力：FinFET 单管微缩遭遇物理终点（鳍宽 5nm 下限、迁移率崩塌、三面栅控漏电路径），而先进封装/异构集成（Chiplet 突破 reticle 极限、3D 混合键合、光互联/CPO）与低精度/软件协同成为后摩尔时代性能提升的替代载体——晶体管层面“物理终点”与系统层面“技术延续”并存（与“5nm 是 FinFET 终点——而非技术终点”的章节表述一致）。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "FinFET 存在微缩死循环：栅长缩短导致短沟道效应加剧，为维持静电控制必须缩窄鳍，而鳍宽降至 5nm 以下时表面粗糙度散射与量子限制使载流子迁移率崩塌、阈值电压漂移（仿真显示鳍宽 5nm 时 Vth 偏移约 50mV，缩至 4nm 时陡增），驱动电流损失回到原点。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "死循环机制为直接陈述，但其中的 Vth 数值含“约”且为“仿真显示”口径，合并标 uncertain。"
+    },
+    {
+      "id": "claim_002",
+      "text": "FinFET 栅极只覆盖三面，鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_003",
+      "text": "GAA 纳米片把垂直细鳍换成水平堆叠的宽片（片宽 30–50nm、厚 5–7nm，堆叠 3–4 层），栅极经 ALD 保形包裹全部四面，驱动电流由“片宽 × 堆叠层数”决定；行业参数对照显示 DIBL 从 FinFET 的 30–50 mV/V 降至 15–30 mV/V，SS 从 65–75 mV/dec 降至 62–68 mV/dec。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_004",
+      "text": "先进封装与 Chiplet 路径：B200 双 die + NV-HBI 互连达 10 TB/s，208B 晶体管突破 reticle 极限；MI300X 采用 8×XCD 3D 混合键合。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "claim_005",
+      "text": "低精度与光互联路径：Blackwell FP4 dense 达 9,000 TFLOPS（较 FP8 再翻倍），NVFP4 在 <1% 精度损失下省 3.5× 显存；NVLink 5 单 GPU 1.8 TB/s → Rubin（NVLink 6）3.6 TB/s；CPO 降功耗 3.5×、激光器少 4×。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "claim_006",
+      "text": "Rubin 平台（2026，厂商发布口径）：Rubin GPU 为 336B 晶体管、288GB HBM4（12-Hi）、22 TB/s 带宽、NVFP4 单 GPU 50 PF；Vera Rubin NVL72 整柜 NVFP4 推理 3,600 PFLOPS、训练 2,520 PFLOPS；2026 H2 全面量产（【A，NVIDIA】发布口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "规格与量产时间为厂商发布/计划口径，保留“2026 H2 全面量产”之计划属性。"
+    },
+    {
+      "id": "claim_007",
+      "text": "软件协同方面，FlashAttention 每代需重写适配新硬件（FA3 把 H100 利用率从 35% 提至 85%）——硬件性能不再“自动”释放，需算法同步。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "claim_008",
+      "text": "推断：FinFET 单管微缩遭遇物理终点（鳍宽下限、三面栅控局限、关态漏电路径），而先进封装/异构集成（Chiplet、HBM、光互联/CPO）与低精度/软件协同构成后摩尔时代的替代性能来源——性能提升的载体从“晶体管微缩”转向“系统级集成与算法规格”，两条路径互补转移而非互相否定，这与“5nm 是 FinFET 的终点——而非技术终点”的章节表述相一致。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "跨两份证据将物理终点与系统性能路径综合，使用“推断/相一致/而非互相否定”限定。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "FinFET 物理终点与先进封装/异构集成性能提升之间的方向性张力：FinFET 一侧是单管微缩的硬约束（鳍宽 5nm 以下迁移率崩塌、三面栅控的关态漏电通路），先进封装一侧是系统级性能的持续提升（B200 双 die 突破 reticle 极限、MI300X 3D 混合键合、Rubin 22 TB/s 带宽）——晶体管层面的收益递减与系统集成层面的收益上升并存。",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    },
+    {
+      "id": "tension_002",
+      "text": "“5nm 是 FinFET 的终点——而非技术终点”这一章节表述本身包含张力：晶体管结构层面的物理终点与技术整体延续的叙事并存——微缩终结论与性能持续提升论在同一证据集中同时成立。",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "tension_003",
+      "text": "宣称性能与软件兑现之间存在张力：Rubin 整柜 NVFP4 推理 3,600 PFLOPS、训练 2,520 PFLOPS 等规格（厂商发布口径）与“FlashAttention 每代需重写、FA3 才把 H100 利用率从 35% 提至 85%、硬件性能不再自动释放”的软件协同约束并存——峰值性能需算法同步适配才能兑现。",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"]
+    }
+  ],
+  "uncertainties": [
+    "Rubin 平台规格与 2026 H2 全面量产为 NVIDIA 发布/计划口径，未经全面量产验证。",
+    "FP4 9,000 TFLOPS、50 PF、3,600 PFLOPS 等为规格书/发布口径数值，其实际可达性依赖软件适配。",
+    "FinFET 转向 GAA 的具体工艺节点与厂商决策时间表未在本任务证据中给出（证据一为物理机制结论）。",
+    "鳍宽 5nm 时 Vth 偏移约 50mV 为仿真显示结果。"
+  ],
+  "open_questions": [
+    "先进封装/异构集成带来的性能提升能否在总量上对冲单管微缩放缓？证据未提供联合量化。",
+    "FinFET→GAA 切换发生在哪个具体工艺节点？证据仅以“5nm 是 FinFET 终点”表述机制，未含厂商路线图。"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "FinFET 转向 GAA 在各厂商的具体工艺节点与时间表是什么？",
+      "reason": "证据只含物理机制结论（“5nm 是 FinFET 终点”），无厂商路线图直接陈述。"
+    },
+    {
+      "question": "先进封装（Chiplet/光互联）贡献与单管微缩贡献的性能拆分数据是什么？",
+      "reason": "证据分别陈述两条路径，未做贡献拆分，无法量化“对冲”程度。"
+    },
+    {
+      "question": "Rubin 2026 H2 全面量产计划的后续验证信息是什么？",
+      "reason": "当前仅有 NVIDIA 发布口径（【A，NVIDIA】），未见量产后的独立验证。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:10:23+08:00"
+}

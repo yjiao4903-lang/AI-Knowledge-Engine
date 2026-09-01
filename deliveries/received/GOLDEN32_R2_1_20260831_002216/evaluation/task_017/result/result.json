@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "causal_synthesis",
+  "query": "为什么接口位宽提高会进一步推高先进封装的系统价值量？",
+  "summary": "证据显示 HBM4 接口位宽翻倍（1024→2048-bit）与混合键合、定制逻辑 Base Die 等先进封装升级在代际参数中并列出现，且先进封装正承担带宽提升角色（B200 双 die、MI300X 3D 混合键合）。但证据未提供任何价值量或成本数字，位宽提高推高封装价值量只能作为推断并以 uncertain 标注机制缺口。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM4 接口位宽从 HBM3/HBM3e 的 1024-bit 翻倍至 2048-bit。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直陈位宽翻倍参数。"
+    },
+    {
+      "id": "claim_002",
+      "text": "HBM4 采用混合键合，取消传统微凸块，实现晶圆级直接铜-铜键合，间距从 25 微米降至 1 微米以下，互连电容降低 80%。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直陈混合键合工艺参数。"
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM4 定制逻辑 Base Die 采用台积电先进制程（N3/N4/12nm），能够将内存控制逻辑与近存校验算子直接集成于 Base Die。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直陈定制逻辑 Base Die 制程与功能。"
+    },
+    {
+      "id": "claim_004",
+      "text": "位宽翻倍、混合键合与定制逻辑 Base Die 在 HBM4 中并列发生，报告将其共同描述为 HBM4 核心代际跃迁参数。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据将三项内容并列于同一要点清单。"
+    },
+    {
+      "id": "claim_005",
+      "text": "2048-bit 位宽使 I/O 数量与互连密度需求上升，混合键合（间距降至 1 微米以下）可能成为支撑高密度互连的工艺路径。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "位宽与键合间距两参数在证据中并列，其需求-工艺对应关系为合理推导。"
+    },
+    {
+      "id": "claim_006",
+      "text": "定制逻辑 Base Die 增加逻辑功能集成并采用先进逻辑制程，可能提升 Base Die 环节的工艺复杂度与价值。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "由制程升级与功能集成推断环节价值变化，无直接价值量证据。"
+    },
+    {
+      "id": "claim_007",
+      "text": "先进封装正承担带宽提升角色：B200 采用双 die + NV-HBI 实现 10 TB/s（208B 晶体管突破 reticle 极限），MI300X 采用 8 个 XCD 的 3D 混合键合。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "证据直陈先进封装在带宽/晶体管规模上的作用。"
+    },
+    {
+      "id": "claim_008",
+      "text": "Rubin GPU 单卡带宽达 22 TB/s 并搭载 288GB HBM4（12-Hi），显示带宽需求与 HBM 堆叠/封装规格同步提升。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "参数为证据直陈；配套关系为同一句内并列描述。"
+    },
+    {
+      "id": "claim_009",
+      "text": "单 GPU 带宽持续提升（至 22 TB/s）可能需要更高 HBM 堆叠与混合键合等封装工艺支撑，从而可能推高封装复杂度与价值量占比。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023", "M05:ch2-2:o2:0026"],
+      "rationale": "带宽需求与封装工艺升级的对应关系为综合推导，使用可能限定。"
+    },
+    {
+      "id": "claim_010",
+      "text": "证据未提供接口位宽提高推高先进封装系统价值量的直接量化证据（无价值量、单价或成本数字），该因果关系在当前证据中仅体现为技术参数的并列与推断。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "两份证据均无价值量/成本量化内容，机制为推断性解释。"
+    },
+    {
+      "id": "claim_011",
+      "text": "混合键合与定制逻辑 Base Die 打破存储与逻辑计算的传统代工边界，可能引发封装/代工环节的分工调整。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "代工边界变化为证据直陈，分工调整为推断。"
+    },
+    {
+      "id": "claim_012",
+      "text": "综合判断：接口位宽提高推高先进封装系统价值量的机制可能经由互连密度/带宽需求上升、进而要求混合键合/更高堆叠/逻辑 Base Die 等更复杂方案实现，但缺乏直接证据支撑其必然性。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "为多环节推导的综合表述，全程使用可能等限定词。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "任务预设位宽提高会推高先进封装系统价值量，而证据仅并列给出位宽翻倍与混合键合/定制 Base Die 参数，未包含任何价值量或成本数据，因果假设与证据强度之间存在落差。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "假设方向明确但证据无价值量支撑，属证据缺口性张力。"
+    }
+  ],
+  "uncertainties": [
+    "位宽提高与先进封装价值量之间的因果链未获直接证据",
+    "混合键合与定制逻辑 Base Die 的成本增量、良率损失与价值量数据缺失"
+  ],
+  "open_questions": [
+    "混合键合在 HBM4 中带来的成本增量与良率损失如何影响封装环节价值量？",
+    "价值量提升是来自工艺复杂度、代工边界重构还是良率稀缺？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4 混合键合封装的价值量、单价与成本占比数据",
+      "reason": "证据仅有技术参数，无任何价值量量化内容"
+    },
+    {
+      "question": "位宽与先进封装价值量之间的量化相关性研究",
+      "reason": "当前机制为多环节推断，缺乏直接因果证据"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:48:33+08:00"
+}

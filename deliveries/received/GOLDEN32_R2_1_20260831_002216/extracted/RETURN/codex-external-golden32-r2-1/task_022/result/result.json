@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "task_type": "causal_synthesis",
+  "query": "推理总拥有成本对模型部署选型的影响机制是什么？",
+  "summary": "模型全生命周期推理总拥有成本 TCO(N,D,Q) = CapEx_train(N,D) + OpEx_infer(N,Q) 将推理调用量 Q 纳入选型目标函数：在云端高并发生产环境（Q 达 10^11-10^13 Tokens，Q≫D）下推理项占主导，最优决策转向大幅超训练（D 超过 Chinchilla 最优 10-100 倍）并压缩参数量 N 至 8B/70B 级，即过度训练成为推理即服务模式下摊薄 TCO 的理性选择。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "模型全生命周期总拥有成本定义为 TCO(N, D, Q) = CapEx_train(N, D) + OpEx_infer(N, Q)，其中 Q 为该模型在服役期内预计处理的下游推理查询总量（Tokens）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直陈 TCO 的形式化定义。"
+    },
+    {
+      "id": "claim_002",
+      "text": "训练成本 CapEx_train 约为 γtrain·(6ND)，推理成本 OpEx_infer 约为 γinfer·(2NQ)，其中 γtrain、γinfer 分别为训练与推理阶段单 FLOP 的硬件折旧与电费成本。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直陈成本展开式与参数含义。"
+    },
+    {
+      "id": "claim_003",
+      "text": "当模型处于云端高并发生产环境时，调用量 Q 往往达到 10^11-10^13 Tokens 级别（即 Q≫D），此时 TCO 方程中推理项（OpEx_infer）占绝对主导地位。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直陈高并发场景下推理项的主导地位。"
+    },
+    {
+      "id": "claim_004",
+      "text": "为压低单次推理的计算量 2NQ，最优决策是不惜大幅增加前期训练集规模 D（甚至超过 Chinchilla 最优值 10-100 倍），强行将模型参数量 N 压缩至 8B 或 70B 级别。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直陈最优决策方向与超训练幅度。"
+    },
+    {
+      "id": "claim_005",
+      "text": "过度训练（Over-training）不是对标度律的否定，而是标度律在“推理即服务”全生命周期资本配置下的必然演化。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据以结论形式直接陈述，保留必然限定词并注明为报告结论口径。"
+    },
+    {
+      "id": "claim_006",
+      "text": "推理：推理运营成本与参数量 N、调用量 Q 成线性正比（2NQ），因此当预期生命周期推理量高时，部署选型将偏向参数量更小、训练更充分的模型配置。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "由 OpEx_infer ≈ γinfer·(2NQ) 与最优解方向推导，使用将偏向等推导性表述。"
+    },
+    {
+      "id": "claim_007",
+      "text": "推理：当预期推理调用量 Q 较小（Q≫D 前提不成立）时，训练成本项相对权重上升，最优参数量将向常规（Chinchilla 最优）训练策略靠近，即部署选型随 Q 的量级变化而切换。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "由 TCO 两项相对权重的量级分析推断，使用将向靠近等推导性表述。"
+    },
+    {
+      "id": "claim_008",
+      "text": "推理：训练数据规模 D 的边际增加（超训练）可换取参数量 N 的收缩，二者在 TCO 目标函数中形成替代关系，使推理 TCO 量化地约束了参数量-数据规模的选型组合。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "由 TCO 函数中 N 与 D 的耦合关系推导，证据给出公式与最优性条件。"
+    },
+    {
+      "id": "claim_009",
+      "text": "推理：该机制表明模型部署选型（参数量与训练规模的取舍）是推理负载结构（Q 的量级）的函数：生产负载越高，越倾向小参数加过度训练配置。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "由高并发主导项与最优解方向的综合推断，使用表明等限定词。"
+    },
+    {
+      "id": "claim_010",
+      "text": "证据给出的 TCO 框架以解析模型形式呈现，目标为达到预定目标损失 L_target 时求解使全生命周期 TCO 最小的参数量 N*。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直陈最优化问题的设定与求解目标。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "过度训练（大幅超训练数据规模）与 Chinchilla 计算最优训练策略（D = C_train/6N）在表面上构成张力：报告将超训练表述为标度律在推理即服务成本框架下的必然演化而非否定，二者关系呈现为同一框架对部署目标差异化的响应。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据同时给出 Chinchilla 最优解与超训练最优决策，二者在部署目标差异下并行成立。"
+    },
+    {
+      "id": "tension_002",
+      "text": "最优参数量 N* 严重依赖调用量 Q 与成本参数 γtrain/γinfer，证据未给出这些参数的实证取值，解析结论向具体选型的转化存在参数不确定性。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "形式化模型成立但参数未标定，结论适用范围依赖参数取值。"
+    }
+  ],
+  "uncertainties": [
+    "γtrain 与 γinfer 的具体取值未在证据中给出，TCO 数值结论依赖参数标定",
+    "8B/70B 等参数量级别为示例口径，实际最优规模随 Q 与硬件成本变动",
+    "目标损失 L_target 的选择标准未展开，影响 N* 解的位置"
+  ],
+  "open_questions": [
+    "推理 TCO 框架如何与具体硬件（GPU 利用率、KV 缓存、批处理）成本结构衔接？",
+    "Q 的预测（推理需求总量）本身存在不确定性时，选型最优解如何稳健化？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "训练与推理阶段单 FLOP 成本（γtrain、γinfer）的实证取值与区间",
+      "reason": "证据仅有解析模型，参数未标定，无法得到可复核的数值结论"
+    },
+    {
+      "question": "超训练 10-100 倍数据规模对模型能力（下游任务表现）的影响数据",
+      "reason": "框架仅考虑成本最优化，未给出超训练对模型质量上限的实证影响"
+    },
+    {
+      "question": "不同推理负载结构（在线/批量、Q 的量级分布）下的实际选型案例",
+      "reason": "证据为理论推导，无部署实例验证"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:57:54+08:00"
+}

@@ -160,11 +160,12 @@ def rescan_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/archive")
 def archive_task(task_id: str, request: Request) -> dict:
-    _, importer = _require_taskpack(request)
-    pack = importer.locate(task_id)
-    if pack is None:
-        raise HTTPException(status_code=404, detail=f"任务不存在: {task_id}")
-    target = importer.archive_task(task_id)
+    _, importer = _require_task(request, task_id)
+    try:
+        target = importer.archive_task(task_id)
+    except FileExistsError as exc:
+        # Archive collision is a client-visible conflict; source task remains intact.
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return {"task_id": task_id, "status": ARCHIVED, "task_path": str(target)}
 
 
@@ -175,11 +176,7 @@ def open_task_folder(task_id: str, request: Request) -> dict:
     复用 KE 既有 open-original 的受控打开思想，但校验基准是 TaskPack 根目录
     （cfg.taskpack.root_dir），而非知识库 roots。禁止任意路径执行。
     """
-    cfg = getattr(request.app.state, "cfg", None)
-    _, importer = _require_taskpack(request)
-    pack = importer.locate(task_id)
-    if pack is None:
-        raise HTTPException(status_code=404, detail=f"任务不存在: {task_id}")
+    pack, importer = _require_task(request, task_id)
     root = importer.root.resolve()
     resolved = pack.resolve()
     try:

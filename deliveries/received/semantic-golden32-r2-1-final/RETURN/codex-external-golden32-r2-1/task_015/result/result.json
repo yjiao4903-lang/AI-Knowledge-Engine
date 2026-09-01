@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_gpu",
+  "task_type": "comparison",
+  "query": "对比 GPU 供应链中先进制程与先进封装/互连两类约束。",
+  "summary": "GPU 供应链存在先进制程、HBM、先进封装（CoWoS）、互连四位一体的系统级约束。先进制程以台积电集中（约 70% 份额）与红利递减为特征；先进封装/互连以 CoWoS 独占、NVLink 域内/域外带宽落差与机架物理上限为约束。份额、产能预测与行业测算数字一律标注 uncertain。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "GPU 供应链约束被归纳为先进制程、HBM、先进封装（CoWoS）、互连四者耦合的四位一体系统级稀缺。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "证据章节标题直陈四位一体约束论点。"
+    },
+    {
+      "id": "claim_002",
+      "text": "先进制程方面，NVIDIA H100 采用 N4、B200 采用 N4P 制程。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "证据直陈两代 GPU 制程节点。"
+    },
+    {
+      "id": "claim_003",
+      "text": "台积电占全球先进制程（foundry 口径）约 70%，为份额估算。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "市场份额为约数估算口径，不得标 supported。"
+    },
+    {
+      "id": "claim_004",
+      "text": "制程红利递减：行业测算（B 级）显示 N3 到 N2 密度仅提升约 +15%，而单晶体管成本反升约 30%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "数据为行业测算口径（B 级），含约数与估算，保留限定词。"
+    },
+    {
+      "id": "claim_005",
+      "text": "CoWoS 先进封装产能从 2023 年的 13-15K wpm 扩至 2025 年的 75-80K wpm，2023-2025 年为实际交付瓶颈。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "2023/2025 产能为已过年份的统计口径，直接陈述。"
+    },
+    {
+      "id": "claim_006",
+      "text": "CoWoS 产能 2026E 预计达 115-140K wpm，且非台积电官方指引。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "2026E 为预测值且非官方指引，保留原文限定。"
+    },
+    {
+      "id": "claim_007",
+      "text": "HBM4 供应链三供就位（2026）：三星于 2026-06 通过 NVIDIA 认证，美光 HBM4 亦通过认证，SK 海力士仍为 Rubin 平台最大供应商（UBS 预计约占 HBM4 供应 70%）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "认证事件与供应格局涉及 2026 年时点及 UBS 预计口径，供应份额为预测，整体标注 uncertain。"
+    },
+    {
+      "id": "claim_008",
+      "text": "NVIDIA 占 CoWoS 先进封装产能 60% 以上（2023-25，TrendForce 口径），台积电独占 CoWoS 超过 90%，均为份额估算。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "市场份额数字为估算口径，不得标 supported。"
+    },
+    {
+      "id": "claim_009",
+      "text": "互连约束：NVLink 5 单 GPU 带宽 1.8 TB/s；单 NVLink 域上限 576 GPU（NVL72 到 NVL576），超域通信带宽骤降 5-14 倍（从 1.8 TB/s 跌至 InfiniBand 约 350 GB/s），NCCL 跨域即遇悬崖。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "证据直陈互连规格参数（A/B 级来源）。"
+    },
+    {
+      "id": "claim_010",
+      "text": "机架受 120 kW / 1.4 吨物理上限约束；B200 双 die + NV-HBI 10 TB/s 实现 208B 晶体管突破 reticle 极限，MI300X 采用 8 个 XCD 的 3D 混合键合。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "机架约束与先进封装参数均为证据直陈。"
+    },
+    {
+      "id": "claim_011",
+      "text": "Rubin 平台（2026-06-22 ISC 发布，科学计算版）：Rubin GPU 采用 336B 晶体管、224 SM、896 Tensor Core、288GB HBM4（12-Hi）、22 TB/s 带宽。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "发布产品参数为证据直陈（A，NVIDIA 口径）。"
+    },
+    {
+      "id": "claim_012",
+      "text": "对比推断：先进制程红利递减（N3→N2 成本反升）且高度集中于台积电，系统性能提升重心转向先进封装/互连（Chiplet、混合键合、光互连/CPO）与低精度计算，二者构成 GPU 供应链中制造端与系统集成端两类不同性质的约束。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "由制程红利递减与先进封装/互连性能来源两条证据链综合推断。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "2026 年 HBM4 供应份额预测分歧明显：三星份额预测区间 24-37%，而 UBS 预计 SK 海力士约占 HBM4 供应 70%，不同机构预测相互冲突。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "两份预测口径在同一证据内并列且区间分歧大。"
+    },
+    {
+      "id": "tension_002",
+      "text": "制程红利递减（单晶体管成本反升约 30%）与先进制程仍高度集中于台积电（约 70%）并存，表明制程端约束更多来自集中度而非微缩红利。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "由同段证据内两项数据（成本上升、份额集中）综合推断。"
+    }
+  ],
+  "uncertainties": [
+    "台积电先进制程约 70%、CoWoS 独占超 90%、NVIDIA 占 CoWoS 60%+ 等份额均为估算口径",
+    "N3→N2 密度与成本数据为 B 级行业测算",
+    "2026E CoWoS 产能与 HBM4 供应份额为非官方预测"
+  ],
+  "open_questions": [
+    "台积电官方对 2026 年 CoWoS 产能的指引如何？",
+    "Rubin 平台量产节奏（2026 H2 全面量产）能否如期兑现？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "台积电官方的先进制程与 CoWoS 产能数据",
+      "reason": "现有产能/份额为 TrendForce 与行业测算口径，非官方指引"
+    },
+    {
+      "question": "HBM4 实际供应份额分布的确证数据",
+      "reason": "2026 年 HBM4 供应预测（SK 70% 与三星 24-37%）高度分歧"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:48:33+08:00"
+}

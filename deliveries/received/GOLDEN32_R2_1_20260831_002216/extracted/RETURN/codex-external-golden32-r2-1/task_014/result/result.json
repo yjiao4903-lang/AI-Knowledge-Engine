@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "comparison",
+  "query": "比较四轮价值链中租金归属与集中度的差异。",
+  "summary": "四轮价值链租金归属依次为路权/轨道所有者、电气设备商、流量入口，AI 时代则集中于三层栈顶端与瓶颈（GPU 计算、晶圆代工、HBM 存储）并由少数云厂形成纵向租金漏斗。各市场份额与营收数据保留来源口径，份额类估算一律标注 uncertain。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "租金归属随时代迁移：铁路时代租金归于轨道/路权所有者，电气时代归于电气设备商（通用电气、西屋），平台时代归于流量入口，AI 时代租金高度集中于三层栈的顶端与瓶颈。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "证据直陈各时代租金归属。"
+    },
+    {
+      "id": "claim_002",
+      "text": "技术爆发初期，底层硬件与核心设备制造商享有高达 60%~80% 的垄断毛利率与整个产业链绝大部分的经济利润（如瓦特蒸汽机厂、通用电气发电设备、英特尔 CPU、英伟达 GPU 与台积电 CoWoS 先进封装）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch5-3:0062"],
+      "rationale": "证据直陈第一阶段高毛利与利润集中现象及其举例。"
+    },
+    {
+      "id": "claim_003",
+      "text": "第二阶段网络与基础设施建设者（铁路公司、电网公用事业、电信运营商、超大规模云厂商）为争夺通道霸权进行规模空前的债务/股权融资与过度资本开支，报告称其必然引发暗光纤/暗算力过剩与资本回报率（ROIC）下挫。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch5-3:0062"],
+      "rationale": "保留报告原判断口径（必然引发），作为报告框架性陈述直陈。"
+    },
+    {
+      "id": "claim_004",
+      "text": "第三阶段价值捕获中枢不可逆地漂移向直接掌控终端用户、重塑垂直行业工作流、并将 AI 深度嵌入组织微观肌理的平台型与生态型企业（L1 因果证实口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch5-3:0062"],
+      "rationale": "证据直陈第三阶段价值归属，保留报告因果证实标注。"
+    },
+    {
+      "id": "claim_005",
+      "text": "平台时代租金归于流量入口，OECD（2025）对波兰、拉脱维亚、立陶宛在线集市的研究显示单一平台流量份额可达 80% 以上。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "证据直陈 OECD 2025 具体研究结论，保留可达限定词。"
+    },
+    {
+      "id": "claim_006",
+      "text": "Nvidia 2027 财年第一季度营收达 816 亿美元、数据中心收入 752 亿美元（同比 +92%），创纪录（Nvidia, 2026 披露口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "已披露的财报数据，直接引用原文数字。"
+    },
+    {
+      "id": "claim_007",
+      "text": "Nvidia 占 AI 加速器（GPU）收入约 80%（OECD 2025、Stanford HAI AI Index 2026 口径），为份额估算。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "市场份额为约数估算口径，保留约字，不得标 supported。"
+    },
+    {
+      "id": "claim_008",
+      "text": "TSMC 占晶圆代工约 72% 且是 CoWoS 先进封装瓶颈（BIS 2026、Stanford HAI 口径），为份额估算。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "市场份额为约数估算口径，保留约字，不得标 supported。"
+    },
+    {
+      "id": "claim_009",
+      "text": "SK Hynix 占 HBM 约 50%-55%（Stanford HAI、BIS 口径），为份额估算。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "市场份额为约数区间估算，保留约字。"
+    },
+    {
+      "id": "claim_010",
+      "text": "少数超大规模云厂同时掌握需求入口与资本开支，形成模型-算力-云的纵向租金漏斗。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "证据直陈纵向租金漏斗的形成机制。"
+    },
+    {
+      "id": "claim_011",
+      "text": "AI 产业组织被归纳为模型实验室+算力云+AI 原生应用三层结构，该划分与 OECD（2025）对 AI 基础设施多层级栈、持续集中、垂直整合的描述及 BIS（2026）的分层判断一致。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "证据直陈三层结构划分及其与外部研究的对应关系。"
+    },
+    {
+      "id": "claim_012",
+      "text": "对比推断：前两轮租金集中于单一供给环节（路权/设备商），平台时代集中于流量入口，AI 时代租金则在供给瓶颈（GPU、代工、HBM）与需求入口（云厂）两端同时集中，集中维度更多元。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["四次技术革命比较解剖_最终报告:ch2:o22:0028", "M01:ch5-3:0062"],
+      "rationale": "由两份证据的租金归属描述综合对比得出。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "M01 第三阶段认为价值捕获终局漂移至终端应用与组织流线重构者，而另一证据显示 AI 时代租金高度集中于三层栈顶端与瓶颈（GPU/代工/HBM 与云厂）——价值收敛至终端与租金集中于上游瓶颈两种判断存在张力。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M01:ch5-3:0062", "四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "两份证据分别强调终端平台与上游瓶颈的价值归属，方向存在张力。"
+    },
+    {
+      "id": "tension_002",
+      "text": "Nvidia 数据中心收入同比 +92% 的高增长（2026 披露）与报告第二阶段框架（过度资本开支引发 ROIC 下挫）看似矛盾——当前基础设施商仍处高增长，ROIC 下挫为框架性判断，证据未提供当期实证。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M01:ch5-3:0062", "四次技术革命比较解剖_最终报告:ch2:o22:0028"],
+      "rationale": "高增长数据与框架性下挫判断分属不同证据，当期 ROIC 数据缺失。"
+    }
+  ],
+  "uncertainties": [
+    "Nvidia 约 80%、TSMC 约 72%、SK Hynix 50%-55% 等份额为不同来源估算口径，且随时间变动",
+    "Nvidia 2027 财年 Q1 数据为 2026 年披露口径"
+  ],
+  "open_questions": [
+    "AI 时代租金集中是否将重演第二阶段的资本开支陷阱？",
+    "模型实验室、算力云与 AI 原生应用三层之间的租金分配比例如何量化？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "各市场份额数字的最新统计口径与数据时间点",
+      "reason": "份额为约数与区间估算，来源（OECD/BIS/Stanford HAI）口径与时间未完全对齐"
+    },
+    {
+      "question": "云厂商资本开支回报（ROIC）的当期实证数据",
+      "reason": "报告 ROIC 下挫为框架性推断，无当期实证"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:48:33+08:00"
+}

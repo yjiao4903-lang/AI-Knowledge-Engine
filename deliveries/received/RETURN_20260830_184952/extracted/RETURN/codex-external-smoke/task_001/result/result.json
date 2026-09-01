@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_hbm4-hbm",
+  "task_type": "summary",
+  "query": "总结 HBM4 相比前几代 HBM 在接口位宽与引脚速率上的演进要点。",
+  "summary": "HBM4 相比前几代 HBM（HBM2E、HBM3、HBM3e）在接口位宽与引脚速率上实现了显著演进：接口位宽由前代的 1024-bit 翻倍跃升至 2048-bit；引脚速率由 HBM2E 的 3.6 Gbps、HBM3 的 6.4 Gbps、HBM3e 的 9.6 Gbps 进一步提升至 11.7~13.0 Gbps，共同驱动单堆栈峰值带宽由 1.2 TB/s 及以下跃升至 2.0 ~ 3.3 TB/s。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM4 相比前几代 HBM（HBM2E、HBM3、HBM3e 的 1024-bit）接口位宽实现翻倍，跃升至 2048-bit。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "M04 规格表与 M05 均明确指出 HBM2E/HBM3/HBM3e 接口位宽为 1024-bit，而 HBM4 跃升至 2048-bit（翻倍）。"
+    },
+    {
+      "id": "claim_002",
+      "text": "HBM 引脚速率呈现代际递增演进：HBM2E 为 3.6 Gbps、HBM3 为 6.4 Gbps、HBM3e 为 9.6 Gbps，至 HBM4 引脚速率提升至 11.7~13.0 Gbps。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040"
+      ],
+      "rationale": "M04 规格表记录了各代 HBM 的引脚速率数据。"
+    },
+    {
+      "id": "claim_003",
+      "text": "在 2048-bit 接口位宽翻倍与引脚速率提升的共同驱动下，HBM4 单堆栈峰值带宽突破至 2.0 ~ 3.3 TB/s（M05 标注为突破 2.0 ~ 3.0 TB/s），显著高于 HBM3e（1.2 TB/s）、HBM3（819 GB/s）与 HBM2E（460 GB/s）。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "M04 与 M05 均记录了位宽与速率提升共同驱动的单栈带宽跃升数据。"
+    },
+    {
+      "id": "claim_004",
+      "text": "后继规划代际 HBM4E 预计维持 2048-bit 接口位宽，引脚速率预计进一步提升至 14~16 Gbps，单栈峰值带宽预计达 3.6 ~ 4.0 TB/s。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040"
+      ],
+      "rationale": "M04 物理规格表给出了 2027E HBM4E 的规划参数。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "关于 HBM4 单堆栈峰值带宽上限存在轻微数据区间差异：M04 规格表标注为 2.0 ~ 3.3 TB/s，而 M05 标注为突破 2.0 ~ 3.0 TB/s。",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ]
+    }
+  ],
+  "uncertainties": [
+    "任务包证据未包含 HBM4 之前更早代际（如初代 HBM、HBM2）的接口位宽与引脚速率基准数据。",
+    "证据给出的 HBM4 引脚速率为 11.7~13.0 Gbps 区间值，缺乏各原厂具体量产型号的定型分档及测试工作条件。"
+  ],
+  "open_questions": [
+    "HBM4 在 2026 年规模商用时，主流原厂首发量产芯片的引脚速率档位落在 11.7 Gbps 还是最高 13.0 Gbps？",
+    "在 2048-bit 高位宽下，Base Die 升级为 TSMC 12nm/3nm 制程对维持 11.7~13.0 Gbps 引脚速率的信号完整性与功耗开销有何量化影响？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "各主流原厂 HBM4 商业化量产型号的具体引脚速率规格及 JEDEC 详细标准参数",
+      "reason": "现有证据仅给出 11.7~13.0 Gbps 宏观区间，缺少具体厂商型号或详细标准分档数据。"
+    },
+    {
+      "question": "第一代 HBM 与 HBM2 的接口位宽与引脚速率物理规格数据",
+      "reason": "现有 evidence.jsonl 仅包含从 HBM2E 开始的演进数据，缺少更早代际的基准证据。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "Gemini 3.7 Flash"
+  },
+  "generated_at": "2026-08-30T18:45:00+08:00"
+}

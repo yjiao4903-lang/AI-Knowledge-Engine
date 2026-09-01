@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_hbm4-base-die",
+  "task_type": "comparison",
+  "query": "对比 HBM4 采用混合键合与定制逻辑 Base Die 相对前代结构的主要变化。",
+  "summary": "HBM4 相对前代（HBM2E/HBM3/HBM3e）的主要结构变化包括接口位宽翻倍（1024→2048-bit）、以混合键合替代传统微凸块、Base Die 制程由 DRAM 标准工艺升级为台积电先进逻辑制程并可集成近存逻辑；涉及带宽与未来代际（HBM4E）的数值多为估计口径。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM4 接口位宽从 HBM3/3e 的 1024-bit 跃升至 2048-bit，实现翻倍。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "M04:ch3-2:o1:0040"],
+      "rationale": "两份证据均直接给出位宽翻倍表述"
+    },
+    {
+      "id": "claim_002",
+      "text": "HBM4 采用混合键合（Hybrid Bonding）：取消传统微凸块，实现晶圆级直接铜-铜（Cu-Cu）与介质键合，间距（Pitch）从 25μm 骤降至 <1μm，互连电容降低 80%。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直接陈述混合键合物理参数"
+    },
+    {
+      "id": "claim_003",
+      "text": "前代 HBM2E/HBM3/HBM3e 的 Base Die 均采用 DRAM 标准工艺制造；HBM4 的 Base Die 升级为台积电先进逻辑制程（M05 表述为 N3/N4/12nm，M04 规格表列为 TSMC 12nm/3nm 逻辑）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"],
+      "rationale": "规格表逐代列示 Base Die 工艺，M05 给出制程范围"
+    },
+    {
+      "id": "claim_004",
+      "text": "定制逻辑 Base Die 使存储厂能够将内存控制逻辑、近存校验算子直接集成于 Base Die，打破存储与逻辑计算的传统代工边界。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直接陈述集成能力与边界变化"
+    },
+    {
+      "id": "claim_005",
+      "text": "核心封装工艺代际对比：HBM2E 采用 Micro-bump TCB，HBM3 采用 MR-MUF/TC-NCF，HBM3e 采用 Advanced MR-MUF，HBM4 列为 MR-MUF/1µm 混合键合。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "规格表逐代列示核心封装工艺"
+    },
+    {
+      "id": "claim_006",
+      "text": "HBM4 单堆栈峰值带宽约为 2.0~3.0 TB/s（M05 引 L3 产业共识口径），HBM4E（2027E）预计为 3.6~4.0 TB/s，均属估计口径。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "M04:ch3-2:o1:0040"],
+      "rationale": "带宽数值为产业共识/未来预测口径，保留区间与限定词"
+    },
+    {
+      "id": "claim_007",
+      "text": "HBM4E（2027E）预计采用 2048-bit 接口、16-Hi（64GB）堆叠、0.5µm Direct Bonding，Base Die 采用 TSMC 3nm/Intel 18A；该行属未来年份的预测规格。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "2027E 为未来年份预测口径"
+    },
+    {
+      "id": "claim_008",
+      "text": "堆叠与容量变化：HBM3 最大 12-Hi（24GB）、HBM3e 最大 12-Hi/16-Hi（36GB），HBM4 最大 12-Hi/16-Hi（48GB）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "规格表直接列示各代堆叠层数与容量"
+    },
+    {
+      "id": "claim_009",
+      "text": "混合键合（pitch <1μm）与接口位宽翻倍（1024→2048-bit）在证据中作为并列的代际跃迁参数出现，与带宽提升的产业共识数值相一致，可能共同构成 HBM4 相对前代在互连与封装结构上的主要变化。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "M04:ch3-2:o1:0040"],
+      "rationale": "基于两份证据并列参数的合理综合，使用可能/相一致限定"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "HBM4 单堆栈峰值带宽口径差异：M05 文本引述产业共识为 2.0~3.0 TB/s，M04 规格表列为 2.0~3.3 TB/s，两来源区间上限不一致。",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "M04:ch3-2:o1:0040"]
+    }
+  ],
+  "uncertainties": [
+    "HBM4 单堆栈带宽区间上限（3.0 与 3.3 TB/s）跨来源不一致",
+    "HBM4E 全部规格为 2027E 预测口径",
+    "混合键合在 HBM4 中的具体应用界面与量产、良率情况无证据"
+  ],
+  "open_questions": [
+    "混合键合具体应用于哪些界面（die-to-die 或 die-to-基板）？",
+    "定制逻辑 Base Die 对存储厂与台积电之间代工边界及成本结构的具体影响程度？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4 混合键合的量产渗透率与良率数据",
+      "reason": "现有证据仅给出间距与互连电容等物理参数，无量产与可靠性数据"
+    },
+    {
+      "question": "HBM4E 规格的后续确认来源",
+      "reason": "现有为 2027E 估计口径，需要一手来源更新"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:15:00+08:00"
+}

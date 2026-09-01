@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_5nm-finfet",
+  "task_type": "summary",
+  "query": "总结为什么 5nm 是 FinFET 工艺的终点。",
+  "summary": "鳍宽降至 5nm 以下时表面粗糙度散射与量子限制导致迁移率崩塌、阈值电压漂移，且 FinFET 三面栅结构存在关态漏电通路；GAA 纳米片以四面栅控与宽片结构绕开这些限制，因此 5nm 被视为 FinFET 的终点而非技术终点。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "栅极对沟道的控制能力可用自然长度 λ 刻画，λ 越短则短沟道效应越弱。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_002",
+      "text": "对三面栅 FinFET，λ ∝ √(t_si·t_ox/3)；对四面环绕的 GAA 纳米片，分母中的 3 变为 4，同等体厚下 GAA 的自然长度短约 15%，带来更低的 DIBL 与更陡的亚阈值摆幅。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_003",
+      "text": "FinFET 面临“死循环”：栅长缩短加剧短沟道效应，为维持静电控制必须让鳍更窄；而鳍宽降至 5nm 以下时，表面粗糙度散射与量子限制使载流子迁移率崩塌、阈值电压漂移，驱动电流损失回到原点。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_004",
+      "text": "仿真显示鳍宽 5nm 时阈值电压偏移约 50mV，缩至 4nm 时偏移陡增。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"],
+      "rationale": "保留“仿真显示”与“约 50mV”的原始口径。"
+    },
+    {
+      "id": "claim_005",
+      "text": "FinFET 的栅极只覆盖三面，鳍底与衬底相接的一面始终不受控，构成关态漏电的固有通路。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_006",
+      "text": "GAA 纳米片把垂直细鳍换成水平堆叠的宽片（片宽 30–50nm、厚 5–7nm，堆叠 3–4 层），栅极经 ALD 保形包裹全部四面。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_007",
+      "text": "GAA 的驱动电流由“片宽 × 堆叠层数”决定，彻底脱离了“鳍宽”这个死结。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_008",
+      "text": "行业参数对照显示 DIBL 从 FinFET 的 30–50 mV/V 降至 15–30 mV/V，亚阈值摆幅从 65–75 mV/dec 降至 62–68 mV/dec。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    },
+    {
+      "id": "claim_009",
+      "text": "综合证据表明，5nm 被视为 FinFET 的终点是因为鳍宽继续微缩至 5nm 以下将遭遇迁移率崩塌、阈值电压漂移与关态漏电通路等物理限制，而 GAA 通过四面栅控与宽片结构绕开这些限制，成为后续工艺方向（章节标题称其为“而非技术终点”）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["5nm制程_最终报告:ch2-6:0033"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "鳍宽 5nm 时的 Vth 偏移（约 50mV）与 4nm 时陡增为仿真结果，量产级实测数据未提供。"
+  ],
+  "open_questions": [
+    "FinFET 在 5nm 以下节点是否完全没有量产可行性？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "FinFET 在 4nm 及以下节点的实际量产验证或失败案例",
+      "reason": "当前证据主要为物理机理、仿真参数与 GAA 对照表，缺乏实际量产层面的证据"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

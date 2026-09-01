@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_dpo-direct-preference-optimization",
+  "task_type": "summary",
+  "query": "总结 DPO（Direct Preference Optimization）相比传统方法的核心要点。",
+  "summary": "DPO（Rafailov 等，2023，Stanford）通过数学变换省去显式奖励模型与 PPO 在线采样循环，利用最优策略与奖励函数的闭式对应并代入 Bradley-Terry 公式实现直接偏好优化。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "DPO（Direct Preference Optimization）由 Rafailov 等人（Stanford）于 2023 年提出。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_002",
+      "text": "DPO 利用数学变换彻底省去了显式奖励模型 r_φ 与 PPO 复杂的在线多模型采样循环。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_003",
+      "text": "DPO 将带 KL 约束的强化学习目标重写后，最优策略 π* 与真实奖励函数 r(x,y) 存在精确的代数对应关系：π*(y|x) = (1/Z(x))·π_ref(y|x)·exp((1/β)·r(x,y))，其中 Z(x) 为配分函数。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_004",
+      "text": "由此可将奖励函数重构为 r(x,y) = β·log(π*(y|x)/π_ref(y|x)) + β·log Z(x)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_005",
+      "text": "将该式直接代入 Bradley-Terry 偏好概率公式时，配分函数 Z(x) 在两项相减时精确抵消。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_006",
+      "text": "最终偏好概率可表示为 P(y_w ≻ y_l | x) = σ(β·log(π_θ(y_w|x)/π_ref(y_w|x)) − β·log(π_θ(y_l|x)/π_ref(y_l|x)))。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    },
+    {
+      "id": "claim_007",
+      "text": "DPO 通过闭式解推导绕过显式奖励建模与在线多模型采样，这一点可能构成其相对传统 PPO 类方法在训练流程简化上的核心差异。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch2-2-2:0020"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "证据摘录在 Bradley-Terry 公式处截断，未包含章节标题所述 DPO 与 PPO 在训练稳定性上的对比结论。"
+  ],
+  "open_questions": [
+    "DPO 与 PPO 在训练稳定性上的差异如何量化？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "DPO 相对 PPO 的稳定性/性能对比的实验证据",
+      "reason": "现有摘录未覆盖章节中的等价性与稳定性解剖部分，推理结论需实验验证"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

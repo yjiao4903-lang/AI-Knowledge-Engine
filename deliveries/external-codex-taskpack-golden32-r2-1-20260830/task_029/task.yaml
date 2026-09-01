@@ -1,0 +1,20 @@
+schema_version: '1.0'
+task_id: 20260830_180538_task
+task_type: tension_extraction
+query: 先进制程供应能力与算力能耗约束之间是否存在矛盾证据？
+created_at: '2026-08-30T18:05:38+08:00'
+taskpack_version: '1.0'
+prompt_version: taskpack-synthesis-v1
+permissions:
+  read_only_inputs: true
+  allow_network: false
+  allow_external_sources: false
+  allow_write_paths:
+  - result/
+constraints:
+  evidence_only: true
+  max_claims: 12
+  language: zh-CN
+expected_output:
+  schema: SynthesisDraftV1
+  path: result/result.json

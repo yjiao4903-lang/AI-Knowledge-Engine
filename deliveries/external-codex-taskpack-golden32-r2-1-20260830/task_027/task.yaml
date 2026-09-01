@@ -1,0 +1,20 @@
+schema_version: '1.0'
+task_id: 20260830_180538_task
+task_type: tension_extraction
+query: 数据中心用电强增长与液冷能效提升两条证据方向是否相互矛盾？
+created_at: '2026-08-30T18:05:38+08:00'
+taskpack_version: '1.0'
+prompt_version: taskpack-synthesis-v1
+permissions:
+  read_only_inputs: true
+  allow_network: false
+  allow_external_sources: false
+  allow_write_paths:
+  - result/
+constraints:
+  evidence_only: true
+  max_claims: 12
+  language: zh-CN
+expected_output:
+  schema: SynthesisDraftV1
+  path: result/result.json

@@ -1,0 +1,13 @@
+{
+  "worker_tool": "codex-external",
+  "provider": "external",
+  "model": null,
+  "model_version": null,
+  "started_at": "2026-08-30T23:48:30+08:00",
+  "completed_at": "2026-08-30T23:51:05+08:00",
+  "prompt_version": "taskpack-synthesis-v1",
+  "prompt_sha256": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+  "task_manifest_sha256": "fd90005ce61c6ae9bed3f5a0f04f96c39871377b99abf86abdd12f9cd664d6b5",
+  "input_tokens": null,
+  "output_tokens": null
+}

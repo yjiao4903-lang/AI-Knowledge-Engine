@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "task_type": "tension_extraction",
+  "query": "电力扩张需求与电网/选址约束之间存在哪些张力证据？",
+  "summary": "证据显示算力需求端（10 万卡集群约 209 MW、园区级规划 1–2 GW）与电网供给端（并网排队 5–7 年、变压器交期 150–200 周、1GW 变电站稀缺）之间存在供需时序错配的系统性张力，并推动算力向富余水核基荷区位分流、形成区位惩罚。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "按证据核算，10 万卡集群（1,400 个 GB200 NVL72 机架）IT 设备净功耗为 182 MW（1400×130 kW），按 PUE=1.15 计，集群总稳态接入负荷为 209.3 MW。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "证据完整给出 182 MW 与 209.3 MW 的计算过程。"
+    },
+    {
+      "id": "claim_002",
+      "text": "单颗 GPU 芯片 TDP 已达 1,000–1,200 W；单台 GB200 NVL72 机架（含 72 颗 Blackwell GPU 与 36 颗 Grace CPU）的额定供电功率为 120–140 kW。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "证据直接给出 TDP 与机架额定供电区间。"
+    },
+    {
+      "id": "claim_003",
+      "text": "业界规划（Microsoft/OpenAI Stargate、Meta Prometheus 等）向 50 万卡至 100 万卡集群迈进时，单体园区电力需求预计突破 1–2 GW。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "'当集群规模按规划迈进时...将突破'为规划与预估口径，保留限定词。"
+    },
+    {
+      "id": "claim_004",
+      "text": "证据引用 IEA 2026 展望称全球数据中心电力消耗在 2025–2026 年突破 1,000 TWh，占全球总用电量比重从 1.5% 升至近 4.0%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "该数字来自 IEA 展望口径且含'近'的约数表述，保留来源与限定词。"
+    },
+    {
+      "id": "claim_005",
+      "text": "单座十万张 GPU 级别的超大规模 AI 数据中心，其稳态电力负荷需求高达 500 MW–1 GW，相当于一座中型核反应堆或一个百万人口中等城市的全部居民用电总和。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据原文直接给出负荷区间与类比。"
+    },
+    {
+      "id": "claim_006",
+      "text": "美国 PJM 与 ERCOT 区域的新建大型数据中心并网申请排队时间长达 5 至 7 年，原因为变压器产能短缺（大型升压变压器交期拉长至 150–200 周）与高压输电走廊环保审批冗长。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据直接陈述排队时长与两个原因。"
+    },
+    {
+      "id": "claim_007",
+      "text": "算力中心被迫向具备富余廉价水核基荷的区位（美国西北太平洋地区、北欧、中国西部水电与光伏富集区）迁移；缺乏本地清洁电力基荷与坚强输电网的地区正经历严重的算力区位惩罚。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "证据直接描述区位分流与区位惩罚。"
+    },
+    {
+      "id": "claim_008",
+      "text": "证据称全美乃至全球范围内，能够直接提供 1GW 瞬态稳定高压接入的电网变电站屈指可数。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-1:0005"],
+      "rationale": "证据原文直接陈述该稀缺性。"
+    },
+    {
+      "id": "claim_009",
+      "text": "可推断，需求端集群级供电（10 万卡约 209 MW、园区级规划 1–2 GW）与供给端并网排队 5–7 年、变压器交期 150–200 周及 1GW 变电站稀缺之间存在供需时序错配的系统性张力。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-1:0005", "M01:ch6-2-1:0069"],
+      "rationale": "由需求端核算与供给端约束两组数据综合推导。"
+    },
+    {
+      "id": "claim_010",
+      "text": "可推断，区位分流是对电网约束的理性应对，但也可能强化缺乏基荷地区的算力能力洼地，扩大区域间算力区位差异。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M01:ch6-2-1:0069"],
+      "rationale": "由区位分流与区位惩罚的并列描述推导其分化效应。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "单集群 209 MW、园区规划 1–2 GW 的高增长电力需求，与并网排队 5–7 年、变压器交期 150–200 周的扩容时序之间存在系统性错配：需求扩张速度快于电网扩容速度。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-1:0005", "M01:ch6-2-1:0069"]
+    },
+    {
+      "id": "tension_002",
+      "text": "全球数据中心用电总量展望（突破 1,000 TWh、占比近 4.0%）与'1GW 接入变电站屈指可数'的点状瓶颈并存，总量叙事与节点级供给稀缺之间的关系需要进一步数据。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M01:ch6-2-1:0069", "M06:ch1-1:0005"]
+    },
+    {
+      "id": "tension_003",
+      "text": "头部园区（50–100 万卡）的 1–2 GW 供电规划与现网 1GW 变电站稀缺相互冲突，可能迫使超大规模项目集中于少数电网节点，形成新的区位集中与竞争。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-1:0005"]
+    }
+  ],
+  "uncertainties": [
+    "全球数据中心用电突破 1,000 TWh 与占比近 4.0% 来自 IEA 展望口径。",
+    "209.3 MW 的计算基于假设的 PUE=1.15 与机架数量（1,400），实际部署存在偏差。",
+    "50–100 万卡园区规划为科技巨头披露的规划口径（L3 证据强度）。"
+  ],
+  "open_questions": [
+    "并网排队 5–7 年与变压器 150–200 周交期在多大程度上是结构性而非周期性约束？",
+    "区位分流（水核基荷区）能否实质缓解 1GW 变电站稀缺，其迁移成本如何？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "是否有 PJM/ERCOT 并网排队队列长度与通过率的时序数据？",
+      "reason": "证据仅给出 5-7 年排队时长的静态判断，缺少队列规模与变化趋势。"
+    },
+    {
+      "question": "是否有已投产大型 AI 园区的实际接入负荷与 PUE 实测数据？",
+      "reason": "209.3 MW 为核算值，实际接入水平与损耗结构需实测核验。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:45:17+08:00"
+}

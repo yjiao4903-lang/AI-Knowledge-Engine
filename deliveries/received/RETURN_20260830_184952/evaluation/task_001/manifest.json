@@ -1,0 +1,14 @@
+{
+  "taskpack_version": "1.0",
+  "task_id": "20260830_180537_hbm4-hbm",
+  "created_at": "2026-08-30T18:05:37+08:00",
+  "files": {
+    "task.yaml": "f8b0246494d2e876db3ce8a0447b28c879b7033693ba252483fe18729efa42a0",
+    "AGENT_INSTRUCTION.md": "19f812ee9e9a9ecc8176a829ff6714433b5a859d55e26db4d6390fb4c7706c7c",
+    "evidence.jsonl": "3b0caf10609f9eca32f57907a5783ea8db40892381cd99b1f36ed50536ee8cc4",
+    "output_schema.json": "5ec56fc7d23e6494cbdd1c89216677bf1cf41f6fe04d74b13a41ff52ecd9b499",
+    "README.md": "3fd5fec443d27678850035e167f0bab864f22d110232bd0544d12a009d2f04cf"
+  },
+  "evidence_count": 2,
+  "cognition_context_count": 0
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "summary",
+  "query": "总结全球数据中心用电的规模与增速数据。",
+  "summary": "全球数据中心用电 2024 年 415 TWh（占全球约 1.5%）、2025 年 485 TWh（+17%），报告预计 2030 年约 950 TWh（约 3%）；美国电网负荷余量预计 2027 年转负，均为预测口径。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "全球数据中心用电 2024 年为 415 TWh，占全球用电约 1.5%（来源标注为 IEA 2025/2026）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"]
+    },
+    {
+      "id": "claim_002",
+      "text": "全球数据中心用电 2025 年为 485 TWh，较 2024 年增长约 17%。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"]
+    },
+    {
+      "id": "claim_003",
+      "text": "报告预计全球数据中心用电 2030 年约 950 TWh，约占全球用电约 3%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "2030 年数值为预测口径（“约 950 TWh”），保留未来年份与约数限定词。"
+    },
+    {
+      "id": "claim_004",
+      "text": "报告预计美国电网可承载新增负荷余量于 2027 年转负（来源标注为 SemiAnalysis Energy）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "“预计 2027 年转负”为预测口径。"
+    },
+    {
+      "id": "claim_005",
+      "text": "报告对比数据中心需求 84 GW（2030 年）与电网年增 15 GW，并给出变压器交期 3–4 年（来源标注为 SemiAnalysis Energy）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "84 GW 为 2030 年预测值，变压器交期 3–4 年为转述数据。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "2030 年约 950 TWh、约 3% 占比、美国电网负荷余量 2027 年转负、数据中心 84 GW 需求等均为预测口径（IEA / SemiAnalysis），并非已实现事实。"
+  ],
+  "open_questions": [
+    "2026–2029 年间逐年用电量与增速的路径数据？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "数据中心用电量的年度序列与区域拆分",
+      "reason": "现有证据仅给出 2024、2025、2030 三个时点数据，中间年份与区域分布缺失"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

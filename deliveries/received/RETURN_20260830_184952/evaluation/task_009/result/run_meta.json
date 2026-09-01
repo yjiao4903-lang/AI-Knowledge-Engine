@@ -1,0 +1,13 @@
+{
+  "worker_tool": "codex-external",
+  "provider": "Google",
+  "model": "Gemini 3.7 Flash",
+  "model_version": "gemini-3.7-flash",
+  "started_at": "2026-08-30T18:44:15+08:00",
+  "completed_at": "2026-08-30T18:45:00+08:00",
+  "prompt_version": "taskpack-synthesis-v1",
+  "prompt_sha256": "19f812ee9e9a9ecc8176a829ff6714433b5a859d55e26db4d6390fb4c7706c7c",
+  "task_manifest_sha256": "b572628b5156cc480b2d2e5108ef427cf14178a8bca3d53101d6c915d96fa52f",
+  "input_tokens": null,
+  "output_tokens": null
+}

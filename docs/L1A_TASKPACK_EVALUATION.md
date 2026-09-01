@@ -1,13 +1,17 @@
 # L1A TaskPack Evaluation
 
-> 日期：2026-08-30 ｜ 依据：V3.0 §54-§57 / §74（Task 10）｜ 状态：**硬件/工具就绪，待用户外部执行**
+> 日期：2026-08-30 ｜ 依据：V3.0 §54-§57 / §74（Task 10）｜ 状态：**准备中；Task 9/10 尚未完成**
 > 本文件说明评估口径与如何用 `backends/scripts/taskpack_eval.py` 进行无模型评估。正式结果在外部执行 Task 9/10 后告警于此。
 
 ---
 
 ## 1. 评估对象
 
-- **Golden inputs**：`data/taskpack_golden/task_001..032/` —— 由 `migrate_golden_taskpacks.py` 从
+### R1 / R2 解释
+
+R1 的 4-task smoke 即使机器 Gate 4/4 通过，也只表示协议、Schema、引用和导入链路通过；若预测/估算/未来年份或无直接因果证据的强因果被标为 `supported`，状态仍为“机器通过、语义需修订”。正典 Prompt 修订后，R2 才是重跑候选：必须用新模板重新生成/复制任务包、重新运行外部 Worker，并保留新 prompt SHA 与结果审计，不能把旧结果直接升级为 R2。
+
+- **Golden inputs（已核实存在，32 个）**：`data/taskpack_golden/task_001..032/` —— 由 `migrate_golden_taskpacks.py` 从
   32 条 `data/synthesis_golden_tasks.jsonl` 生成，固定只读任务包（Evidence Set 与 KE catalog 权威一致）。
 - **Worker results**：`data/taskpack_golden/runs/<worker>/<task_id>/result/result.json`。
 
@@ -65,8 +69,8 @@ Critical Contradiction = 0
 `runs/<worker>`，再各自 `taskpack_eval.py`，比较 Schema / Citation / Entailment / Latency / Cost /
 Edit Burden。Research OS 相关代码无需改动。
 
-## 7. 冒烟验证记录
+## 7. 冒烟验证记录（历史/计划性，不计入当前 Task 9/10）
 
-- `migrate_golden_taskpacks.py`：32/32 生成；manifest 八步 Gate 抽查 `manifest_valid=32/32, bad=[]`。
-- `taskpack_eval.py`：对构造的合法 run 冒烟 → `Manifest 1/1、Schema 1/1、Invalid 0、Coverage 1/1、Unsupported 1/1、全通过 1/1`；stale 非阻断验证通过。
-- 注：正式 32 条结果需用户在外部工具执行（Task 9）后重新生成此报告。
+- 曾有构造合法 run 的单任务冒烟记录，但不是 Task 9/10 结果。
+- 当前已核实 32 个 Golden 输入包、`backend/scripts/migrate_golden_taskpacks.py` 和 `backend/scripts/taskpack_eval.py` 均存在；`data/taskpack_golden/runs/` 存在但为空，尚无外部 Worker 结果，因此 Task 9/10 为 `blocked`。
+- 正式 32 条结果需外部 Worker 执行（Task 9）后，主负责人运行无模型评估并补充真实报告；在此之前不得写“32/32 PASS”。

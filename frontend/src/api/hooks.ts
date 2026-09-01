@@ -97,6 +97,21 @@ export function useTasks() {
   });
 }
 
+export function useExternalRuns() {
+  return useQuery({
+    queryKey: ['externalTaskpackRuns'],
+    queryFn: () => api.externalRuns(),
+  });
+}
+
+export function useExternalRun(id: string) {
+  return useQuery({
+    queryKey: ['externalTaskpackRun', id],
+    queryFn: () => api.externalRun(id),
+    enabled: Boolean(id),
+  });
+}
+
 export function useCreateTask() {
   const qc = useQueryClient();
   return useMutation({

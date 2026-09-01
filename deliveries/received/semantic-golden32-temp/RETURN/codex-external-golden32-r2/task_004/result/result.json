@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_inference-tco",
+  "task_type": "summary",
+  "query": "总结模型全生命周期推理总拥有成本（Inference TCO）的形式化构成。",
+  "summary": "Inference TCO 形式化为 TCO(N,D,Q) = CapEx_train(N,D) + OpEx_infer(N,Q)，其中训练资本开支约 γ_train·6ND、推理运营开支约 γ_infer·2NQ；高推理量 Q 下最优策略是过度训练以压缩参数量。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "模型全生命周期总拥有成本定义为 TCO(N, D, Q) = CapEx_train(N, D) + OpEx_infer(N, Q)，其中 Q 为该模型在服役期内预计处理的下游推理查询总量（Tokens）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_002",
+      "text": "训练资本开支近似为 CapEx_train ≈ γ_train · (6ND)，其中 γ_train 为训练阶段单 FLOP 的硬件折旧与电费成本。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_003",
+      "text": "推理运营开支近似为 OpEx_infer ≈ γ_infer · (2NQ)，其中 γ_infer 为推理阶段单 FLOP 的硬件折旧与电费成本。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_004",
+      "text": "将 Chinchilla 最优解 D = C_train/(6N) 代入，在预定目标损失 L_target 约束（E + A·N^{-α} + B·D^{-β} = L_target）下，对隐函数求导可得使全生命周期 TCO 最小的参数量 N* 满足 ∂TCO/∂N = 6γ_train·(D + N·∂D/∂N) + 2γ_infer·Q = 0。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_005",
+      "text": "当模型处于云端高并发生产环境时，调用量 Q 往往达到 10^11~10^13 Tokens 级别（即 Q >> D），此时方程第二项占绝对主导地位。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_006",
+      "text": "报告的经济学机制推导表明：为压低单次推理的计算量 2NQ，最优决策是不惜大幅增加前期训练集规模 D（甚至超过 Chinchilla 最优值 10~100 倍），强行将模型参数量 N 压缩至 8B 或 70B 级别（过度训练）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    },
+    {
+      "id": "claim_007",
+      "text": "报告结论认为过度训练（Over-training）不是对标度律的否定，而是标度律在“推理即服务（Inference-as-a-Service）”全生命周期资本配置下的必然演化。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "该模型为报告中的形式化推导，γ_train、γ_infer 等关键成本参数的具体取值未给出。"
+  ],
+  "open_questions": [
+    "标度律常数 E、A、B 与目标损失 L_target 的取法？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "Inference TCO 模型的实证校验或行业实际成本参数",
+      "reason": "现有证据仅为单一报告的理论推导，缺乏参数标定与实证验证"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

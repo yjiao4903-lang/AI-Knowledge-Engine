@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_dlc",
+  "task_type": "comparison",
+  "query": "比较冷板式（DLC）与浸没式液冷的热力学换热模型差异。",
+  "summary": "冷板式（DLC）以微通道冷板配合去离子水/乙二醇回路直接冷却芯片（二维对流-扩散方程，机架密度 150~200 kW、PUE 1.05~1.15）；浸没式将整台服务器浸泡于不导电介电液体，证据未给出其对等换热参数。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "冷板式（DLC）为直接芯片液体冷却，其液体冷却液（去离子水/乙二醇溶液）的体积热容约为空气的 3,500 倍，对流换热系数约 5,000~15,000 W/(m²·K)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_002",
+      "text": "微通道冷板（Microchannel Cold Plate）的传热微分方程遵循二维对流-扩散方程。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_003",
+      "text": "冷板换热使数据中心能够承受高达 150~200 kW 的单机架密度，并将 PUE 压制在 1.05~1.15 的区间。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_004",
+      "text": "冷却系统并未消灭热量，只是将高密度的热流转移至冷却水回路中；为将 35~45°C 的温水废热排放至大气，采用机械制冷压缩机会消耗巨大压缩电能，采用蒸发冷却塔会引发水资源消耗硬约束（WUE 危机）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"]
+    },
+    {
+      "id": "claim_005",
+      "text": "浸没式液冷将整台服务器主板、CPU、GPU、内存及供电模块完全浸泡在不导电的绝缘介电液体（Dielectric Fluid）中。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M07:ch4-1:0039"]
+    },
+    {
+      "id": "claim_006",
+      "text": "结合两证据，冷板式（DLC）为芯片级直接冷却（冷却液流经微通道冷板），浸没式为整机级浸泡冷却（整台服务器浸泡于绝缘介电液体），二者在换热接触层面与工质特性上不同，可能对应不同的换热模型与适用场景。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-2:o2:0008", "M07:ch4-1:0039"]
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "证据对冷板式的换热参数描述详细，但未提供浸没式液冷的换热模型与量化参数（机架密度、PUE、传热性能），无法完成二者热力学换热的直接数值对比。"
+  ],
+  "open_questions": [
+    "浸没式液冷（尤其相变换热）与冷板式的换热性能定量差异？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "浸没式液冷的热力学换热模型与量化参数（机架密度、PUE、传热性能）",
+      "reason": "现有证据仅包含冷板式的详细参数与浸没式的物理定义，缺少浸没式侧的对等数据"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

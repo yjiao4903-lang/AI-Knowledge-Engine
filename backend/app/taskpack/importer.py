@@ -34,6 +34,7 @@ from app.taskpack.schemas import (
     RunMeta,
     TaskPackEvidence,
     TaskYaml,
+    is_safe_task_id,
 )
 
 # 任务状态机枚举（§40）
@@ -145,6 +146,11 @@ class TaskPackImporter:
     def _subdir(self, name: str) -> Path:
         return self.root / name
 
+    @staticmethod
+    def _read_json(path: Path) -> dict:
+        """Read external JSON with optional UTF-8 BOM; validation remains separate."""
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+
     def _read_task_yaml(self, pack: Path) -> TaskYaml | None:
         p = pack / "task.yaml"
         if not p.exists():
@@ -161,7 +167,7 @@ class TaskPackImporter:
         if not p.exists():
             return None
         try:
-            return Manifest.model_validate(json.loads(p.read_text(encoding="utf-8")))
+            return Manifest.model_validate(self._read_json(p))
         except Exception:
             return None
 
@@ -185,7 +191,7 @@ class TaskPackImporter:
         if not p.exists():
             return None
         try:
-            raw = json.loads(p.read_text(encoding="utf-8"))
+            raw = self._read_json(p)
         except Exception:
             return None
         try:
@@ -198,7 +204,7 @@ class TaskPackImporter:
         if not p.exists():
             return None
         try:
-            return RunMeta.model_validate(json.loads(p.read_text(encoding="utf-8")))
+            return RunMeta.model_validate(self._read_json(p))
         except Exception:
             return None
 
@@ -229,6 +235,8 @@ class TaskPackImporter:
 
     def locate(self, task_id: str) -> Path | None:
         """在全部子目录中定位任务目录（防止重复/移动后查找）。"""
+        if not is_safe_task_id(task_id):
+            return None
         for sub in (OUTBOX, PROCESSING_DIR, COMPLETED_DIR, FAILED_DIR, ARCHIVE_DIR):
             p = self.root / sub / task_id
             if p.is_dir():
@@ -519,5 +527,9 @@ class TaskPackImporter:
         dst = self._subdir(ARCHIVE_DIR)
         dst.mkdir(parents=True, exist_ok=True)
         target = dst / pack.name
-        shutil.move(str(pack), str(target))
+        # 归档必须是同卷原子 rename；禁止 shutil.move 在目标已存在时产生
+        # 覆盖/嵌套目录等平台相关行为。碰撞由调用方显式处理并保留原任务。
+        if target.exists():
+            raise FileExistsError(f"归档目标已存在: {target}")
+        pack.rename(target)
         return target

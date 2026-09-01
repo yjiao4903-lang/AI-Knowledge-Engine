@@ -1,0 +1,13 @@
+{
+  "worker_tool": "antigravity",
+  "provider": "google",
+  "model": "gemini-2.5-pro",
+  "model_version": null,
+  "started_at": "2026-08-30T19:03:20+08:00",
+  "completed_at": "2026-08-30T19:04:45+08:00",
+  "prompt_version": "taskpack-synthesis-v1",
+  "prompt_sha256": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+  "task_manifest_sha256": "06362b40013ca2adb4b326666a83081dece3283b701c41369f1cff13b6e80316",
+  "input_tokens": null,
+  "output_tokens": null
+}

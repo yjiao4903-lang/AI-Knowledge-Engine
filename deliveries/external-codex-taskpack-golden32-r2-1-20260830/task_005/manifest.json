@@ -1,0 +1,14 @@
+{
+  "taskpack_version": "1.0",
+  "task_id": "20260830_180537_dpo-direct-preference-optimization",
+  "created_at": "2026-08-30T18:05:37+08:00",
+  "files": {
+    "task.yaml": "7c5929b9f6d77c5b1e3b97fdf7fd601630e33d9eca8c57214e60e46a8ac88355",
+    "AGENT_INSTRUCTION.md": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+    "evidence.jsonl": "12efed9ac8211d7f5225829b16644fc1883223e1424448d5d1b759348ec8b948",
+    "output_schema.json": "5ec56fc7d23e6494cbdd1c89216677bf1cf41f6fe04d74b13a41ff52ecd9b499",
+    "README.md": "141cab779df4e46180354b492b435314fd840ac376cb04646a2343ba825c2bea"
+  },
+  "evidence_count": 1,
+  "cognition_context_count": 0
+}

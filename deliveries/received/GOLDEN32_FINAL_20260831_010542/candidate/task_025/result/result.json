@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_hbm",
+  "task_type": "tension_extraction",
+  "query": "HBM 迭代带来封装价值提升与供应链集中瓶颈之间是否存在证据张力？",
+  "summary": "证据显示 HBM 代际迭代（位宽翻倍、带宽与堆叠提升、封装工艺升级）显著抬高了封装环节价值（B200 中 HBM 约占制造成本 45%），同时 HBM 与先进封装供应高度集中（台积电 CoWoS >90%、SK 海力士 2025 年份额 52.3%），价值提升与供应集中之间存在结构性张力；2026-2027 的供应格局预测存在分歧。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM 在 B200 中约 $2,900，占总制造成本约 45%（COGS 口径，自下而上建模估算，非实物拆解），按售价仅约 7-9%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "该占比为自下而上建模估算（Epoch AI，B 级），属估算口径，按规则不得标 supported，保留'约/估算'限定。"
+    },
+    {
+      "id": "claim_002",
+      "text": "证据预计 HBM 市场 TAM 从 2023 年约 $4.4B 增长至 2024 年 $17-18B、2025 年 $35-36B、2026E 约 $54-57B。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "2026E 为未来年份预测口径，保留'预计'与 E 标注，不得标 supported。"
+    },
+    {
+      "id": "claim_003",
+      "text": "2025 年 HBM 份额（位元出货口径）为 SK 海力士 52.3%、三星 28.7%、美光 19%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "2025 年份额虽为已发生年份的 TrendForce 数据，但按规则市场份额类数字不得标 supported，保留'位元出货口径'限定。"
+    },
+    {
+      "id": "claim_004",
+      "text": "台积电占全球先进制程约 70%，CoWoS 先进封装独占 >90%；2023–25 年 CoWoS 为实际交付瓶颈，NVIDIA 占其产能 60%+。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "占比数字为份额类（advanced 制程/CoWoS/产能），按规则不得标 supported，保留'约/>/60%+'限定；'2023–25 年 CoWoS 为实际交付瓶颈'为证据直接陈述。"
+    },
+    {
+      "id": "claim_005",
+      "text": "2026 年 HBM 供应商份额预测分歧大，其中对三星份额的预测区间为 24–37%；UBS 预计 SK 海力士约占 HBM4 供应 70%。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "2026 年及 HBM4 供应份额均为预测口径，保留来源预测表述。"
+    },
+    {
+      "id": "claim_006",
+      "text": "证据给出 HBM4 在 2026 年的接口位宽由 1024-bit 翻倍至 2048-bit，封装工艺为 MR-MUF / 1µm 混合键合，Base Die 采用 TSMC 12nm/3nm 逻辑工艺。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "两份证据均给出 HBM4 位宽翻倍，规格表给出其封装与 Base Die 工艺。"
+    },
+    {
+      "id": "claim_007",
+      "text": "证据给出 HBM4E（2027E）的规划规格：2048-bit、14~16 Gbps、3.6~4.0 TB/s、16-Hi（64GB）、TSMC 3nm / Intel 18A 逻辑、0.5µm Direct Bonding。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "2027E 为未来年份规划口径，保留 E 标注。"
+    },
+    {
+      "id": "claim_008",
+      "text": "可推断，HBM 代际迭代带来封装环节价值提升（位宽、带宽、堆叠提升且占制造成本约 45%），而供应集中于台积电（CoWoS >90%）与 SK 海力士（份额过半）等少数厂商，两者之间可能形成'价值越高、瓶颈风险越集中'的结构性张力。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "GPU产业技术源流与投资机会_最终报告:ch3-1:0014"],
+      "rationale": "由价值占比与供应集中度两组证据综合推导的张力判断。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "HBM 迭代显著提升封装环节价值（B200 中占制造成本约 45%，COGS 估算口径），而供应链高度集中（台积电 CoWoS >90%、2023-25 为实际交付瓶颈，SK 海力士 2025 年份额 52.3%），价值提升与单点瓶颈并存。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    },
+    {
+      "id": "tension_002",
+      "text": "2025 年已实现的三供份额（海力士 52.3%/三星 28.7%/美光 19%）与 2026 年的供应预测（三星 24-37%、UBS 预计海力士占 HBM4 约 70%）显示集中度走向存在分歧：三供就位或缓解集中，但头部占比预测仍高。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    },
+    {
+      "id": "tension_003",
+      "text": "HBM4 三供就位（三星 2026-06 通过 NVIDIA 认证、美光亦通过认证）可能缓解 HBM 单一供应瓶颈，但台积电在先进制程（约 70%）与 CoWoS 封装（>90%）中的独占地位仍是不可绕开的集中点，供应瓶颈可能从 HBM 环节转移而非消除。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch3-1:0014"]
+    },
+    {
+      "id": "tension_004",
+      "text": "HBM4 规模商用年份（2026）与 HBM4E（2027E）的后续演进之间存在时点与良率不确定性，其实际价值兑现程度与供应能力并存的局面仍需数据验证。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    }
+  ],
+  "uncertainties": [
+    "HBM 占 B200 制造成本 45% 为自下而上建模估算，非实物拆解。",
+    "2026E TAM、2026 份额区间、HBM4 供应占比（UBS 约 70%）均为预测口径。",
+    "HBM4E 2027E 规格为规划值，最终实现存在不确定性。"
+  ],
+  "open_questions": [
+    "当前证据中'封装价值提升'与'供应集中瓶颈'的净效应如何权衡？",
+    "HBM4 三供就位后，CoWoS 与先进制程的集中是否成为新的、更强的瓶颈？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "是否有 2026 年 HBM4 实际量产份额与封测产能利用率数据？",
+      "reason": "当前 2026 年供应格局仅有分歧较大的预测，缺少已实现数据。"
+    },
+    {
+      "question": "是否有 HBM 迭代对系统总成本与售价比重的跨代际实测对比？",
+      "reason": "45% 的成本占比为建模估算，且仅覆盖 B200 单机型。"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:45:17+08:00"
+}

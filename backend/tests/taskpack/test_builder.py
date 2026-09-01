@@ -54,6 +54,9 @@ def test_root_tree_and_template_sync(tk_env):
     )
     assert synced == canonical
     assert "TASKPACK WORKER — STANDARD INSTRUCTION V1" in canonical
+    for rule in ("2026E", "2027E", "不得标为 `supported`", "没有直接因果证据"):
+        assert rule in canonical
+        assert rule in synced
 
 
 def test_task_yaml_contract(tk_env):
@@ -124,6 +127,22 @@ def test_task_id_collision_suffix(tk_env):
     assert a.task_id != b.task_id
     assert b.task_id == f"{a.task_id}-2"
     assert b.task_path.is_dir()
+
+
+def test_create_task_failure_cleans_visible_ready_pack(tk_env, monkeypatch):
+    """Evidence resolution failure must not leave a directory discoverable as READY."""
+    builder = tk_env["builder"]
+
+    def fail(_refs):
+        raise RuntimeError("simulated evidence failure")
+
+    monkeypatch.setattr(builder, "_resolve_evidence", fail)
+    with pytest.raises(RuntimeError, match="simulated evidence failure"):
+        builder.create_task(
+            task_type="summary", query="cleanup check", evidence_refs=tk_env["refs"],
+            now=NOW,
+        )
+    assert list((tk_env["root"] / "outbox").iterdir()) == []
 
 
 def test_unknown_chunk_raises_not_found(tk_env):

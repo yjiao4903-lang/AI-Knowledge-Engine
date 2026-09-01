@@ -1,0 +1,20 @@
+schema_version: '1.0'
+task_id: 20260830_180537_hbm4-base-die
+task_type: comparison
+query: 对比 HBM4 采用混合键合与定制逻辑 Base Die 相对前代结构的主要变化。
+created_at: '2026-08-30T18:05:37+08:00'
+taskpack_version: '1.0'
+prompt_version: taskpack-synthesis-v1
+permissions:
+  read_only_inputs: true
+  allow_network: false
+  allow_external_sources: false
+  allow_write_paths:
+  - result/
+constraints:
+  evidence_only: true
+  max_claims: 12
+  language: zh-CN
+expected_output:
+  schema: SynthesisDraftV1
+  path: result/result.json

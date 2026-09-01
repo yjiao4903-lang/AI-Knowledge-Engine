@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_hbm4-hbm",
+  "task_type": "summary",
+  "query": "总结 HBM4 相比前几代 HBM 在接口位宽与引脚速率上的演进要点。",
+  "summary": "规格表显示 HBM 接口位宽在 HBM2E/HBM3/HBM3e 三代维持 1024-bit，HBM4 规划翻倍至 2048-bit；引脚速率由 HBM2E 的 3.6 Gbps 逐代升至 HBM3e 的 9.6 Gbps，HBM4 规划为 11.7~13.0 Gbps、HBM4E（2027E）规划为 14~16 Gbps。HBM4/HBM4E 各项参数来自前瞻性规格表与产业共识，均标为 uncertain。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "据 M04 代际演进规格表与 M05 表述，HBM4（2026 规模商用规划）接口位宽为 2048-bit，相对 HBM3/3e 的 1024-bit 翻倍。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"],
+      "rationale": "M04 规格表 HBM4 行标注 2048-bit（翻倍）；M05 明示接口位宽从 HBM3/3e 的 1024-bit 跃升至 2048-bit；HBM4 参数属前瞻性规格，故标 uncertain。"
+    },
+    {
+      "id": "claim_002",
+      "text": "规格表将 HBM4 引脚速率列为 11.7~13.0 Gbps，高于 HBM3e 的 9.6 Gbps。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "前瞻性规格表中的规划参数，保留原文区间与'2026 规模商用'口径，不标 supported。"
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM3e 接口位宽为 1024-bit、引脚速率 9.6 Gbps、单栈峰值带宽 1.2 TB/s，规模商用年份为 2024（12-Hi/16-Hi，36GB）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "规格表中历史代际（2024 规模商用）的直接陈述，未改变原文时态与口径。"
+    },
+    {
+      "id": "claim_004",
+      "text": "HBM3 接口位宽为 1024-bit、引脚速率 6.4 Gbps、单栈峰值带宽 819 GB/s，规模商用年份为 2023（12-Hi，24GB）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "历史规格（2023 规模商用）直接转述，无未来/估算/因果内容，supported 合规。"
+    },
+    {
+      "id": "claim_005",
+      "text": "HBM2E 接口位宽为 1024-bit、引脚速率 3.6 Gbps、单栈峰值带宽 460 GB/s，规模商用年份为 2020（8-Hi，16GB）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "历史规格（2020 规模商用）直接转述。"
+    },
+    {
+      "id": "claim_006",
+      "text": "规格表将 HBM4E（2027E 规模商用规划）接口位宽列为 2048-bit、引脚速率 14~16 Gbps、单栈峰值带宽 3.6~4.0 TB/s（16-Hi，64GB）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "2027E 为未来年份且为规划参数，保留 E 后缀与区间，标 uncertain。"
+    },
+    {
+      "id": "claim_007",
+      "text": "M05 称 HBM4 采用混合键合（Hybrid Bonding），取消传统微凸块，实现晶圆级 Cu-Cu 与介质键合，间距从 25µm 骤降至 <1µm；'互连电容降低 80%'为报告表述。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "HBM4 代际跃迁参数中的前瞻性技术描述，保留报告口径，标 uncertain。"
+    },
+    {
+      "id": "claim_008",
+      "text": "M05 称 HBM4 Base Die 将从传统低成本 DRAM 逻辑制程升级为台积电先进制程（N3/N4/12nm）定制逻辑，可集成内存控制逻辑与近存校验算子；'打破存储与逻辑代工边界'为报告判断。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "HBM4 前瞻性设计描述，保留'称'与报告判断口径，标 uncertain。"
+    },
+    {
+      "id": "claim_009",
+      "text": "M05 将接口位宽翻倍、混合键合与定制逻辑 Base Die 三项并列为 HBM4 核心代际跃迁参数的内容。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "对证据文本结构与列举内容的直接转述，不涉及未来数字陈述。"
+    },
+    {
+      "id": "claim_010",
+      "text": "关于 HBM4 单栈峰值带宽，M04 规格表列为 2.0~3.3 TB/s，M05 表述为'突破 2.0~3.0 TB/s（L3 产业共识）'，两处数字范围不同。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"],
+      "rationale": "前瞻性能数字且两源并存不同区间，保留各自数字与'产业共识'口径，标 uncertain。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "两处来源对 HBM4 单栈峰值带宽的表述不一致：M04 规格表为 2.0~3.3 TB/s，M05 为'突破 2.0~3.0 TB/s（L3 产业共识）'；差异可能源于统计口径或时点不同。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"]
+    },
+    {
+      "id": "tension_002",
+      "text": "HBM4 Base Die 制造工艺在两处来源中的表述粒度不同：M04 规格表为'TSMC 12nm/3nm 逻辑'，M05 为'台积电先进制程（N3/N4/12nm）'；两者是否为同一口径未在证据中说明。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"]
+    }
+  ],
+  "uncertainties": [
+    "HBM4/HBM4E 各项参数来自前瞻性规格表与产业共识，尚未确认最终商用规格",
+    "HBM4 单栈峰值带宽两源数字不一致（2.0~3.3 vs 2.0~3.0 TB/s）",
+    "两源对 HBM4 Base Die 制程的表述粒度不同（12nm/3nm vs N3/N4/12nm）"
+  ],
+  "open_questions": [
+    "HBM4 量产后的实际引脚速率落在 11.7~13.0 Gbps 区间的何处",
+    "HBM4 带宽口径差异（2.0~3.3 vs 2.0~3.0 TB/s）的时点与统计口径界定"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4 正式发布或量产的官方规格（接口位宽、引脚速率、单栈带宽）",
+      "reason": "当前证据仅为前瞻性规格表与产业共识表述，无一手官方规格"
+    },
+    {
+      "question": "HBM4 Base Die 制程口径（12nm/3nm 与 N3/N4/12nm）的统一说明",
+      "reason": "M04 与 M05 表述不一致，需权威来源裁定"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:50:20+08:00"
+}

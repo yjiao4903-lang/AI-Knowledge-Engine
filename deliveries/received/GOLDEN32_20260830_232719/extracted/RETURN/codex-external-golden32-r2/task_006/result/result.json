@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_moe",
+  "task_type": "summary",
+  "query": "总结 MoE 模型在总损失中引入辅助加载平衡损失的作用。",
+  "summary": "传统 MoE 通过辅助负载均衡损失 L_aux（L_total = L_target + α_aux·L_aux）强行拉平专家负载以抑制路由崩溃，但该损失与真实任务目标冲突，权重 α_aux 存在两难。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "为强行拉平各个专家的负载，传统 MoE 模型在总损失函数中引入了辅助损失项 L_aux，即 L_total = L_target + α_aux·L_aux。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    },
+    {
+      "id": "claim_002",
+      "text": "辅助损失项形式为 L_aux = α·E·Σ_{i=1}^{E} f_i·P_i，其中 f_i 为专家 i 的实际接收频率（令牌被路由给专家 i 的比例），P_i 为门控网络对专家 i 的平均预测概率。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    },
+    {
+      "id": "claim_003",
+      "text": "辅助损失本质上是一个与下游真实任务目标（Next-token Prediction）冲突的人为惩罚项。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    },
+    {
+      "id": "claim_004",
+      "text": "当权重 α_aux 过大时，门控网络被迫将与数学相关的 token 强行分流给文学或代码专家，严重破坏了专家的专业化学习能力。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    },
+    {
+      "id": "claim_005",
+      "text": "当 α_aux 过小时，又无法抑制路由崩溃。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    },
+    {
+      "id": "claim_006",
+      "text": "综合而言，辅助负载均衡损失的作用是通过附加惩罚项均衡各专家负载、抑制路由崩溃，但其与任务目标的冲突使其强度设定需要权衡，可能在负载均衡与专家专业化之间存在折中。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "辅助损失权重 α_aux 存在内在两难：取值过大会破坏专家的专业化学习能力，取值过小又无法抑制路由崩溃。",
+      "evidence_refs": ["M09:ch4-2:o43:0053"]
+    }
+  ],
+  "uncertainties": [
+    "证据未给出 α_aux 的具体取值范围或最优设定方法。"
+  ],
+  "open_questions": [
+    "章节标题提及的“无辅助损失策略”的具体机制与效果如何？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "无辅助损失（aux-loss-free）负载均衡策略的原理与对比效果",
+      "reason": "证据摘录仅覆盖传统辅助损失部分，未包含该策略的细节"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

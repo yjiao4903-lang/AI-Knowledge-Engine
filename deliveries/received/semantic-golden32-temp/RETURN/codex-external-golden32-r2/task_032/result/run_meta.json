@@ -1,0 +1,13 @@
+﻿{
+    "task_manifest_sha256":  "9479724441F375C6CC55A62869244D5FC2AACE3CA8615ABC1791C6C97FBFE58A",
+    "prompt_sha256":  "22A922E22A6B04DB58330911DC33CBCD6B733272AA1A6951CD0D39C42580C8E5",
+    "completed_at":  "2026-08-30T23:02:43+08:00",
+    "started_at":  "2026-08-30T23:02:43+08:00",
+    "input_tokens":  null,
+    "output_tokens":  null,
+    "prompt_version":  "taskpack-synthesis-v1",
+    "worker_tool":  "codex-external",
+    "model":  "claude-sonnet-4",
+    "model_version":  null,
+    "provider":  null
+}

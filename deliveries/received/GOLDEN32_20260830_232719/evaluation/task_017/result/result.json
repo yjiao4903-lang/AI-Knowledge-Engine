@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_task",
+  "task_type": "causal_synthesis",
+  "query": "为什么接口位宽提高会进一步推高先进封装的系统价值量？",
+  "summary": "证据显示接口位宽翻倍与混合键合、定制逻辑 Base Die、NV-HBI 等先进封装/互连技术相伴出现，但“位宽提高推高先进封装价值量”无直接量化证据；该项关联仅能作推断，需补充封装价值量数据验证。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM4 接口位宽由 HBM3/3e 的 1024-bit 跃升至 2048-bit，单堆栈带宽约为 2.0~3.0 TB/s（L3 产业共识口径）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "位宽翻倍为直接陈述，带宽数值为产业共识估计"
+    },
+    {
+      "id": "claim_002",
+      "text": "HBM4 采用混合键合：取消传统微凸块，实现晶圆级直接铜-铜（Cu-Cu）与介质键合，间距从 25μm 骤降至 <1μm，互连电容降低 80%。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直接陈述混合键合参数"
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM4 定制逻辑 Base Die 由传统低成本 DRAM 逻辑制程升级为台积电先进制程（N3/N4/12nm），使存储厂能够将内存控制逻辑、近存校验算子直接集成于 Base Die，打破存储与逻辑计算的传统代工边界。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "证据直接陈述 Base Die 制程升级与集成能力"
+    },
+    {
+      "id": "claim_004",
+      "text": "高带宽互连依赖先进封装集成在 GPU 平台普遍出现：B200 采用双 die + NV-HBI 实现 10 TB/s 并突破 reticle 极限，MI300X 采用 8×XCD 3D 混合键合；Rubin 平台带宽提升至 22 TB/s（288GB HBM4、12-Hi，NVIDIA 官方口径）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "产品规格为直接陈述；Rubin 为官方发布口径"
+    },
+    {
+      "id": "claim_005",
+      "text": "证据将接口位宽翻倍、混合键合与定制逻辑 Base Die 并列列为 HBM4 的核心代际跃迁参数，并在 GPU 平台将更高带宽与更复杂封装/互连技术（NV-HBI、3D 混合键合）并列出现；这表明位宽提高与先进封装复杂度提升在代际演进中相伴出现，但证据未直接陈述位宽提高对先进封装价值量的影响。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026", "GPU产业技术源流与投资机会_最终报告:ch5-1:0023"],
+      "rationale": "基于并列参数的合理综合，使用表明限定"
+    },
+    {
+      "id": "claim_006",
+      "text": "定制逻辑 Base Die 集成近存计算功能使先进封装承载的内容从纯互连扩展至逻辑功能，且 Base Die 制程升级为台积电先进逻辑制程，可能推动封装环节的价值构成与代工边界发生变化，与“位宽提高推高先进封装价值量”的方向相一致；但现有证据无任何封装价值量或 ASP 的量化数据。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M05:ch2-2:o2:0026"],
+      "rationale": "合理推导，使用可能/相一致限定并声明证据缺口"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "“推高先进封装系统价值量”缺乏直接量化证据（无价格/ASP/收入数据）",
+    "Rubin 平台规格与量产时间为 NVIDIA 官方口径",
+    "HBM4 单堆栈带宽为产业共识估计值"
+  ],
+  "open_questions": [
+    "接口位宽提高通过何种路径转化为先进封装的价值量（ASP 或收入）？",
+    "混合键合与 MR-MUF 在 HBM4 中的成本结构差异如何？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "接口位宽与先进封装价值量/ASP 的定量关系",
+      "reason": "现有证据仅并列技术参数，无价格或收入数据"
+    },
+    {
+      "question": "HBM4 混合键合的成本与良率数据",
+      "reason": "成本与良率是决定封装价值量的关键变量，现有证据缺失"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:15:00+08:00"
+}

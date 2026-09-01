@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_hbm4-hbm",
+  "task_type": "summary",
+  "query": "总结 HBM4 相比前几代 HBM 在接口位宽与引脚速率上的演进要点。",
+  "summary": "HBM4 相比前代（HBM2E/HBM3/HBM3e）在物理接口位宽与传输速率上实现了关键跨越：\n1. 接口位宽：打破了前几代长达数年保持的 1024-bit 限制，直接翻倍跃升至 2048-bit；后续 HBM4E 规划继续维持 2048-bit 位宽。\n2. 引脚速率：从 HBM2E 的 3.6 Gbps、HBM3 的 6.4 Gbps 及 HBM3e 的 9.6 Gbps 持续演进，HBM4 规划参数区间达到 11.7~13.0 Gbps，预计 2027E 商用的 HBM4E 则进一步规划达到 14~16 Gbps。\n3. 协同演进：位宽翻倍与引脚速率提升共同支撑 HBM4 单栈峰值带宽突破 2.0~3.3 TB/s，底层依托 1µm 混合键合及台积电先进制程 Base Die 实现互连革新。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "前代 HBM 包括 HBM2E（2020 年商用）、HBM3（2023 年商用）与 HBM3e（2024 年商用）的接口位宽（Bus Width）均固定在 1024-bit。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "M04 规格表与 M05 均明确指出 HBM2E、HBM3 和 HBM3e 的接口位宽为 1024-bit。"
+    },
+    {
+      "id": "claim_002",
+      "text": "前代 HBM 在 1024-bit 位宽下引脚速率持续提升，HBM2E 为 3.6 Gbps，HBM3 为 6.4 Gbps，HBM3e 进一步提升至 9.6 Gbps。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040"
+      ],
+      "rationale": "M04 规格表给出了 HBM2E、HBM3 至 HBM3e 引脚速率从 3.6 Gbps 到 9.6 Gbps 的历史演进数据。"
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM4 相比前代实现了接口位宽翻倍，从 HBM3/3e 的 1024-bit 跃升至 2048-bit。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "M04 规格表标明 HBM4 接口位宽为 2048-bit (翻倍)，M05 明确记载接口位宽从 HBM3/3e 的 1024-bit 跃升至 2048-bit。"
+    },
+    {
+      "id": "claim_004",
+      "text": "根据 M04 规格表，2026 年规模商用口径下的 HBM4 引脚速率参数区间为 11.7~13.0 Gbps。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040"
+      ],
+      "rationale": "该参数为 2026 年商用规划的区间指标（11.7~13.0 Gbps），依规则预测/目标口径标为 uncertain。"
+    },
+    {
+      "id": "claim_005",
+      "text": "根据 M04 规格表，预计 2027E 规模商用的 HBM4E 接口位宽预计保持 2048-bit，引脚速率预计进一步提升至 14~16 Gbps。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040"
+      ],
+      "rationale": "包含未来年份 2027E 标识与远期预测/估算参数，依规则标为 uncertain 并保留预计口径。"
+    },
+    {
+      "id": "claim_006",
+      "text": "在位宽翻倍（2048-bit）与引脚速率提升（11.7~13.0 Gbps）的协同演进下，HBM4 单栈峰值带宽在报告中提升至 2.0~3.3 TB/s（M05 记述单堆栈带宽突破 2.0~3.0 TB/s 为产业共识）。",
+      "epistemic_state": "inference",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "基于位宽与速率物理参数对单栈峰值带宽表现的综合推导与来源对照。"
+    },
+    {
+      "id": "claim_007",
+      "text": "HBM4 接口位宽翻倍与引脚互连演进伴随着底层工艺革新，包括引入 1µm 混合键合（取消传统微凸块）以及采用台积电先进制程（N3/N4/12nm）定制逻辑 Base Die。",
+      "epistemic_state": "supported",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ],
+      "rationale": "M04 与 M05 明确记载了 HBM4 采用 1µm 混合键合与台积电先进制程 Base Die。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "关于 HBM4 单栈峰值带宽指标，M04 规格表给出的峰值带宽区间为 2.0 ~ 3.3 TB/s，而 M05 表述为单堆栈带宽突破 2.0 ~ 3.0 TB/s [L3 产业共识]，两份报告在带宽上限与共识口径上存在细微范围差异。",
+      "evidence_refs": [
+        "M04:ch3-2:o1:0040",
+        "M05:ch2-2:o2:0026"
+      ]
+    }
+  ],
+  "uncertainties": [
+    "HBM4 在不同封装方案（MR-MUF 与 1µm 混合键合）下实际量产引脚速率能否稳定达到 13.0 Gbps 上限尚存工程不确定性。",
+    "远期代际 HBM4E 预计在 2027E 达成 14~16 Gbps 引脚速率与 3.6~4.0 TB/s 带宽目标的具体商用落地进度与制程良率存在技术不确定性。"
+  ],
+  "open_questions": [
+    "主流存储原厂在 2048-bit 接口位宽下实际量产采用的引脚速率基准及信号完整性表现如何？",
+    "取消传统微凸块、采用 1µm 混合键合对 HBM4 在高引脚速率下的热耗散与电容降低的具体实测效果如何？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4 在不同工作电压与封装条件下的实测引脚速率与功耗曲线。",
+      "reason": "当前证据仅提供 11.7~13.0 Gbps 规划参数区间，缺少量产芯片的实测电气测试与功耗数据。"
+    },
+    {
+      "question": "JEDEC 官方正式发布的 HBM4 接口标准与引脚电气规范文档。",
+      "reason": "当前证据基于行业战略报告规格表及产业共识，缺少 JEDEC 官方标准层面的正式引脚定义支撑。"
+    }
+  ],
+  "worker": {
+    "tool": "antigravity",
+    "model": "gemini-2.5-pro"
+  },
+  "generated_at": "2026-08-30T19:04:30+08:00"
+}

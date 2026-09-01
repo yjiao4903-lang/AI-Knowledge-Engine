@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "task_type": "causal_synthesis",
+  "query": "推理总拥有成本对模型部署选型的影响机制是什么？",
+  "summary": "证据构建 TCO(N,D,Q)=CapEx_train+OpEx_infer 的形式模型：高并发推理（Q 达 10^11~10^13 Tokens、Q≫D）时推理成本项占主导，最优决策是大幅增加训练数据规模而压缩参数量（报告称可超 Chinchilla 最优 10~100 倍、压至 8B/70B 级）；该结论为模型推导，参数取值缺失。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "模型全生命周期总拥有成本定义为 TCO(N,D,Q)=CapEx_train(N,D)+OpEx_infer(N,Q)，其中 Q 为该模型服役期内预计处理的推理查询总量；训练资本开支近似为 γ_train·(6ND)，推理运营开支近似为 γ_infer·(2NQ)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直接给出形式化模型定义，保留近似与预计口径"
+    },
+    {
+      "id": "claim_002",
+      "text": "在目标损失约束下，使全生命周期 TCO 最小的参数量满足 ∂D/∂N = -D/N - (γ_infer/(3γ_train))·(Q/N)；当模型处于云端高并发生产环境、调用量 Q 达 10^11~10^13 Tokens 级别（即 Q≫D）时，该方程第二项占绝对主导。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "证据直接给出推导条件与主导项判断"
+    },
+    {
+      "id": "claim_003",
+      "text": "由主导项可知：为压低单次推理计算量 2NQ，最优决策是大幅增加训练集规模 D（报告称可超过 Chinchilla 最优值 10~100 倍）并将模型参数量 N 压缩至 8B 或 70B 级别；该“过度训练”结论为报告基于形式模型的推导，具体数值依赖模型参数假设。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "模型推导结论，保留参数量区间与推导属性"
+    },
+    {
+      "id": "claim_004",
+      "text": "影响机制总结：推理查询总量 Q 越大，推理成本在 TCO 中的主导性越强，最优部署配置越偏向“多训数据、压缩参数”；报告将该策略定性为标度律在“推理即服务”全生命周期资本配置下的必然演化（L1 口径），属模型演绎结论而非实证观测。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch1-3-1:0013"],
+      "rationale": "基于模型推导的机制归纳，声明无实证验证"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "γ_train/γ_infer（单 FLOP 硬件折旧与电费）与推理查询量 Q 的具体取值在证据中未给出",
+    "10~100 倍、8B/70B 为模型推导示例，未见实证验证",
+    "“必然演化”为演绎结论，部署实证缺失"
+  ],
+  "open_questions": [
+    "过度训练策略在真实模型的部署选型中如何验证？",
+    "Chinchilla 最优与过度训练之间的经验间距是多少？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "γ 参数与推理查询量 Q 的实证取值",
+      "reason": "形式模型结论依赖这些参数，证据未给出"
+    },
+    {
+      "question": "过度训练策略的实际采用案例与效果数据",
+      "reason": "现有证据仅为模型推导，无部署验证"
+    },
+    {
+      "question": "Chinchilla 最优与过度训练的实证关系数据",
+      "reason": "10~100 倍区间需要经验数据支撑"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:15:00+08:00"
+}

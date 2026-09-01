@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_hbm4-hbm",
+  "task_type": "summary",
+  "query": "总结 HBM4 相比前几代 HBM 在接口位宽与引脚速率上的演进要点。",
+  "summary": "HBM 代际演进中，HBM2E/HBM3/HBM3e 接口位宽均为 1024-bit，引脚速率从 3.6 提升至 9.6 Gbps；HBM4 将接口位宽翻倍至 2048-bit，引脚速率升至 11.7~13.0 Gbps。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "HBM2E 于 2020 年规模商用，接口位宽为 1024-bit，引脚速率为 3.6 Gbps，单栈峰值带宽 460 GB/s。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_002",
+      "text": "HBM3 于 2023 年规模商用，接口位宽为 1024-bit，引脚速率为 6.4 Gbps，单栈峰值带宽 819 GB/s。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_003",
+      "text": "HBM3e 于 2024 年规模商用，接口位宽为 1024-bit，引脚速率为 9.6 Gbps，单栈峰值带宽 1.2 TB/s。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_004",
+      "text": "HBM4（规模商用年份 2026）接口位宽翻倍至 2048-bit，引脚速率为 11.7~13.0 Gbps，单栈峰值带宽 2.0~3.3 TB/s。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_005",
+      "text": "前几代 HBM（HBM2E/HBM3/HBM3e）接口位宽均保持 1024-bit，HBM4 首次翻倍至 2048-bit；M05 报告同样指出 HBM4 接口位宽从 HBM3/3e 的 1024-bit 跃升至 2048-bit，单堆栈带宽突破 2.0~3.0 TB/s（来源标注为 L3 产业共识）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"]
+    },
+    {
+      "id": "claim_006",
+      "text": "引脚速率呈逐代提升的演进序列：HBM2E 3.6 Gbps → HBM3 6.4 Gbps → HBM3e 9.6 Gbps → HBM4 11.7~13.0 Gbps。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M04:ch3-2:o1:0040"]
+    },
+    {
+      "id": "claim_007",
+      "text": "HBM4E 为预期中的下一代规格（规模商用年份标注为 2027E），接口位宽 2048-bit、引脚速率 14~16 Gbps、单栈峰值带宽 3.6~4.0 TB/s。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M04:ch3-2:o1:0040"],
+      "rationale": "HBM4E 行标注年份为 2027E，属预测口径，保留未来年份限定词。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "两份证据对 HBM4 单堆栈峰值带宽的上界表述不一致：M04 表格为 2.0~3.3 TB/s，M05 文本为 2.0~3.0 TB/s（标注为 L3 产业共识）。",
+      "evidence_refs": ["M04:ch3-2:o1:0040", "M05:ch2-2:o2:0026"]
+    }
+  ],
+  "uncertainties": [
+    "HBM4E 的规格（2048-bit、14~16 Gbps）与规模商用年份（2027E）为预测口径，尚未确证。",
+    "HBM4 单堆栈峰值带宽上界在证据间存在 3.0 TB/s 与 3.3 TB/s 的口径差异。"
+  ],
+  "open_questions": [
+    "HBM4E 之后的接口位宽是否继续加宽？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "HBM4E 的最终量产规格与时间表",
+      "reason": "现有证据仅有一条标注 2027E 的预期性表格数据，属于预测口径，需权威一手来源确认"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": "claude-sonnet-4"
+  },
+  "generated_at": "2026-08-30T23:07:20+08:00"
+}

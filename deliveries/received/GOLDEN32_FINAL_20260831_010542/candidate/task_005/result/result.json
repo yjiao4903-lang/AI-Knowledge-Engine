@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_dpo-direct-preference-optimization",
+  "task_type": "summary",
+  "query": "总结 DPO（Direct Preference Optimization）相比传统方法的核心要点。",
+  "summary": "DPO（Rafailov et al., 2023, Stanford）通过数学变换省去显式奖励模型 r_φ 与 PPO 的在线多模型采样循环：带 KL 约束的 RL 目标被重写为闭式形式，最优策略 π* 与奖励函数 r 存在精确代数对应，代入 Bradley-Terry 偏好概率后配分函数 Z(x) 精确抵消，得出不依赖奖励模型与采样循环的偏好优化目标。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "2023 年，Rafailov 等人（Stanford）提出 DPO（Direct Preference Optimization）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文对 DPO 提出时间与作者的直接陈述。"
+    },
+    {
+      "id": "claim_002",
+      "text": "DPO 利用数学变换彻底省去了显式奖励模型 r_φ 与 PPO 复杂的在线多模型采样循环。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文对 DPO 相比 PPO 方法差异的直接陈述。"
+    },
+    {
+      "id": "claim_003",
+      "text": "推导中，带 KL 约束的强化学习目标被重写为 max_π E_x[-β·KL(π(y|x) ‖ π*(y|x)) + β·log Z(x)] 的形式，其中配分函数 Z(x) = Σ_y π_ref(y|x)·exp((1/β)·r(x,y))。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文给出重写后的目标函数与配分函数定义。"
+    },
+    {
+      "id": "claim_004",
+      "text": "当且仅当 π(y|x) = π*(y|x) 时，KL 散度达到最小值 0，目标函数取得全局极大值。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文对最优条件与全局极大值的直接陈述。"
+    },
+    {
+      "id": "claim_005",
+      "text": "最优策略 π* 与真实奖励函数 r 之间存在精确的代数对应：π*(y|x) = (1/Z(x))·π_ref(y|x)·exp((1/β)·r(x,y))，等价于 r(x,y) = β·log(π*(y|x)/π_ref(y|x)) + β·log Z(x)。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文直接给出的双向代数对应关系。"
+    },
+    {
+      "id": "claim_006",
+      "text": "将该式直接代入 Bradley-Terry 偏好概率公式后，Z(x) 在两项相减时精确抵消。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "原文对抵消过程的直接陈述。"
+    },
+    {
+      "id": "claim_007",
+      "text": "由于显式奖励模型与在线采样循环被省去，DPO 的训练流程可能比 PPO 类方法更直接、工程实现更简单（推断）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "由'省去奖励模型与采样循环'的直接表述理性推断，用'可能'限定。"
+    },
+    {
+      "id": "claim_008",
+      "text": "章节标题将本节定位为'PPO 到 DPO 的等价性与稳定性解剖'，结合推导过程，DPO 保留了带 KL 约束的优化目标而以闭式形式表达偏好，表明其与 PPO 的优化目标存在对应关系（推断）。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M10:ch2-2-2:0020"],
+      "rationale": "由标题定位与推导形式推断等价性论述方向，用'表明'限定。"
+    }
+  ],
+  "tensions": [],
+  "uncertainties": [
+    "本片段未给出 DPO 与 PPO 在稳定性、样本效率上的实证对比结论",
+    "Bradley-Terry 偏好假设的适用范围未在本片段讨论"
+  ],
+  "open_questions": [
+    "DPO 闭式推导在 Bradley-Terry 假设不成立时的行为"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "DPO 与 PPO 在稳定性与样本效率上的实证对比数据",
+      "reason": "当前证据仅含数学推导，无实证对比"
+    },
+    {
+      "question": "DPO 训练对偏好数据质量与规模的依赖",
+      "reason": "证据未涉及数据要求与训练稳定性细节"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:51:20+08:00"
+}

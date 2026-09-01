@@ -1,0 +1,14 @@
+{
+  "taskpack_version": "1.0",
+  "task_id": "20260830_180538_task",
+  "created_at": "2026-08-30T18:05:38+08:00",
+  "files": {
+    "task.yaml": "6f0b79362ab4a2110a66573745881eb66a9017c51c4d31d7b4a10e93be67d095",
+    "AGENT_INSTRUCTION.md": "22a922e22a6b04db58330911dc33cbcd6b733272aa1a6951cd0d39c42580c8e5",
+    "evidence.jsonl": "d596490b147abd59be515e8551cc7881cddd310892691a25f97ade23f0f0c4d3",
+    "output_schema.json": "5ec56fc7d23e6494cbdd1c89216677bf1cf41f6fe04d74b13a41ff52ecd9b499",
+    "README.md": "141cab779df4e46180354b492b435314fd840ac376cb04646a2343ba825c2bea"
+  },
+  "evidence_count": 2,
+  "cognition_context_count": 0
+}

@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "task_id": "20260830_180537_ai",
+  "task_type": "causal_synthesis",
+  "query": "AI 算力扩张推升液冷需求的因果机制是什么？",
+  "summary": "AI 算力扩张通过推高芯片 TDP 与单机架功率密度，使风冷在 40-50 kW/机架处失效，倒逼数据中心迁移至冷板式直接芯片液冷与浸没式液冷；液冷凭借液体高热容与高对流换热系数支撑 150-200 kW 单机架密度并将 PUE 压至 1.05-1.15，形成由算力密度到散热需求的因果链条。未来用电量、渗透率与 Rubin TDP 等预测值均标注 uncertain。",
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "AI 加速芯片热设计功耗（TDP）逐代攀升：A100 400W、H100 700W、B200 1,000W，使单机架功率密度随之提高。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "证据直陈各代 GPU TDP 数值（已发布产品口径）。"
+    },
+    {
+      "id": "claim_002",
+      "text": "风冷散热在 40-50 kW/机架处失效，工业界被迫全面迁移至直接芯片液体冷却（DLC）或相变浸没式液冷（Immersion Cooling）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024", "M06:ch1-2:o2:0008"],
+      "rationale": "两份证据分别直陈风冷失效阈值与向液冷迁移的行业行为。"
+    },
+    {
+      "id": "claim_003",
+      "text": "液体冷却液（去离子水/乙二醇溶液）的体积热容约为空气的 3,500 倍，对流换热系数约 5,000-15,000 W/(m²·K)，构成液冷支撑高密度机架的物理基础。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "证据直陈液冷物理参数。"
+    },
+    {
+      "id": "claim_004",
+      "text": "冷板换热使数据中心能够承受高达 150-200 kW 的单机架密度，并将 PUE 压制在 1.05-1.15 区间。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "证据直陈冷板换热的能力数值。"
+    },
+    {
+      "id": "claim_005",
+      "text": "浸没式液冷将整台服务器主板、CPU、GPU、内存及供电模块完全浸泡在不导电的绝缘介电液体（Dielectric Fluid）中。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M07:ch4-1:0039"],
+      "rationale": "证据直陈浸没式液冷的定义性特征。"
+    },
+    {
+      "id": "claim_006",
+      "text": "冷却系统并未消灭热量，只是将高密度热流转移至冷却水回路；若采用机械制冷压缩机会消耗巨大压缩电能，采用蒸发冷却塔则引发强烈的水资源消耗约束（WUE 危机）。",
+      "epistemic_state": "supported",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "证据直陈热力学第二定律约束下的冷却代价。"
+    },
+    {
+      "id": "claim_007",
+      "text": "推理：芯片 TDP 上升与机架密度提高共同推升单机架发热量，当风冷能力在 40-50 kW/机架达到上限时，液冷成为维持高功率密度部署的替代冷却路径，从而推升液冷需求。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024", "M06:ch1-2:o2:0008"],
+      "rationale": "由风冷失效阈值与液冷能力数值综合推导，使用成为/从而等推导性表述。"
+    },
+    {
+      "id": "claim_008",
+      "text": "推理：AI 算力扩张（数据中心用电量与 GPU 部署规模上升）通过抬高单机架功率密度形成对液冷的需求拉动，风冷失效是其中的传导环节。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024", "M06:ch1-2:o2:0008"],
+      "rationale": "由用电量增长与散热能力约束两条证据综合推断，无直接因果陈述。"
+    },
+    {
+      "id": "claim_009",
+      "text": "推理：液冷将单机架 PUE 压制在 1.05-1.15 区间，可能在缓解数据中心能耗与用水约束方面较风冷更具优势，从而与算力扩张形成相互强化的正向反馈。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "基于 PUE 数值与冷却代价陈述的推导，使用可能等限定词。"
+    },
+    {
+      "id": "claim_010",
+      "text": "全球数据中心用电量 2024 年为 415 TWh（占全球 1.5%），2025 年升至 485 TWh（同比 +17%）；报告预计 2030 年约 950 TWh（约 3%）。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "含 2030 年预测数值，保留约与预计口径，不得标 supported。"
+    },
+    {
+      "id": "claim_011",
+      "text": "液冷渗透率从 2024 年 14% 上升至 2025 年 33%，为行业渗透率统计口径。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "渗透率为预期类统计数字，保留来源口径。"
+    },
+    {
+      "id": "claim_012",
+      "text": "未来旗舰 GPU（Rubin）TDP 预计约 1,800W 以上，若兑现将进一步提高单机架功率密度并强化液冷需求。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "涉及未来产品的预测值（约 1,800W+），保留约与预计口径。"
+    }
+  ],
+  "tensions": [
+    {
+      "id": "tension_001",
+      "text": "证据一方面描述液冷需求随算力密度上升而扩张，另一方面又称电力与散热相关的绝对上限叙事本身是行业话语，算法效率（蒸馏/小模型）、SMR 核电、低功耗架构构成替代轴——需求扩张与新叙事之间存在张力。",
+      "epistemic_state": "inference",
+      "evidence_refs": ["GPU产业技术源流与投资机会_最终报告:ch5-2:0024"],
+      "rationale": "同一证据中并存液冷渗透率上升与替代轴叙事，构成推断性张力。"
+    },
+    {
+      "id": "tension_002",
+      "text": "液冷通过转移高密度热流到冷却水回路降低 PUE，但机械制冷压缩机与蒸发冷却塔分别带来压缩电能与水资源消耗（WUE）约束——液冷在省电与耗水/耗能之间的净收益需按具体制冷路径区分。",
+      "epistemic_state": "uncertain",
+      "evidence_refs": ["M06:ch1-2:o2:0008"],
+      "rationale": "证据直陈冷却代价但未给出液冷各路径的总能耗对比量化。"
+    }
+  ],
+  "uncertainties": [
+    "2030 年数据中心用电量约 950 TWh 为基于 IEA 2025/2026 的预测值",
+    "液冷渗透率 14%(2024)→33%(2025) 的统计口径与样本范围",
+    "Rubin TDP 约 1,800W+ 为未来产品预期值"
+  ],
+  "open_questions": [
+    "直接芯片液冷（DLC）与浸没式液冷在不同功率密度区间的适用边界如何划分？",
+    "液冷引入的冷却水回路与高耗水（WUE）问题在多大规模下会反噬其部署收益？"
+  ],
+  "additional_evidence_needed": [
+    {
+      "question": "液冷渗透率的具体统计口径、数据来源与 2026 年更新值",
+      "reason": "证据仅给出 2024/2025 两个年份的渗透率数字，无方法论说明"
+    },
+    {
+      "question": "DLC 与浸没式液冷在各功率密度与地理（温湿度/水资源）条件下的总拥有成本对比数据",
+      "reason": "证据给出热力学参数但未量化各冷却路径的总成本与净收益"
+    },
+    {
+      "question": "AI 算力扩张与液冷部署之间的时序与规模量化数据",
+      "reason": "证据仅并列给出 TDP、机架密度与用电量增长，无直接的容量-需求弹性估计"
+    }
+  ],
+  "worker": {
+    "tool": "codex-external",
+    "model": null
+  },
+  "generated_at": "2026-08-30T23:57:54+08:00"
+}
