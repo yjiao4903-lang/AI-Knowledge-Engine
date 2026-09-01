@@ -92,6 +92,7 @@ def build_cognition_proposal_payload(
         if any(ref not in by_chunk for ref in claim.evidence_refs):
             warnings.append(f"claim {claim.id} 包含 TaskPack 快照中不存在的 evidence ref")
         cognition_state = GROUNDING_TO_COGNITION[claim.epistemic_state]
+        contradicted = claim.epistemic_state == "contradicted"
         items.append(
             {
                 "title": _truncate_title(claim.text),
@@ -101,8 +102,8 @@ def build_cognition_proposal_payload(
                 "confidence": GROUNDING_TO_CONFIDENCE[claim.epistemic_state],
                 "sections": {
                     "内容": claim.text,
-                    "支持证据": refs_md,
-                    "反方证据": "" if claim.epistemic_state != "contradicted" else refs_md,
+                    "支持证据": "" if contradicted else refs_md,
+                    "反方证据": refs_md if contradicted else "",
                     "什么会证明它错": "需在 Cognition Proposal Preview 中补充/确认。",
                     "来源定位": _source_markdown(result, claim.epistemic_state, refs_md),
                 },
