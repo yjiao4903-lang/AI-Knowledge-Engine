@@ -3,6 +3,7 @@ from types import SimpleNamespace
 
 from app.api import synthesis as synthesis_api
 from app.contracts.cognition import CognitionContextItem
+from app.core.config import load_config
 from app.integration.proposals import build_cognition_proposal_payload
 from app.synthesis.schemas import Claim, SynthesisRequest, Tension
 from app.taskpack.importer import COMPLETED
@@ -161,3 +162,23 @@ def test_proposal_candidate_endpoint_is_read_only_and_postable_shape(tmp_path, m
     assert response["source_status"] == COMPLETED
     assert response["proposal_payload"]["origin_ref"] == "task_001"
     assert response["proposal_payload"]["items"]
+
+
+def test_runtime_env_overrides_keep_backend_paths_aligned(monkeypatch, tmp_path):
+    taskpack = tmp_path / "taskpacks"
+    cognition = tmp_path / "cognition"
+    kb = tmp_path / "reports"
+    models = tmp_path / "models"
+
+    monkeypatch.setenv("AIKE_TASKPACK_ROOT", str(taskpack))
+    monkeypatch.setenv("COGNITION_DATA_ROOT", str(cognition))
+    monkeypatch.setenv("AIKE_KB_ROOT", str(kb))
+    monkeypatch.setenv("AIKE_MODEL_ROOT", str(models))
+    monkeypatch.setenv("AIKE_KE_PORT", "9876")
+
+    cfg = load_config(tmp_path / "does-not-exist.yaml")
+    assert cfg.taskpack.root_dir == str(taskpack)
+    assert cfg.cognition.root == str(cognition)
+    assert cfg.knowledge_base.roots == [str(kb)]
+    assert cfg.paths.model_dir == str(models)
+    assert cfg.app.port == 9876
