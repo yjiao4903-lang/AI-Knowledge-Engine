@@ -155,7 +155,7 @@ class TaskPackConfig(BaseModel):
     """TaskPack 外部模型工作流配置。"""
 
     enabled: bool = True
-    root_dir: str = "D:/AI知识整合体系/taskpacks"
+    root_dir: str = str(PROJECT_ROOT / "data" / "taskpacks")
     prompt_version: str = "taskpack-synthesis-v1"
     max_evidence: int = 20
     evidence_max_chars: int = 1200
