@@ -1,5 +1,4 @@
 // 类型化 API client。所有请求走 /api 前缀（Vite dev server 代理到 127.0.0.1:8765）。
-// 错误兼容两种格式：AppError {"error","message","detail"} 与 FastAPI HTTPException {"detail"}。
 import type {
   ChunkDetail,
   CreateTaskRequest,
@@ -7,18 +6,19 @@ import type {
   DocumentDetail,
   DocumentsResponse,
   EvaluationLatest,
+  ExternalRunDetail,
+  ExternalRunsResponse,
+  HealthResponse,
   IndexStatus,
   PromptResponse,
+  ProposalCandidatesResponse,
   RescanResponse,
   SearchRequest,
   SearchResponse,
-  HealthResponse,
   SectionsResponse,
   SettingsPayload,
   TaskDetail,
   TaskListResponse,
-  ExternalRunDetail,
-  ExternalRunsResponse,
 } from './types';
 
 export class ApiError extends Error {
@@ -92,10 +92,13 @@ export const api = {
   settings: () => request<SettingsPayload>('/api/settings'),
   evaluationLatest: () => request<EvaluationLatest>('/api/evaluation/latest'),
 
-  // TaskPack Synthesis（V3.0：外部 Worker 工作流，§34-§39）
   createTask: (req: CreateTaskRequest) => post<CreateTaskResponse>('/api/synthesis/tasks', req),
   listTasks: () => request<TaskListResponse>('/api/synthesis/tasks'),
   task: (id: string) => request<TaskDetail>(`/api/synthesis/tasks/${encodeURIComponent(id)}`),
+  taskProposalCandidates: (id: string) =>
+    request<ProposalCandidatesResponse>(
+      `/api/synthesis/tasks/${encodeURIComponent(id)}/proposal-candidates`,
+    ),
   rescanTask: (id: string) =>
     post<RescanResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/rescan`),
   archiveTask: (id: string) =>
