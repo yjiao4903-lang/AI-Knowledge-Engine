@@ -22,9 +22,13 @@ AI-Knowledge-Engine
 - TaskPack V1 Builder / External Worker / Importer Gate / runs 读取；
 - I8 共享 `CognitionContextItem V1`；
 - I8 TaskPack -> Cognition Proposal Candidate 只读转换；
-- I8 Unified Research OS runtime 迁入本仓；
+- I8 Unified Research OS runtime / health / backup / restore 迁入本仓；
+- I8 TaskPack 默认根迁入 `<repo>/data/taskpacks`；
+- I8 旧 `D:\AI知识整合体系\taskpacks` 安全迁移脚本；
 - I8 Cognition + durable TaskPack backup lifecycle；
-- I8 read-only cross-system smoke script。
+- I8 read-only cross-system smoke script；
+- I8 KE Task Center 降级为运行/调试控制台，移除固定空 Evidence 的坏创建入口；
+- I8 Task Center 可只读查看/复制 Cognition Proposal Candidate JSON。
 
 ## 永久边界
 
@@ -66,9 +70,17 @@ GET  /api/health
 
 `backend/app/integration/proposals.py`
 
-### Runtime
+### Runtime / Migration
 
-`runtime/research-os.ps1`
+```text
+runtime/research-os.ps1
+runtime/start.ps1
+runtime/stop.ps1
+runtime/health.ps1
+runtime/backup.ps1
+runtime/restore.ps1
+runtime/migrate-taskpacks.ps1
+```
 
 ### Smoke
 
@@ -78,7 +90,31 @@ GET  /api/health
 
 `docs/INTEGRATION_CONTRACT_V2.md`
 
+## TaskPack 数据迁移
+
+新默认根：
+
+```text
+D:\AI-Knowledge-Engine\data\taskpacks
+```
+
+旧路径如果仍有历史任务，先 dry-run：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
+```
+
+再显式：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
+```
+
+迁移器只复制、不删除旧源，并按 SHA256 检测冲突/复验。
+
 ## 下一阶段（需要真实 cognition-app 代码）
+
+`AI-knowledge-combine` GitHub 仓库本身不包含真实 Cognition Vue/Node 源码，因此 I8 Phase 2 不能仅靠该仓继续改 UI。真实代码位于现有本机 Cognition App 目录。
 
 I8 Phase 2：
 
@@ -91,10 +127,29 @@ I8 Phase 2：
 
 ## 验证状态
 
-本分支已加入 deterministic unit tests 与 read-only smoke test脚本；由于 GitHub 仓库当前没有 Actions workflow，本次远程改动本身不等价于本机 runtime 验收。合入后应在真实 Windows 环境执行：
+本分支已加入 deterministic unit tests 与 cross-system smoke test 脚本；但 GitHub 仓库当前没有 Actions workflow，而且 GitHub Connector 不能替代用户 Windows 主机上的 ROCm、Qdrant、Cognition 实体运行环境。因此本次远程代码整合**不宣称真机测试已经通过**。
+
+合入后在真实 Windows 环境应执行：
 
 ```powershell
+# 旧 TaskPack 首次迁移（如旧目录存在）
+powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
+powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
+
+# 后端回归
 .venv\Scripts\python.exe -m pytest backend\tests\ -q
-powershell -ExecutionPolicy Bypass -File .\runtime\research-os.ps1 -Action health
+
+# 前端类型 + 构建
+cd frontend
+npm run build
+cd ..
+
+# 全栈健康
+powershell -ExecutionPolicy Bypass -File .\runtime\health.ps1
+
+# 跨系统只读 smoke
 .venv\Scripts\python.exe backend\scripts\integration_smoke.py
+
+# 备份恢复演练建议先用隔离目录
+powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 ```
