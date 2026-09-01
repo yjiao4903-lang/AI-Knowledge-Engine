@@ -42,6 +42,8 @@ def index_status(request: Request) -> dict:
 def index_scan(request: Request) -> dict:
     """全量 manifest 扫描并应用变更（同步返回；全量语料耗时与规模成正比）。"""
     app = request.app
+    if getattr(app.state, "pipeline", None) is None:
+        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
     with app.state.index_lock:
         try:
             from app.indexing.scanner import scan
@@ -58,6 +60,8 @@ def index_scan(request: Request) -> dict:
 @router.post("/reindex-document/{doc_id}")
 def reindex_document(doc_id: str, request: Request) -> dict:
     app = request.app
+    if getattr(app.state, "pipeline", None) is None:
+        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
     row = app.state.conn.execute(
         "SELECT source_path FROM documents WHERE id = ?", (doc_id,)).fetchone()
     if row is None:
@@ -76,6 +80,8 @@ def index_rebuild(body: RebuildBody, request: Request) -> dict:
     if body.confirm != "yes":
         raise HTTPException(status_code=400, detail='rebuild 需要 {"confirm": "yes"}')
     app = request.app
+    if getattr(app.state, "pipeline", None) is None:
+        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
     with app.state.index_lock:
         try:
             from app.storage.sqlite import connect

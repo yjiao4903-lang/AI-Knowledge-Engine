@@ -79,6 +79,13 @@ export interface SearchResponse {
   results: SearchResult[];
   timing_ms: SearchTiming;
   debug?: DebugInfo;
+  fallback_from?: SearchMode;
+  fallback_reason?: string;
+}
+
+export interface HealthResponse {
+  status: string;
+  retrieval?: { qdrant_available?: boolean; dense_search?: string };
 }
 
 export interface DocumentInfo {

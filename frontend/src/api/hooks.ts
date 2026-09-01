@@ -53,9 +53,34 @@ export function useEvaluationLatest() {
   });
 }
 
-export function useSearch() {
+export function useHealth() {
+  return useQuery({
+    queryKey: ['health'],
+    queryFn: () => api.health(),
+    refetchInterval: 15_000,
+  });
+}
+
+export function useSearch(qdrantAvailable?: boolean) {
   return useMutation({
-    mutationFn: (req: SearchRequest) => api.search(req),
+    mutationFn: async (req: SearchRequest) => {
+      const requested = req.options?.mode ?? 'hybrid';
+      const fallback = async (reason: string) => {
+        const response = await api.search({ ...req, options: { ...req.options, mode: 'lexical' } });
+        return { ...response, fallback_from: requested, fallback_reason: reason };
+      };
+      if (requested !== 'lexical' && qdrantAvailable === false) {
+        return fallback('Qdrant 不可用（health 状态）');
+      }
+      try {
+        return await api.search(req);
+      } catch (error) {
+        if (requested !== 'lexical' && (error as { status?: number }).status === 503) {
+          return fallback((error as Error).message);
+        }
+        throw error;
+      }
+    },
   });
 }
 

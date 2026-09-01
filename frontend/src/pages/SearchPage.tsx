@@ -1,7 +1,7 @@
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Alert, Button, Card, Collapse, Input, Radio, Space, Spin, Switch, Tag, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
-import { useDocuments, useSearch } from '../api/hooks';
+import { useDocuments, useHealth, useSearch } from '../api/hooks';
 import type { DebugInfo, SearchMode, SearchTiming } from '../api/types';
 import FiltersBar, { FiltersValue } from '../components/FiltersBar';
 import ResultCard, { EmptyResults } from '../components/ResultCard';
@@ -76,7 +76,8 @@ const SearchPage: React.FC = () => {
   const [topK, setTopK] = useState(10);
   const [filters, setFilters] = useState<FiltersValue>({});
 
-  const search = useSearch();
+  const health = useHealth();
+  const search = useSearch(health.data?.retrieval?.qdrant_available);
   const documentsQuery = useDocuments();
   const documents = documentsQuery.data?.documents ?? [];
 
@@ -171,6 +172,17 @@ const SearchPage: React.FC = () => {
           style={{ marginBottom: 16 }}
           message="检索失败"
           description={(search.error as Error)?.message}
+        />
+      )}
+
+      {search.data?.fallback_from && (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message="语义检索暂不可用，当前显示关键词检索结果"
+          description={`原请求模式为 ${search.data.fallback_from}；当前实际模式为 lexical。原因：${search.data.fallback_reason ?? '服务不可用'}`}
+          action={<Button size="small" onClick={() => setMode('lexical')}>切换为关键词模式</Button>}
         />
       )}
 

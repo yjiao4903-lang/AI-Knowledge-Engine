@@ -32,6 +32,10 @@ class SearchRequest(BaseModel):
 
 @router.post("/search")
 def search(body: SearchRequest, request: Request) -> dict:
+    if body.options.mode in ("hybrid", "dense") and not getattr(request.app.state, "qdrant_available", True):
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=503, detail="Qdrant 不可用，dense/hybrid 检索暂不可用；可改用 lexical 模式")
     engine = request.app.state.engine
     filters = body.filters.model_dump() if body.filters else None
     if filters:

@@ -72,8 +72,16 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         reranker = RerankerService(cfg, app.state.manager)
         app.state.engine = SearchEngine(
             cfg, app.state.conn, dense, reranker)
-        app.state.pipeline = IndexPipeline(
-            cfg, app.state.conn, EmbedderAdapter(cfg, app.state.manager))
+        app.state.pipeline = None
+        app.state.qdrant_available = False
+        try:
+            app.state.pipeline = IndexPipeline(
+                cfg, app.state.conn, EmbedderAdapter(cfg, app.state.manager))
+            app.state.qdrant_available = True
+        except Exception:
+            # Qdrant is an optional runtime dependency for local-only/read-only APIs.
+            # Keep the app alive; index operations and dense search report 503.
+            logger.exception("Qdrant unavailable; indexing and dense search disabled")
         logger.info("inference worker ready: %s (%s)", app.state.manager.device,
                     app.state.manager.device_kind)
 
@@ -195,6 +203,10 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     @app.get("/api/health")
     def health() -> dict:
         body = collect_health(cfg)
+        body["retrieval"] = {
+            "qdrant_available": getattr(app.state, "qdrant_available", False),
+            "dense_search": "available" if getattr(app.state, "qdrant_available", False) else "unavailable",
+        }
         # I0 Error/Health Model：聚合 gpu_worker 明细与 index_generation
         mgr = getattr(app.state, "manager", None)
         if mgr is not None:

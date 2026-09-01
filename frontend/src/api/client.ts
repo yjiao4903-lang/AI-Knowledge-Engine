@@ -12,6 +12,7 @@ import type {
   RescanResponse,
   SearchRequest,
   SearchResponse,
+  HealthResponse,
   SectionsResponse,
   SettingsPayload,
   TaskDetail,
@@ -72,6 +73,7 @@ function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 export const api = {
+  health: () => request<HealthResponse>('/api/health'),
   search: (req: SearchRequest) => post<SearchResponse>('/api/search', req),
 
   documents: () => request<DocumentsResponse>('/api/documents'),
