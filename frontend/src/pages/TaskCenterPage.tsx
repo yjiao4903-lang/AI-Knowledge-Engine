@@ -3,34 +3,20 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   CopyOutlined,
+  ExportOutlined,
   FolderOpenOutlined,
   InboxOutlined,
-  PlusOutlined,
   RedoOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import {
-  Alert,
-  App,
-  Button,
-  Card,
-  Form,
-  Input,
-  Modal,
-  Select,
-  Space,
-  Spin,
-  Table,
-  Tag,
-  Typography,
-} from 'antd';
+import { Alert, App, Button, Card, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
 import React from 'react';
 import {
   useArchiveTask,
-  useCreateTask,
   useOpenTaskFolder,
   useRescanTask,
   useTaskPrompt,
+  useTaskProposalCandidates,
   useTasks,
 } from '../api/hooks';
 import type { TaskInfo, TaskStatus, TaskType } from '../api/types';
@@ -59,7 +45,7 @@ function StatusTag({ status, stale }: { status: TaskStatus; stale: boolean }) {
   return (
     <Space size={4}>
       <Tag color={meta.color}>{meta.label}</Tag>
-      {status === 'COMPLETED' && stale && <Tag color="warning">证据已过时</Tag>}
+      {['COMPLETED', 'IMPORTED'].includes(status) && stale && <Tag color="warning">证据已过时</Tag>}
     </Space>
   );
 }
@@ -67,14 +53,11 @@ function StatusTag({ status, stale }: { status: TaskStatus; stale: boolean }) {
 const TaskCenterPage: React.FC = () => {
   const { message } = App.useApp();
   const tasksQuery = useTasks();
-  const createTask = useCreateTask();
   const rescanTask = useRescanTask();
   const archiveTask = useArchiveTask();
   const openFolder = useOpenTaskFolder();
   const copyPrompt = useTaskPrompt();
-
-  const [createOpen, setCreateOpen] = React.useState(false);
-  const [form] = Form.useForm();
+  const proposalCandidates = useTaskProposalCandidates();
   const tasks = tasksQuery.data?.tasks ?? [];
 
   const refresh = () => {
@@ -105,8 +88,8 @@ const TaskCenterPage: React.FC = () => {
       onSuccess: (r) => {
         void message.success(
           r.passed
-            ? `导入通过（citation_coverage=${r.citation_coverage}）`
-            : `导入未通过（stale=${r.stale}）`,
+            ? `Gate 通过（citation_coverage=${r.citation_coverage}）`
+            : `Gate 未通过（stale=${r.stale}）`,
         );
         void refresh();
       },
@@ -114,10 +97,63 @@ const TaskCenterPage: React.FC = () => {
     });
   };
 
+  const onProposalCandidates = (record: TaskInfo) => {
+    proposalCandidates.mutate(record.task_id, {
+      onSuccess: (r) => {
+        const payloadText = JSON.stringify(r.proposal_payload, null, 2);
+        Modal.info({
+          title: `Cognition Proposal 候选 · ${record.task_id}`,
+          width: 920,
+          okText: '关闭',
+          content: (
+            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+              <Alert
+                type="warning"
+                showIcon
+                message="只读候选，不会自动写入正式认知"
+                description="该 JSON 符合 Cognition Proposal V0.2 候选契约；正式变更仍必须在 Cognition 侧 Preview + Human Apply。"
+              />
+              <Text>
+                候选项 {r.proposal_payload.items.length} 条 · auto_apply={String(r.auto_apply)}
+              </Text>
+              {r.warnings.length > 0 && (
+                <Alert type="warning" message={`转换警告 ${r.warnings.length} 条`} description={r.warnings.join('\n')} />
+              )}
+              <Button
+                icon={<CopyOutlined />}
+                onClick={() => {
+                  void navigator.clipboard.writeText(payloadText).then(
+                    () => void message.success('Proposal payload 已复制'),
+                    () => void message.warning('复制失败'),
+                  );
+                }}
+              >
+                复制 Proposal JSON
+              </Button>
+              <pre
+                style={{
+                  maxHeight: 420,
+                  overflow: 'auto',
+                  background: '#fafafa',
+                  border: '1px solid #eee',
+                  padding: 12,
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {payloadText}
+              </pre>
+            </Space>
+          ),
+        });
+      },
+      onError: (e) => void message.error(`生成 Proposal 候选失败：${(e as Error).message}`),
+    });
+  };
+
   const onArchive = (record: TaskInfo) => {
     Modal.confirm({
       title: '归档任务',
-      content: `确定归档任务「${record.task_id}」吗？目录将移入 taskpacks/archive。`,
+      content: `确定归档任务「${record.task_id}」吗？`,
       okText: '归档',
       cancelText: '取消',
       onOk: () =>
@@ -134,26 +170,6 @@ const TaskCenterPage: React.FC = () => {
           });
         }),
     });
-  };
-
-  const onCreate = (values: { task_type: TaskType; query: string }) => {
-    createTask.mutate(
-      {
-        task_type: values.task_type,
-        query: values.query,
-        evidence_refs: [],
-        cognition_context: [],
-      },
-      {
-        onSuccess: (r) => {
-          void message.success(`TaskPack 已创建：${r.task_id}（${r.status}）`);
-          form.resetFields();
-          setCreateOpen(false);
-          void refresh();
-        },
-        onError: (e) => void message.error(`创建失败：${(e as Error).message}`),
-      },
-    );
   };
 
   const columns = [
@@ -178,12 +194,7 @@ const TaskCenterPage: React.FC = () => {
       width: 160,
       render: (_: TaskStatus, r: TaskInfo) => <StatusTag status={r.status} stale={r.stale} />,
     },
-    {
-      title: '查询',
-      dataIndex: 'query',
-      key: 'query',
-      ellipsis: true,
-    },
+    { title: '查询', dataIndex: 'query', key: 'query', ellipsis: true },
     {
       title: '证据数',
       dataIndex: 'evidence_count',
@@ -198,12 +209,9 @@ const TaskCenterPage: React.FC = () => {
       render: (_: unknown, r: TaskInfo) =>
         r.worker || r.model ? (
           <Text style={{ fontSize: 12 }}>
-            {r.worker ?? '—'}
-            {r.model ? ` · ${r.model}` : ''}
+            {r.worker ?? '—'}{r.model ? ` · ${r.model}` : ''}
           </Text>
-        ) : (
-          '—'
-        ),
+        ) : '—',
     },
     {
       title: '创建时间',
@@ -215,19 +223,14 @@ const TaskCenterPage: React.FC = () => {
     {
       title: '操作',
       key: 'actions',
-      width: 320,
+      width: 455,
       render: (_: unknown, r: TaskInfo) => (
         <Space size={4} wrap>
-          <Button
-            size="small"
-            icon={<FolderOpenOutlined />}
-            onClick={() => onOpenFolder(r)}
-            disabled={r.status === 'ARCHIVED'}
-          >
+          <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(r)} disabled={r.status === 'ARCHIVED'}>
             打开目录
           </Button>
           <Button size="small" icon={<CopyOutlined />} onClick={() => onCopyPrompt(r)}>
-            复制启动词
+            启动词
           </Button>
           <Button
             size="small"
@@ -236,14 +239,18 @@ const TaskCenterPage: React.FC = () => {
             disabled={!['COMPLETED', 'INVALID_RESULT'].includes(r.status)}
             loading={rescanTask.isPending}
           >
-            刷新
+            Gate
           </Button>
           <Button
             size="small"
-            danger
-            onClick={() => onArchive(r)}
-            disabled={r.status === 'ARCHIVED'}
+            icon={<ExportOutlined />}
+            onClick={() => onProposalCandidates(r)}
+            disabled={!['COMPLETED', 'IMPORTED'].includes(r.status)}
+            loading={proposalCandidates.isPending}
           >
+            Proposal 候选
+          </Button>
+          <Button size="small" danger onClick={() => onArchive(r)} disabled={r.status === 'ARCHIVED'}>
             归档
           </Button>
         </Space>
@@ -252,33 +259,26 @@ const TaskCenterPage: React.FC = () => {
   ];
 
   if (tasksQuery.isLoading) {
-    return (
-      <div style={{ textAlign: 'center', padding: 96 }}>
-        <Spin size="large" />
-      </div>
-    );
+    return <div style={{ textAlign: 'center', padding: 96 }}><Spin size="large" /></div>;
   }
 
   return (
     <div className="page-container">
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <Alert
+          type="info"
+          showIcon
+          message="I8：Task Center 现在是运行/调试控制台"
+          description="已移除会固定发送空 evidence_refs 的坏创建入口。TaskPack 必须由显式 EvidenceReference[] 创建；正式产品入口将在 Cognition Evidence Basket 中接入。"
+        />
+
         <Space>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
-            创建 TaskPack
-          </Button>
-          <Button icon={<SyncOutlined />} onClick={refresh} loading={tasksQuery.isFetching}>
-            刷新
-          </Button>
+          <Button icon={<SyncOutlined />} onClick={refresh} loading={tasksQuery.isFetching}>刷新</Button>
           {tasksQuery.isFetching && <Text type="secondary">自动轮询中…</Text>}
         </Space>
 
         {tasksQuery.isError && (
-          <Alert
-            type="error"
-            showIcon
-            message="无法加载 TaskPack 列表"
-            description={(tasksQuery.error as Error)?.message}
-          />
+          <Alert type="error" showIcon message="无法加载 TaskPack 列表" description={(tasksQuery.error as Error)?.message} />
         )}
 
         {tasks.length === 0 ? (
@@ -287,80 +287,31 @@ const TaskCenterPage: React.FC = () => {
             showIcon
             icon={<InboxOutlined />}
             message="暂无任务"
-            description="创建一个 TaskPack 后，外部 Worker 读取 outbox/ 目录并写回 result.json。"
+            description="使用 POST /api/synthesis/tasks 并传入至少一条 EvidenceReference；后续 Cognition Evidence Basket 将调用同一接口。"
           />
         ) : (
           <Card title={<span>Task Center（共 {tasks.length} 个任务）</span>}>
-            <Table
-              rowKey="task_id"
-              columns={columns}
-              dataSource={tasks}
-              size="small"
-              pagination={{ pageSize: 20 }}
-            />
+            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} />
           </Card>
         )}
 
-        <Card size="small" title="工作流状态机（§40）">
+        <Card size="small" title="工作流状态">
           <Space wrap>
-            <Tag icon={<InboxOutlined />} color="blue">
-              待处理 READY
-            </Tag>
-            <Tag icon={<ClockCircleOutlined />} color="processing">
-              处理中 PROCESSING
-            </Tag>
-            <Tag icon={<CheckCircleOutlined />} color="success">
-              已完成 COMPLETED
-            </Tag>
-            <Tag icon={<CloseCircleOutlined />} color="error">
-              失败 FAILED
-            </Tag>
-            <Tag icon={<CloseCircleOutlined />} color="volcano">
-              结果无效 INVALID_RESULT
-            </Tag>
-            <Tag icon={<CheckCircleOutlined />} color="purple">
-              已导入 IMPORTED
-            </Tag>
+            <Tag icon={<InboxOutlined />} color="blue">待处理 READY</Tag>
+            <Tag icon={<ClockCircleOutlined />} color="processing">处理中 PROCESSING</Tag>
+            <Tag icon={<CheckCircleOutlined />} color="success">已完成 COMPLETED</Tag>
+            <Tag icon={<CloseCircleOutlined />} color="error">失败 FAILED</Tag>
+            <Tag icon={<CloseCircleOutlined />} color="volcano">结果无效 INVALID_RESULT</Tag>
+            <Tag icon={<CheckCircleOutlined />} color="purple">已导入 IMPORTED</Tag>
             <Tag color="default">已归档 ARCHIVED</Tag>
           </Space>
           <div style={{ marginTop: 8 }}>
             <Text type="secondary">
-              Worker 在外部工具中读取 outbox/ 任务包 → 完成写入 result/result.json +
-              result/DONE → 此处刷新后由 Importer 执行八步 Gate 导入（§46）。
+              External Worker 写回 result.json + DONE → Importer Gate → COMPLETED → Proposal Candidate → Cognition Preview / Human Apply。
             </Text>
           </div>
         </Card>
       </Space>
-
-      <Modal
-        title="创建 TaskPack"
-        open={createOpen}
-        onCancel={() => setCreateOpen(false)}
-        onOk={() => form.submit()}
-        okText="创建"
-        cancelText="取消"
-        confirmLoading={createTask.isPending}
-        destroyOnClose
-      >
-        <Form form={form} layout="vertical" onFinish={onCreate} initialValues={{ task_type: 'summary' }}>
-          <Form.Item label="任务类型" name="task_type" rules={[{ required: true }]}>
-            <Select
-              options={Object.entries(TASK_TYPE_LABELS).map(([value, label]) => ({ value, label }))}
-            />
-          </Form.Item>
-          <Form.Item
-            label="研究查询"
-            name="query"
-            rules={[{ required: true, message: '请输入研究查询' }]}
-          >
-            <Input.TextArea
-              rows={3}
-              placeholder="如：HBM4 对先进封装意味着什么？"
-              maxLength={1000}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };
