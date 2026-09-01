@@ -1,6 +1,4 @@
-// API 响应类型（依据 docs/HANDOFF_M11.md §2 真实契约建模）
-// 注意：scores.reranker / pre_rerank_rank 在 rerank=false 时为 null；
-// evidence_level 可能为 null（unmarked）；debug 仅在 options.debug=true 时存在。
+// API 响应类型（依据真实后端契约建模）。
 
 export type SearchMode = 'hybrid' | 'dense' | 'lexical';
 
@@ -256,13 +254,6 @@ export interface ExternalRunDetail {
   tasks: ExternalRunTask[];
 }
 
-export interface CreateTaskRequest {
-  task_type: TaskType;
-  query: string;
-  evidence_refs: EvidenceRefInput[];
-  cognition_context?: string[];
-}
-
 export interface EvidenceRefInput {
   source_type: 'report' | 'cognition';
   document_id: string;
@@ -275,6 +266,23 @@ export interface EvidenceRefInput {
   end_line?: number | null;
   evidence_level?: number | null;
   excerpt?: string | null;
+}
+
+export interface CognitionContextInput {
+  schema_version?: '1.0';
+  context_id: string;
+  object_type: string;
+  object_id: string;
+  content_hash?: string | null;
+  title?: string | null;
+  excerpt?: string | null;
+}
+
+export interface CreateTaskRequest {
+  task_type: TaskType;
+  query: string;
+  evidence_refs: EvidenceRefInput[];
+  cognition_context?: CognitionContextInput[];
 }
 
 export interface CreateTaskResponse {
@@ -308,6 +316,26 @@ export interface PromptResponse {
   file: string;
   content: string;
   sha256: string;
+}
+
+export interface CognitionProposalPayload {
+  title: string;
+  origin_type: 'external_llm';
+  origin_ref: string;
+  origin_title: string;
+  generator: string;
+  description: string;
+  topics: string[];
+  items: Array<Record<string, unknown>>;
+}
+
+export interface ProposalCandidatesResponse {
+  task_id: string;
+  source_status: 'COMPLETED' | 'IMPORTED';
+  auto_apply: false;
+  target_contract: string;
+  proposal_payload: CognitionProposalPayload;
+  warnings: string[];
 }
 
 export interface JobInfo {
