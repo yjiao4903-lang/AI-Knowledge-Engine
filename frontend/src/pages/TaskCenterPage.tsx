@@ -4,24 +4,29 @@ import {
   CloseCircleOutlined,
   CopyOutlined,
   ExportOutlined,
+  EyeOutlined,
   FolderOpenOutlined,
   InboxOutlined,
   RedoOutlined,
+  SendOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Alert, App, Button, Card, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
+import { Alert, App, Button, Card, Divider, List, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
 import React from 'react';
 import {
   useArchiveTask,
+  useCognitionHealth,
   useOpenTaskFolder,
+  usePublishTaskProposal,
   useRescanTask,
+  useTaskDetail,
   useTaskPrompt,
   useTaskProposalCandidates,
   useTasks,
 } from '../api/hooks';
-import type { TaskInfo, TaskStatus, TaskType } from '../api/types';
+import type { SynthesisClaim, TaskInfo, TaskResultEnvelope, TaskStatus, TaskType } from '../api/types';
 
-const { Text } = Typography;
+const { Text, Paragraph, Title } = Typography;
 
 const TASK_TYPE_LABELS: Record<TaskType, string> = {
   summary: '综述 (summary)',
@@ -50,18 +55,107 @@ function StatusTag({ status, stale }: { status: TaskStatus; stale: boolean }) {
   );
 }
 
+function ClaimCard({ claim }: { claim: SynthesisClaim }) {
+  return (
+    <Card size="small" style={{ marginBottom: 8 }}>
+      <Space direction="vertical" size={6} style={{ width: '100%' }}>
+        <Space wrap>
+          <Text code>{claim.id}</Text>
+          <Tag>{claim.epistemic_state}</Tag>
+        </Space>
+        <Paragraph style={{ marginBottom: 0 }}>{claim.text}</Paragraph>
+        {claim.evidence_refs?.length > 0 && (
+          <div>
+            <Text type="secondary">Evidence：</Text>{' '}
+            {claim.evidence_refs.map((ref) => <Tag key={ref}>{ref}</Tag>)}
+          </div>
+        )}
+        {claim.rationale && <Text type="secondary">{claim.rationale}</Text>}
+      </Space>
+    </Card>
+  );
+}
+
+function ResultViewer({ result }: { result: TaskResultEnvelope }) {
+  const claims = result.claims ?? [];
+  const tensions = result.tensions ?? [];
+  const questions = result.open_questions ?? [];
+  const uncertainties = result.uncertainties ?? [];
+  const gaps = result.additional_evidence_needed ?? [];
+
+  return (
+    <div style={{ maxHeight: '70vh', overflow: 'auto', paddingRight: 8 }}>
+      <Space wrap style={{ marginBottom: 12 }}>
+        {result.task_type && <Tag>{result.task_type}</Tag>}
+        {result.worker?.tool && <Tag color="blue">{result.worker.tool}{result.worker.model ? ` · ${result.worker.model}` : ''}</Tag>}
+        {result.generated_at && <Text type="secondary">{result.generated_at}</Text>}
+      </Space>
+      <Title level={5}>Summary</Title>
+      <Paragraph>{result.summary || '—'}</Paragraph>
+
+      <Divider />
+      <Title level={5}>Claims（{claims.length}）</Title>
+      {claims.length === 0 ? <Text type="secondary">无</Text> : claims.map((claim) => <ClaimCard key={claim.id} claim={claim} />)}
+
+      <Divider />
+      <Title level={5}>Tensions（{tensions.length}）</Title>
+      {tensions.length === 0 ? (
+        <Text type="secondary">无</Text>
+      ) : (
+        <List
+          size="small"
+          dataSource={tensions}
+          renderItem={(item) => (
+            <List.Item>
+              <Space direction="vertical" size={2}>
+                <Text>{item.text}</Text>
+                <Text type="secondary">{item.evidence_refs?.join(' · ')}</Text>
+              </Space>
+            </List.Item>
+          )}
+        />
+      )}
+
+      <Divider />
+      <Title level={5}>Open Questions（{questions.length}）</Title>
+      <List size="small" dataSource={questions} renderItem={(item) => <List.Item>{item}</List.Item>} />
+
+      <Title level={5}>Uncertainties（{uncertainties.length}）</Title>
+      <List size="small" dataSource={uncertainties} renderItem={(item) => <List.Item>{item}</List.Item>} />
+
+      <Title level={5}>Additional Evidence Needed（{gaps.length}）</Title>
+      <List
+        size="small"
+        dataSource={gaps}
+        renderItem={(item) => (
+          <List.Item>
+            <Space direction="vertical" size={2}>
+              <Text strong>{item.question}</Text>
+              <Text type="secondary">{item.reason}</Text>
+            </Space>
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+}
+
 const TaskCenterPage: React.FC = () => {
   const { message } = App.useApp();
   const tasksQuery = useTasks();
+  const cognitionHealth = useCognitionHealth();
+  const taskDetail = useTaskDetail();
   const rescanTask = useRescanTask();
   const archiveTask = useArchiveTask();
   const openFolder = useOpenTaskFolder();
   const copyPrompt = useTaskPrompt();
   const proposalCandidates = useTaskProposalCandidates();
+  const publishProposal = usePublishTaskProposal();
   const tasks = tasksQuery.data?.tasks ?? [];
 
   const refresh = () => {
     tasksQuery.refetch().catch(() => undefined);
+    cognitionHealth.refetch().catch(() => undefined);
   };
 
   const onCopyPrompt = (record: TaskInfo) => {
@@ -97,6 +191,24 @@ const TaskCenterPage: React.FC = () => {
     });
   };
 
+  const onViewResult = (record: TaskInfo) => {
+    taskDetail.mutate(record.task_id, {
+      onSuccess: (detail) => {
+        if (!detail.result) {
+          void message.warning('该任务暂无可读 result.json');
+          return;
+        }
+        Modal.info({
+          title: `Task Result · ${record.task_id}`,
+          width: 1000,
+          okText: '关闭',
+          content: <ResultViewer result={detail.result} />,
+        });
+      },
+      onError: (e) => void message.error(`读取结果失败：${(e as Error).message}`),
+    });
+  };
+
   const onProposalCandidates = (record: TaskInfo) => {
     proposalCandidates.mutate(record.task_id, {
       onSuccess: (r) => {
@@ -110,12 +222,10 @@ const TaskCenterPage: React.FC = () => {
               <Alert
                 type="warning"
                 showIcon
-                message="只读候选，不会自动写入正式认知"
-                description="该 JSON 符合 Cognition Proposal V0.2 候选契约；正式变更仍必须在 Cognition 侧 Preview + Human Apply。"
+                message="候选区，不会自动修改正式认知"
+                description="正式变更仍必须在 Cognition 侧逐项 Preview + Human Apply。"
               />
-              <Text>
-                候选项 {r.proposal_payload.items.length} 条 · auto_apply={String(r.auto_apply)}
-              </Text>
+              <Text>候选项 {r.proposal_payload.items.length} 条 · auto_apply={String(r.auto_apply)}</Text>
               {r.warnings.length > 0 && (
                 <Alert type="warning" message={`转换警告 ${r.warnings.length} 条`} description={r.warnings.join('\n')} />
               )}
@@ -130,16 +240,7 @@ const TaskCenterPage: React.FC = () => {
               >
                 复制 Proposal JSON
               </Button>
-              <pre
-                style={{
-                  maxHeight: 420,
-                  overflow: 'auto',
-                  background: '#fafafa',
-                  border: '1px solid #eee',
-                  padding: 12,
-                  whiteSpace: 'pre-wrap',
-                }}
-              >
+              <pre style={{ maxHeight: 420, overflow: 'auto', background: '#fafafa', border: '1px solid #eee', padding: 12, whiteSpace: 'pre-wrap' }}>
                 {payloadText}
               </pre>
             </Space>
@@ -147,6 +248,43 @@ const TaskCenterPage: React.FC = () => {
         });
       },
       onError: (e) => void message.error(`生成 Proposal 候选失败：${(e as Error).message}`),
+    });
+  };
+
+  const onPublishProposal = (record: TaskInfo) => {
+    Modal.confirm({
+      title: '发送到 Cognition Proposal 区',
+      content: (
+        <Space direction="vertical" size={8}>
+          <Text>将任务「{record.task_id}」转换为 Cognition Proposal Candidate。</Text>
+          <Text type="secondary">此操作只创建提案，不会执行 Apply、Merge 或判断修订。</Text>
+        </Space>
+      ),
+      okText: '创建 Proposal',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise<void>((resolve) => {
+          publishProposal.mutate(record.task_id, {
+            onSuccess: (r) => {
+              const id = r.publication?.proposal_id ?? 'unknown';
+              void message.success(r.reused ? `Proposal 已存在：${id}` : `Proposal 已创建：${id}`);
+              Modal.success({
+                title: r.reused ? '已复用现有 Proposal' : 'Proposal 已发送到 Cognition',
+                content: (
+                  <Space direction="vertical">
+                    <Text>Proposal ID：<Text code>{id}</Text></Text>
+                    <Text type="secondary">下一步请在 Cognition Proposal Center 逐项 Preview / Apply / Reject / Defer。</Text>
+                  </Space>
+                ),
+              });
+              resolve();
+            },
+            onError: (e) => {
+              void message.error(`发送 Proposal 失败：${(e as Error).message}`);
+              resolve();
+            },
+          });
+        }),
     });
   };
 
@@ -174,85 +312,51 @@ const TaskCenterPage: React.FC = () => {
 
   const columns = [
     {
-      title: '任务 ID',
-      dataIndex: 'task_id',
-      key: 'task_id',
-      width: 220,
+      title: '任务 ID', dataIndex: 'task_id', key: 'task_id', width: 220,
       render: (v: string) => <Text code>{v}</Text>,
     },
     {
-      title: '类型',
-      dataIndex: 'task_type',
-      key: 'task_type',
-      width: 180,
+      title: '类型', dataIndex: 'task_type', key: 'task_type', width: 180,
       render: (v: TaskType | null) => (v ? TASK_TYPE_LABELS[v] ?? v : '—'),
     },
     {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: 160,
+      title: '状态', dataIndex: 'status', key: 'status', width: 160,
       render: (_: TaskStatus, r: TaskInfo) => <StatusTag status={r.status} stale={r.stale} />,
     },
     { title: '查询', dataIndex: 'query', key: 'query', ellipsis: true },
     {
-      title: '证据数',
-      dataIndex: 'evidence_count',
-      key: 'evidence_count',
-      width: 90,
+      title: '证据数', dataIndex: 'evidence_count', key: 'evidence_count', width: 90,
       render: (v: number | null) => v ?? '—',
     },
     {
-      title: 'Worker / 模型',
-      key: 'worker',
-      width: 140,
+      title: 'Worker / 模型', key: 'worker', width: 140,
       render: (_: unknown, r: TaskInfo) =>
-        r.worker || r.model ? (
-          <Text style={{ fontSize: 12 }}>
-            {r.worker ?? '—'}{r.model ? ` · ${r.model}` : ''}
-          </Text>
-        ) : '—',
+        r.worker || r.model ? <Text style={{ fontSize: 12 }}>{r.worker ?? '—'}{r.model ? ` · ${r.model}` : ''}</Text> : '—',
     },
     {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      width: 170,
+      title: '创建时间', dataIndex: 'created_at', key: 'created_at', width: 170,
       render: (v: string | null) => (v ? new Date(v).toLocaleString() : '—'),
     },
     {
-      title: '操作',
-      key: 'actions',
-      width: 455,
+      title: '操作', key: 'actions', width: 650,
       render: (_: unknown, r: TaskInfo) => (
         <Space size={4} wrap>
-          <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(r)} disabled={r.status === 'ARCHIVED'}>
-            打开目录
-          </Button>
-          <Button size="small" icon={<CopyOutlined />} onClick={() => onCopyPrompt(r)}>
-            启动词
-          </Button>
+          <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(r)} disabled={r.status === 'ARCHIVED'}>目录</Button>
+          <Button size="small" icon={<CopyOutlined />} onClick={() => onCopyPrompt(r)}>启动词</Button>
+          <Button size="small" icon={<RedoOutlined />} onClick={() => onRescan(r)} disabled={!['COMPLETED', 'INVALID_RESULT'].includes(r.status)} loading={rescanTask.isPending}>Gate</Button>
+          <Button size="small" icon={<EyeOutlined />} onClick={() => onViewResult(r)} disabled={!['COMPLETED', 'IMPORTED', 'INVALID_RESULT'].includes(r.status)} loading={taskDetail.isPending}>结果</Button>
+          <Button size="small" icon={<ExportOutlined />} onClick={() => onProposalCandidates(r)} disabled={!['COMPLETED', 'IMPORTED'].includes(r.status)} loading={proposalCandidates.isPending}>候选</Button>
           <Button
             size="small"
-            icon={<RedoOutlined />}
-            onClick={() => onRescan(r)}
-            disabled={!['COMPLETED', 'INVALID_RESULT'].includes(r.status)}
-            loading={rescanTask.isPending}
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={() => onPublishProposal(r)}
+            disabled={!['COMPLETED', 'IMPORTED'].includes(r.status) || cognitionHealth.data?.reachable !== true}
+            loading={publishProposal.isPending}
           >
-            Gate
+            发到 Cognition
           </Button>
-          <Button
-            size="small"
-            icon={<ExportOutlined />}
-            onClick={() => onProposalCandidates(r)}
-            disabled={!['COMPLETED', 'IMPORTED'].includes(r.status)}
-            loading={proposalCandidates.isPending}
-          >
-            Proposal 候选
-          </Button>
-          <Button size="small" danger onClick={() => onArchive(r)} disabled={r.status === 'ARCHIVED'}>
-            归档
-          </Button>
+          <Button size="small" danger onClick={() => onArchive(r)} disabled={r.status === 'ARCHIVED'}>归档</Button>
         </Space>
       ),
     },
@@ -268,9 +372,20 @@ const TaskCenterPage: React.FC = () => {
         <Alert
           type="info"
           showIcon
-          message="I8：Task Center 现在是运行/调试控制台"
-          description="已移除会固定发送空 evidence_refs 的坏创建入口。TaskPack 必须由显式 EvidenceReference[] 创建；正式产品入口将在 Cognition Evidence Basket 中接入。"
+          message="Research Workflow：TaskPack → Result → Cognition Proposal"
+          description="TaskPack 由搜索页 Evidence Basket 创建；通过 Gate 后可查看结构化结果，并发送到 Cognition Proposal 候选区。正式认知仍必须 Preview + Human Apply。"
         />
+
+        {cognitionHealth.data?.reachable ? (
+          <Alert type="success" showIcon message="Cognition Proposal API 已连接" description={cognitionHealth.data.api_url} />
+        ) : (
+          <Alert
+            type="warning"
+            showIcon
+            message="Cognition Proposal API 当前不可达"
+            description={cognitionHealth.data?.error ?? '正在检测；TaskPack 检索与结果查看不受影响。'}
+          />
+        )}
 
         <Space>
           <Button icon={<SyncOutlined />} onClick={refresh} loading={tasksQuery.isFetching}>刷新</Button>
@@ -287,28 +402,26 @@ const TaskCenterPage: React.FC = () => {
             showIcon
             icon={<InboxOutlined />}
             message="暂无任务"
-            description="使用 POST /api/synthesis/tasks 并传入至少一条 EvidenceReference；后续 Cognition Evidence Basket 将调用同一接口。"
+            description="请在搜索页把结果加入 Evidence Basket，然后创建 TaskPack。"
           />
         ) : (
           <Card title={<span>Task Center（共 {tasks.length} 个任务）</span>}>
-            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} />
+            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} scroll={{ x: 1500 }} />
           </Card>
         )}
 
         <Card size="small" title="工作流状态">
           <Space wrap>
-            <Tag icon={<InboxOutlined />} color="blue">待处理 READY</Tag>
-            <Tag icon={<ClockCircleOutlined />} color="processing">处理中 PROCESSING</Tag>
-            <Tag icon={<CheckCircleOutlined />} color="success">已完成 COMPLETED</Tag>
-            <Tag icon={<CloseCircleOutlined />} color="error">失败 FAILED</Tag>
-            <Tag icon={<CloseCircleOutlined />} color="volcano">结果无效 INVALID_RESULT</Tag>
-            <Tag icon={<CheckCircleOutlined />} color="purple">已导入 IMPORTED</Tag>
-            <Tag color="default">已归档 ARCHIVED</Tag>
+            <Tag icon={<InboxOutlined />} color="blue">READY</Tag>
+            <Tag icon={<ClockCircleOutlined />} color="processing">PROCESSING</Tag>
+            <Tag icon={<CheckCircleOutlined />} color="success">COMPLETED</Tag>
+            <Tag icon={<CloseCircleOutlined />} color="error">FAILED</Tag>
+            <Tag icon={<CloseCircleOutlined />} color="volcano">INVALID_RESULT</Tag>
+            <Tag icon={<CheckCircleOutlined />} color="purple">IMPORTED</Tag>
+            <Tag>ARCHIVED</Tag>
           </Space>
           <div style={{ marginTop: 8 }}>
-            <Text type="secondary">
-              External Worker 写回 result.json + DONE → Importer Gate → COMPLETED → Proposal Candidate → Cognition Preview / Human Apply。
-            </Text>
+            <Text type="secondary">External Worker → result.json + DONE → Importer Gate → Result Viewer → Cognition Proposal → Preview / Human Apply。</Text>
           </div>
         </Card>
       </Space>
