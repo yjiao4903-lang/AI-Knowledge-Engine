@@ -94,7 +94,7 @@ def test_taskpack_result_converts_to_conservative_cognition_proposal():
     chunk_id = "M04:ch1:o1:0001"
     payload, warnings = build_cognition_proposal_payload(_result(chunk_id=chunk_id), [_evidence(chunk_id)])
 
-    assert warnings == []
+    assert any("TENSION_INSUFFICIENT_EVIDENCE_DIVERSITY" in warning for warning in warnings)
     assert payload["origin_type"] == "external_llm"
     assert payload["origin_ref"] == "task_001"
     assert len(payload["items"]) == 4
