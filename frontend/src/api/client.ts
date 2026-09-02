@@ -24,6 +24,11 @@ import type {
   TaskDetail,
   TaskListResponse,
 } from './types';
+import type {
+  LaunchWorkerResponse,
+  WorkerLauncherId,
+  WorkerLaunchersResponse,
+} from './workerLauncherTypes';
 
 export class ApiError extends Error {
   readonly status: number;
@@ -100,6 +105,9 @@ export const api = {
   createTask: (req: CreateTaskRequest) => post<CreateTaskResponse>('/api/synthesis/tasks', req),
   listTasks: () => request<TaskListResponse>('/api/synthesis/tasks'),
   task: (id: string) => request<TaskDetail>(`/api/synthesis/tasks/${encodeURIComponent(id)}`),
+  workerLaunchers: () => request<WorkerLaunchersResponse>('/api/synthesis/worker-launchers'),
+  launchWorker: (id: string, launcher: WorkerLauncherId) =>
+    post<LaunchWorkerResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/launch-worker`, { launcher }),
   taskProposalCandidates: (id: string) =>
     request<ProposalCandidatesResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/proposal-candidates`),
   rescanTask: (id: string) =>

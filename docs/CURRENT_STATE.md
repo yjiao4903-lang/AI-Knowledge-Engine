@@ -56,6 +56,19 @@ Cognition App 仍是唯一正式认知写入者。
 - Task Center 可查看结构化 Result；
 - INVALID_RESULT 可读但不可发布 Proposal。
 
+### External Worker Launcher
+- Task Center 的 READY 任务可直接选择固定 launcher：`codex / claude / terminal`；
+- launcher 可用性只通过本机 PATH 探测，不从浏览器接受 executable、shell command、cwd 或 API key；
+- Codex 使用非交互 `codex exec`，Claude Code 使用非交互 `claude -p`；两者只收到一条固定短指令，要求读取当前 TaskPack 的 `AGENT_INSTRUCTION.md`；
+- 不把完整 TaskPack prompt 放进命令行，不在 KE 中嵌 OpenAI / Claude SDK，不保存模型凭证；
+- 启动前 TaskPack 原子 `outbox -> processing`；supervisor 启动失败则回滚为 READY，避免任务无故卡在 PROCESSING；
+- detached lifecycle supervisor 为 stdlib-only orchestration：等待外部 CLI 退出，根据 `result/DONE` / `result/FAILED` 把任务移动到 `completed/` / `failed/`；
+- 外部进程退出但缺少 DONE/FAILED 时，写 `result/launcher_error.json` + `result/FAILED` 后进入 failed，避免假完成；
+- Codex / Claude stdout、stderr 仅落本 TaskPack `result/launcher_stdout.log` / `launcher_stderr.log`，供本机排障；
+- `Terminal` 只是本机 fallback shell；关闭后同样由 marker 判定 completed / failed；
+- 原“启动词”复制与“打开目录”入口保留，Launcher 不可用时仍可手工执行 TaskPack；
+- Launcher 不做 retrieval、不做 Result validation、不创建 Cognition Proposal、不执行 Apply，也不承担模型 Provider 职责。
+
 ### TaskPack Validation Cache
 - Task Center 的 `GET /api/synthesis/tasks` 仍可触发 Importer scan，但已避免对未变化 COMPLETED TaskPack 重复执行完整 Gate；
 - 缓存采用 TaskPack 本地 sidecar：`result/validation_cache.json`，不新增 SQLite migration；
@@ -104,10 +117,11 @@ GitHub Actions：`.github/workflows/i8-ci.yml`
 - Deterministic Epistemic Linter unit + Proposal integration contracts；
 - Evidence Context Expansion deterministic contracts；
 - TaskPack Validation Cache deterministic contracts；
+- External Worker Launcher lifecycle / fixed-command deterministic contracts；
 - 前端 TypeScript/Vite build；
 - Runtime PowerShell syntax。
 
-CI 保持 lightweight：不安装本地 Embedding/Reranker 模型，不要求 Qdrant / ROCm / 真实 Cognition App。
+CI 保持 lightweight：不安装本地 Embedding/Reranker 模型，不要求 Qdrant / ROCm / 真实 Cognition App，也不会真实调用 Codex / Claude 模型。
 
 ## 永久边界
 
@@ -131,6 +145,9 @@ External Worker = synthesis executor
 - Retrieval Feedback 直接在线修改 retrieval 参数或自动训练排序器；
 - Retrieval Feedback 写入失败阻断正常 Search；
 - Retrieval Feedback 自动晋升为正式 Cognition；
+- External Worker Launcher 接受浏览器传入的任意 executable / shell command / cwd / API key；
+- External Worker Launcher 内嵌 OpenAI / Anthropic SDK 或变成模型 Provider；
+- External Worker Launcher 绕过 TaskPack AGENT_INSTRUCTION / Evidence 边界；
 - Epistemic Linter 自动改写 Claim state；
 - AI output 自动晋升正式知识。
 
@@ -140,6 +157,8 @@ External Worker = synthesis executor
 POST /api/search
 POST /api/retrieval-feedback
 POST /api/synthesis/tasks
+GET  /api/synthesis/worker-launchers
+POST /api/synthesis/tasks/{task_id}/launch-worker
 GET  /api/synthesis/tasks
 GET  /api/synthesis/tasks/{task_id}
 GET  /api/synthesis/tasks/{task_id}/proposal-candidates
@@ -162,8 +181,10 @@ GET  /api/health
 → 选择 Anchor Evidence（同步记录 selected_as_evidence）
 → Evidence Basket
 → 选择 Evidence Context：none / neighbor_1 / section
-→ 创建显式 chunk identity 的 TaskPack
-→ External Worker
+→ 创建显式 chunk identity 的 TaskPack（READY）
+→ Task Center 选择 Codex / Claude / Terminal Launcher（或继续手工启动）
+→ processing/ + External Worker
+→ DONE/FAILED + lifecycle supervisor
 → Importer Gate（未变化 Result 复用 Validation Cache；stale Gate 实时检查）
 → Result Viewer
 → Deterministic Epistemic Warning
@@ -205,7 +226,9 @@ GitHub Actions 无法代替本机：
 - Windows + RX 7900 XTX / ROCm；
 - 真实 Qdrant corpus；
 - `E:\CODEX\AI深度研究\cognition-app`；
-- 实际 External Worker；
+- 本机 `codex` / `claude` PATH 探测、已有登录状态与实际额度/权限；
+- 真实 READY TaskPack 从 Launcher 启动后完整跑通 `processing -> completed/failed -> Importer Gate`；
+- Terminal fallback 的新控制台行为；
 - Cognition Proposal Preview / Apply；
 - 旧 TaskPack 数据迁移；
 - 真实长报告上的 `neighbor_1 / section` 上下文体量与研究体验；
@@ -228,6 +251,6 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传 TaskPack 路径与 instruction，不把 OpenAI / Claude SDK 或模型 API key 塞回 KE；
-2. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构；
+1. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构；
+2. Launcher 真机验收后再决定是否需要极少量 Windows 兼容修正，不在未验证前扩展为 Worker Scheduler；
 3. Retrieval 参数调优：至少积累约 100 次真实搜索后，再基于 feedback ledger 评估 `dense_k / terms_k / trigram_k / RRF weights / reranker / chunk size`，当前阶段不提前调整。

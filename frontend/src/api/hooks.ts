@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
 import type { ChunkDetail, CreateTaskRequest, Section, SearchRequest } from './types';
+import type { WorkerLauncherId } from './workerLauncherTypes';
 
 export function useDocuments() {
   return useQuery({ queryKey: ['documents'], queryFn: () => api.documents(), staleTime: 60_000 });
@@ -121,6 +122,23 @@ export function useCreateTask() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (req: CreateTaskRequest) => api.createTask(req),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['synthesisTasks'] }),
+  });
+}
+
+export function useWorkerLaunchers() {
+  return useQuery({
+    queryKey: ['workerLaunchers'],
+    queryFn: () => api.workerLaunchers(),
+    refetchInterval: 30_000,
+  });
+}
+
+export function useLaunchWorker() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ taskId, launcher }: { taskId: string; launcher: WorkerLauncherId }) =>
+      api.launchWorker(taskId, launcher),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['synthesisTasks'] }),
   });
 }
