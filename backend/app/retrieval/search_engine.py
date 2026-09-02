@@ -1,10 +1,10 @@
-"""Hybrid Search Engine（M6，spec §32/§34-41 + Addendum §33-41）。
+"""Hybrid Search Engine（M6 + P1 scoped lexical pre-filter）。
 
-三路候选（Dense 50 / Terms 50 / Trigram 30）-> Weighted RRF -> 去重 ->
-Section Parent Boost（轻量 prior，非硬过滤）-> Metadata 过滤 -> Top-K。
+三路候选（Dense / Terms / Trigram）-> Weighted RRF -> 去重 ->
+Section Parent Boost -> Metadata 最终过滤 -> Top-K。
 
-每条候选记录 dense_rank/terms_rank/trigram_rank/rrf/section_boost，全部可解释。
-搜索模式：dense / lexical / hybrid。
+Dense 与 Lexical 都在候选召回阶段尽可能应用 metadata pre-filter；最终仍保留
+统一 post-filter 作为融合后的 correctness boundary。
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ class Candidate:
     chunk_id: str
     document_id: str = ""
     section_id: str = ""
-    ranks: dict[str, int | None] = field(default_factory=dict)  # dense/terms/trigram
+    ranks: dict[str, int | None] = field(default_factory=dict)
     rrf_score: float = 0.0
     section_boost: float = 1.0
     final_score: float = 0.0
@@ -52,17 +52,15 @@ class SearchEngine:
         self.dense = dense
         self.lexical = LexicalSearcher(conn)
         self.reranker = reranker
-        # I6：独立 collection 覆盖（cognition 用独立 collection，禁止与报告混用）
         self.chunks_collection = chunks_collection or cfg.qdrant.chunks_collection
         self.sections_collection = sections_collection or cfg.qdrant.sections_collection
         self.section_boost_enabled = section_boost_enabled
 
-    # ---- 主入口 ----
     def search(
         self,
         query: str,
         *,
-        mode: str = "hybrid",  # dense | lexical | hybrid
+        mode: str = "hybrid",
         top_k: int | None = None,
         filters: dict | None = None,
         debug: bool = False,
@@ -78,7 +76,7 @@ class SearchEngine:
         ranked_lists: dict[str, list[str]] = {}
         debug_trace: dict[str, Any] = {"query": query, "mode": mode, "sources": {}}
 
-        # 1) Dense
+        # 1) Dense：Qdrant metadata filter 在 vector LIMIT 前执行。
         if mode in ("hybrid", "dense"):
             t0 = time.perf_counter()
             dense_hits, embed_ms = self.dense.search(
@@ -95,13 +93,15 @@ class SearchEngine:
             if debug:
                 debug_trace["sources"]["dense"] = ranked_lists["dense"][:10]
 
-        # 2) Lexical（terms + trigram）
+        # 2) Lexical：metadata filter 在 FTS ORDER BY/LIMIT 前执行。
         if mode in ("hybrid", "lexical"):
             t0 = time.perf_counter()
-            terms_hits = self.lexical.search_terms(query, k=cfg.retrieval.fts_terms_k)
+            terms_hits = self.lexical.search_terms(
+                query, k=cfg.retrieval.fts_terms_k, filters=filters)
             timing["terms_ms"] = round((time.perf_counter() - t0) * 1000, 2)
             t0 = time.perf_counter()
-            trigram_hits = self.lexical.search_trigram(query, k=cfg.retrieval.fts_trigram_k)
+            trigram_hits = self.lexical.search_trigram(
+                query, k=cfg.retrieval.fts_trigram_k, filters=filters)
             timing["trigram_ms"] = round((time.perf_counter() - t0) * 1000, 2)
             ranked_lists["terms"] = [h.chunk_id for h in terms_hits]
             ranked_lists["trigram"] = [h.chunk_id for h in trigram_hits]
@@ -113,7 +113,7 @@ class SearchEngine:
                 debug_trace["sources"]["terms"] = ranked_lists["terms"][:10]
                 debug_trace["sources"]["trigram"] = ranked_lists["trigram"][:10]
 
-        # 3) Weighted RRF 融合（dense-only / lexical-only 模式也用 RRF 统一排序）
+        # 3) Weighted RRF
         t0 = time.perf_counter()
         fused = weighted_rrf(
             ranked_lists,
@@ -130,7 +130,7 @@ class SearchEngine:
             c.ranks = {**c.ranks, **{k: v for k, v in ranks.items()}}
         timing["fusion_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-        # 4) Section Parent Boost（spec §19：轻量 prior，禁止硬过滤）
+        # 4) Section Parent Boost
         if (mode == "hybrid" and cfg.fusion.parent_boost_enabled
                 and self.section_boost_enabled and "dense" in ranked_lists):
             t0 = time.perf_counter()
@@ -141,7 +141,6 @@ class SearchEngine:
             except Exception:
                 logger.warning("section boost 查询失败，退回 RRF 排序", exc_info=True)
                 section_hits = []
-            # section_id(doc 无前缀) -> chunk_id 前缀匹配（M04:ch3-2:xxxx）
             boost_prefixes = {
                 f"{h['payload']['document_id']}:{h['payload']['section_id']}:" for h in section_hits
             }
@@ -157,7 +156,7 @@ class SearchEngine:
             for c in candidates.values():
                 c.final_score = c.rrf_score
 
-        # 5) Metadata 过滤（lexical 路无法 prefilter，统一 post-filter）
+        # 5) 最终 Metadata 过滤：即使各召回路已 pre-filter，也保留统一 correctness gate。
         t0 = time.perf_counter()
         ordered = sorted(candidates.values(), key=lambda c: c.final_score, reverse=True)
         if filters:
@@ -166,7 +165,7 @@ class SearchEngine:
         ordered = ordered[:fused_k]
         timing["filter_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-        # 6) 组装结果（snippet/title 从 SQLite 取；rerank 可选）
+        # 6) 组装结果 / optional rerank
         final_k = top_k or cfg.retrieval.final_k
         rows = self._fetch_rows([c.chunk_id for c in ordered])
         rows_by_id = {r["id"]: r for r in rows}
@@ -191,7 +190,6 @@ class SearchEngine:
                 reranked = self.reranker.rerank(query, rerank_candidates)
                 pre_rank_map = {c.chunk_id: i for i, c in enumerate(ordered, 1)}
                 score_by_id = {x["chunk_id"]: x["reranker_score"] for x in reranked}
-                # 重排：reranker 分数降序；未送入 rerank 的候选沉底（-inf）
                 ordered = sorted(
                     ordered,
                     key=lambda c: score_by_id.get(c.chunk_id, float("-inf")),
@@ -211,7 +209,7 @@ class SearchEngine:
         for rank, c in enumerate(ordered[:final_k], 1):
             row = rows_by_id.get(c.chunk_id)
             if row is None:
-                continue  # 索引与 catalog 不同步（M8 reconcile 处理）
+                continue
             snippet = _make_snippet(row["plain_text"], query)
             results.append({
                 "rank": rank,
@@ -264,7 +262,7 @@ class SearchEngine:
         ).fetchall()
 
     def _apply_filters(self, candidates: list[Candidate], filters: dict) -> list[Candidate]:
-        """按 chunks 表列过滤（document_ids/domains/evidence_levels/content_types/date）。"""
+        """Final filter across fused candidates."""
         clauses, params = [], []
         if filters.get("document_ids"):
             marks = ",".join("?" * len(filters["document_ids"]))
