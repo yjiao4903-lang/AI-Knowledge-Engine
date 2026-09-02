@@ -24,7 +24,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.contracts.cognition import CognitionContextItem
-from app.synthesis.schemas import Claim, Tension
+from app.synthesis.schemas import Claim, EvidenceContextMode, Tension
 
 TASKPACK_VERSION = "1.0"
 RESULT_SCHEMA_VERSION = "1.0"
@@ -113,6 +113,7 @@ class TaskYaml(BaseModel):
     created_at: str
     taskpack_version: Literal["1.0"] = TASKPACK_VERSION
     prompt_version: str = DEFAULT_PROMPT_VERSION
+    evidence_context_mode: EvidenceContextMode = "none"
     task_specific_instruction: str | None = None
     permissions: Permissions = Field(default_factory=Permissions)
     constraints: Constraints = Field(default_factory=Constraints)
@@ -135,6 +136,7 @@ class TaskPackEvidence(BaseModel):
     与 API 层 EvidenceRef（app.synthesis.schemas）的差异：heading_path 为数组、
     携带 evidence_id 与截断正文 excerpt。content_hash 是 Importer stale Gate
     （§48）与 catalog 比对的基准；evidence_refs 只允许引用其中的 chunk_id（§16）。
+    Evidence Context Expansion 只会增加更多这样的独立行，不改变 citation identity。
     """
 
     evidence_id: str = Field(..., min_length=1)
