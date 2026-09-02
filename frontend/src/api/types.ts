@@ -199,6 +199,7 @@ export type TaskStatus =
   | 'ARCHIVED';
 
 export type TaskType = 'summary' | 'comparison' | 'causal_synthesis' | 'tension_extraction';
+export type EvidenceContextMode = 'none' | 'neighbor_1' | 'section';
 
 export interface TaskInfo {
   task_id: string;
@@ -278,6 +279,7 @@ export interface CreateTaskRequest {
   task_type: TaskType;
   query: string;
   evidence_refs: EvidenceRefInput[];
+  evidence_context_mode?: EvidenceContextMode;
   cognition_context?: CognitionContextInput[];
 }
 
