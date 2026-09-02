@@ -3,6 +3,10 @@
 This is intentionally small and local-first: one row per search result exposure, then
 explicit user interactions update that row. The resulting table provides a real
 ranking denominator before any future tuning of retrieval weights or model settings.
+
+The schema is created lazily on the report-search SQLite connection instead of the
+shared catalog migration so the separate Cognition catalog is not polluted with an
+unused feedback table.
 """
 
 from __future__ import annotations
@@ -11,9 +15,38 @@ import sqlite3
 from datetime import datetime, timezone
 from uuid import uuid4
 
+_SCHEMA_SQL = (
+    """
+    CREATE TABLE IF NOT EXISTS retrieval_feedback (
+        id TEXT PRIMARY KEY,
+        search_id TEXT NOT NULL,
+        query TEXT NOT NULL,
+        chunk_id TEXT NOT NULL,
+        rank INTEGER NOT NULL,
+        mode TEXT NOT NULL,
+        useful INTEGER,
+        selected_as_evidence INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(search_id, chunk_id)
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_created ON retrieval_feedback(created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_chunk ON retrieval_feedback(chunk_id)",
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_mode ON retrieval_feedback(mode)",
+)
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def ensure_feedback_schema(conn: sqlite3.Connection) -> None:
+    """Idempotently initialize feedback storage on the supplied report connection only."""
+
+    with conn:
+        for statement in _SCHEMA_SQL:
+            conn.execute(statement)
 
 
 def record_search_results(
@@ -25,6 +58,7 @@ def record_search_results(
 ) -> str:
     """Persist one exposure row for every returned result and return a search_id."""
 
+    ensure_feedback_schema(conn)
     search_id = uuid4().hex
     created_at = _now()
     rows = [
@@ -70,6 +104,7 @@ def update_feedback(
     supplied by the API layer.
     """
 
+    ensure_feedback_schema(conn)
     assignments: list[str] = []
     values: list[object] = []
     if useful is not None:
