@@ -226,7 +226,7 @@ def rescan_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/archive")
 def archive_task(task_id: str, request: Request) -> dict:
-    _, importer = _require_task(request)
+    _, importer = _require_task(request, task_id)
     try:
         target = importer.archive_task(task_id)
     except FileExistsError as exc:
