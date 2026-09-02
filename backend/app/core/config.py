@@ -48,7 +48,7 @@ class QdrantConfig(BaseModel):
 
 
 class CognitionConfig(BaseModel):
-    """I6：Cognition 第二类 Source（只读语义检索）。"""
+    """Cognition read-only retrieval + Proposal staging integration."""
 
     enabled: bool = True
     root: str = "E:/CODEX/AI深度研究/cognition"
@@ -65,6 +65,9 @@ class CognitionConfig(BaseModel):
     startup_scan: bool = True
     periodic_reconcile_seconds: int = 300
     docid_prefix: str = "cog"
+    api_url: str = "http://127.0.0.1:3220/api"
+    api_timeout_seconds: float = 8.0
+    proposal_publish_enabled: bool = True
 
 
 class EmbeddingConfig(BaseModel):
@@ -181,17 +184,14 @@ class Config(BaseModel):
 
 
 def _apply_runtime_env_overrides(cfg: Config) -> Config:
-    """Apply the small set of path overrides shared with runtime/research-os.ps1.
-
-    These are explicit operational overrides, not a second configuration system.
-    They are intentionally limited to paths/ports that must stay aligned across
-    the backend and the integrated runtime/backup layer.
-    """
+    """Apply operational overrides shared with runtime/research-os.ps1."""
 
     if os.environ.get("AIKE_KE_PORT"):
         cfg.app.port = int(os.environ["AIKE_KE_PORT"])
     if os.environ.get("COGNITION_DATA_ROOT"):
         cfg.cognition.root = os.environ["COGNITION_DATA_ROOT"]
+    if os.environ.get("COGNITION_API_URL"):
+        cfg.cognition.api_url = os.environ["COGNITION_API_URL"]
     if os.environ.get("AIKE_TASKPACK_ROOT"):
         cfg.taskpack.root_dir = os.environ["AIKE_TASKPACK_ROOT"]
     if os.environ.get("AIKE_KB_ROOT"):
