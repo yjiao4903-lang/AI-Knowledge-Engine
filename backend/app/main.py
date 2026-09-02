@@ -59,7 +59,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.taskpack_importer = None
         if cfg.taskpack.enabled:
             from app.taskpack.builder import TaskPackBuilder
-            from app.taskpack.importer import TaskPackImporter
+            from app.taskpack.validation_cache import CachingTaskPackImporter
 
             cog_conn_tp = None
             if cfg.cognition.enabled:
@@ -69,7 +69,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 except Exception:
                     logger.exception("taskpack cognition catalog 初始化失败，退化为仅 report 证据")
             app.state.taskpack_builder = TaskPackBuilder(cfg, app.state.conn, cog_conn_tp)
-            app.state.taskpack_importer = TaskPackImporter(cfg, app.state.conn, cog_conn_tp)
+            app.state.taskpack_importer = CachingTaskPackImporter(
+                cfg, app.state.conn, cog_conn_tp
+            )
 
         logger.info("starting inference worker...")
         app.state.manager = InferenceManager(cfg)

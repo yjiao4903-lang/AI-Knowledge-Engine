@@ -44,6 +44,18 @@ Cognition App 仍是唯一正式认知写入者。
 - Task Center 可查看结构化 Result；
 - INVALID_RESULT 可读但不可发布 Proposal。
 
+### TaskPack Validation Cache
+- Task Center 的 `GET /api/synthesis/tasks` 仍可触发 Importer scan，但已避免对未变化 COMPLETED TaskPack 重复执行完整 Gate；
+- 缓存采用 TaskPack 本地 sidecar：`result/validation_cache.json`，不新增 SQLite migration；
+- 缓存至少记录 `result_hash / validation_version / validated_at` 与完整 Gate report；
+- 只有 `result_hash` 与 `validation_version` 同时匹配时才复用静态 Gate 结果；
+- `result.json` 变化会自动失效缓存并重新执行完整 validation；
+- validator 规则升级时通过 `validation_version` 自动失效旧缓存；
+- 显式 `POST /api/synthesis/tasks/{task_id}/rescan` 永远绕过缓存并执行完整 Gate；
+- catalog 可能独立变化，因此 cache hit 仍实时执行 stale-evidence Gate，避免缓存掩盖证据过期；
+- 缓存文件损坏或格式非法时自动退化为完整 validation，不阻塞 Task Center；
+- 原有 COMPLETED / INVALID_RESULT / IMPORTED 状态机保持不变，不新增“缓存状态”。
+
 ### Research Quality / Epistemic Review
 - Deterministic Epistemic Linter 已接入 Proposal Candidate；
 - `FORECAST_MARKED_SUPPORTED`：预测/估算/目标类 claim 标成 `supported` 时 warning；
@@ -78,6 +90,7 @@ GitHub Actions：`.github/workflows/i8-ci.yml`
 - Retrieval regression / lexical metadata pre-filter regression；
 - Deterministic Epistemic Linter unit + Proposal integration contracts；
 - Evidence Context Expansion deterministic contracts；
+- TaskPack Validation Cache deterministic contracts；
 - 前端 TypeScript/Vite build；
 - Runtime PowerShell syntax。
 
@@ -100,6 +113,8 @@ External Worker = synthesis executor
 - TaskPack `supported` 自动映射 `verified_fact`；
 - Evidence Context Expansion 拼接丢失 `chunk_id` 的匿名上下文；
 - Evidence Context Expansion 隐式启动新的检索或模型调用；
+- Validation Cache 跳过 catalog stale-evidence 检查；
+- Validation Cache 改变 TaskPack 状态机或把旧 validation 结果当作永久事实；
 - Epistemic Linter 自动改写 Claim state；
 - AI output 自动晋升正式知识。
 
@@ -130,7 +145,7 @@ GET  /api/health
 → 选择 Evidence Context：none / neighbor_1 / section
 → 创建显式 chunk identity 的 TaskPack
 → External Worker
-→ Importer Gate
+→ Importer Gate（未变化 Result 复用 Validation Cache；stale Gate 实时检查）
 → Result Viewer
 → Deterministic Epistemic Warning
 → 发送到 Cognition Proposal
@@ -166,7 +181,8 @@ GitHub Actions 无法代替本机：
 - 实际 External Worker；
 - Cognition Proposal Preview / Apply；
 - 旧 TaskPack 数据迁移；
-- 真实长报告上的 `neighbor_1 / section` 上下文体量与研究体验。
+- 真实长报告上的 `neighbor_1 / section` 上下文体量与研究体验；
+- 大量历史 COMPLETED TaskPack 下 Task Center 轮询的实际 IO / latency 改善幅度。
 
 本机建议：
 
@@ -184,6 +200,6 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. TaskPack Validation Cache：按 `result_hash + validation_version` 避免轮询重复完整 Gate；
-2. Personal Retrieval Feedback：积累真实 `useful / selected_as_evidence` 数据后再调 retrieval；
-3. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传路径，不把外部模型 SDK 塞回 KE。
+1. Personal Retrieval Feedback：记录真实 `query / chunk_id / rank / mode / useful / selected_as_evidence / timestamp`，先积累使用数据，不立即调整 retrieval 参数；
+2. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传 TaskPack 路径与 instruction，不把 OpenAI / Claude SDK 或模型 API key 塞回 KE；
+3. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构。
