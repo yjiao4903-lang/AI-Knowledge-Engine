@@ -15,6 +15,8 @@ import type {
   ProposalCandidatesResponse,
   ProposalPublicationResponse,
   RescanResponse,
+  RetrievalFeedbackResponse,
+  RetrievalFeedbackUpdate,
   SearchRequest,
   SearchResponse,
   SectionsResponse,
@@ -77,6 +79,8 @@ function post<T>(path: string, body?: unknown): Promise<T> {
 export const api = {
   health: () => request<HealthResponse>('/api/health'),
   search: (req: SearchRequest) => post<SearchResponse>('/api/search', req),
+  retrievalFeedback: (req: RetrievalFeedbackUpdate) =>
+    post<RetrievalFeedbackResponse>('/api/retrieval-feedback', req),
 
   documents: () => request<DocumentsResponse>('/api/documents'),
   document: (id: string) => request<DocumentDetail>(`/api/documents/${encodeURIComponent(id)}`),
