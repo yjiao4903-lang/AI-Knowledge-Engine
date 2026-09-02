@@ -8,9 +8,13 @@
     GET  /api/synthesis/tasks/{task_id}/proposal-candidates
     POST /api/synthesis/tasks/{task_id}/rescan
     POST /api/synthesis/tasks/{task_id}/archive
+    GET  /api/synthesis/worker-launchers
+    POST /api/synthesis/tasks/{task_id}/launch-worker
 
 I8 原则：proposal-candidates 仅生成 Cognition Proposal 的候选 payload，绝不由
 Knowledge Engine 自动写入 Cognition；正式变化继续走 Cognition Preview + Apply。
+External Worker Launcher 也只是本地进程编排，不是模型 Provider：浏览器不能提交
+任意 executable / shell command / API key，KE 不嵌入 OpenAI / Claude SDK。
 """
 
 from __future__ import annotations
@@ -20,6 +24,7 @@ import os
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
 
 from app.core.errors import AppError, EvidenceNotFoundError, EvidenceStaleError
 from app.integration.proposals import build_cognition_proposal_payload
@@ -33,9 +38,19 @@ from app.taskpack.importer import (
     READY,
     TaskPackImporter,
 )
+from app.taskpack.launcher import (
+    ExternalWorkerLauncher,
+    LauncherKind,
+    LauncherStateError,
+    LauncherUnavailableError,
+)
 from app.taskpack.schemas import ResultEnvelope, TaskPackEvidence
 
 router = APIRouter(prefix="/api/synthesis", tags=["synthesis"])
+
+
+class LaunchWorkerRequest(BaseModel):
+    launcher: LauncherKind
 
 
 def _taskpack(request: Request) -> tuple[TaskPackBuilder, TaskPackImporter] | None:
@@ -140,6 +155,47 @@ def create_task(body: SynthesisRequest, request: Request) -> dict:
         "task_id": created.task_id,
         "status": READY,
         "task_path": str(created.task_path),
+    }
+
+
+@router.get("/worker-launchers")
+def get_worker_launchers(request: Request) -> dict:
+    """列出固定 launcher 的本机可用性；不返回/接受任意命令配置。"""
+    _, importer = _require_taskpack(request)
+    launchers = ExternalWorkerLauncher(importer.root).describe()
+    return {
+        "launchers": [
+            {"id": item.id, "label": item.label, "available": item.available}
+            for item in launchers
+        ]
+    }
+
+
+@router.post("/tasks/{task_id}/launch-worker")
+def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> dict:
+    """启动一个固定外部 CLI，并把 READY TaskPack 原子推进到 PROCESSING。"""
+    pack, importer = _require_task(request, task_id)
+    status = importer.status_of(pack)
+    if status != READY:
+        raise HTTPException(status_code=409, detail=f"只有 READY TaskPack 可以启动；当前状态={status}")
+
+    launcher = ExternalWorkerLauncher(importer.root)
+    try:
+        result = launcher.launch_ready(task_id, body.launcher)
+    except LauncherUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except LauncherStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"启动外部 Worker 失败: {exc}") from exc
+
+    return {
+        "task_id": task_id,
+        "launcher": result.launcher,
+        "launched": True,
+        "pid": result.pid,
+        "status": "PROCESSING",
+        "task_path": str(result.task_path),
     }
 
 
