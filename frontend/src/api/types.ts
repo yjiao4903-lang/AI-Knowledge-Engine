@@ -68,13 +68,33 @@ export interface DebugInfo {
 }
 
 export interface SearchResponse {
+  search_id?: string | null;
   query: string;
-  mode: string;
+  mode: SearchMode;
   results: SearchResult[];
   timing_ms: SearchTiming;
   debug?: DebugInfo;
   fallback_from?: SearchMode;
   fallback_reason?: string;
+}
+
+export interface RetrievalFeedbackUpdate {
+  search_id: string;
+  chunk_id: string;
+  useful?: boolean;
+  selected_as_evidence?: boolean;
+}
+
+export interface RetrievalFeedbackResponse {
+  search_id: string;
+  query: string;
+  chunk_id: string;
+  rank: number;
+  mode: SearchMode;
+  useful: boolean | null;
+  selected_as_evidence: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface HealthResponse {
