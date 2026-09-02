@@ -1,6 +1,7 @@
 // 类型化 API client。所有请求走 /api 前缀（Vite dev server 代理到 127.0.0.1:8765）。
 import type {
   ChunkDetail,
+  CognitionHealthResponse,
   CreateTaskRequest,
   CreateTaskResponse,
   DocumentDetail,
@@ -12,6 +13,7 @@ import type {
   IndexStatus,
   PromptResponse,
   ProposalCandidatesResponse,
+  ProposalPublicationResponse,
   RescanResponse,
   SearchRequest,
   SearchResponse,
@@ -78,8 +80,7 @@ export const api = {
 
   documents: () => request<DocumentsResponse>('/api/documents'),
   document: (id: string) => request<DocumentDetail>(`/api/documents/${encodeURIComponent(id)}`),
-  sections: (id: string) =>
-    request<SectionsResponse>(`/api/documents/${encodeURIComponent(id)}/sections`),
+  sections: (id: string) => request<SectionsResponse>(`/api/documents/${encodeURIComponent(id)}/sections`),
   chunk: (chunkId: string) => request<ChunkDetail>(`/api/chunks/${encodeURIComponent(chunkId)}`),
   openOriginal: (id: string) =>
     post<{ opened: boolean; path: string }>(`/api/documents/${encodeURIComponent(id)}/open-original`),
@@ -96,9 +97,7 @@ export const api = {
   listTasks: () => request<TaskListResponse>('/api/synthesis/tasks'),
   task: (id: string) => request<TaskDetail>(`/api/synthesis/tasks/${encodeURIComponent(id)}`),
   taskProposalCandidates: (id: string) =>
-    request<ProposalCandidatesResponse>(
-      `/api/synthesis/tasks/${encodeURIComponent(id)}/proposal-candidates`,
-    ),
+    request<ProposalCandidatesResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/proposal-candidates`),
   rescanTask: (id: string) =>
     post<RescanResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/rescan`),
   archiveTask: (id: string) =>
@@ -111,6 +110,17 @@ export const api = {
     ),
   taskPrompt: (id: string) =>
     request<PromptResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/prompt`),
+
+  cognitionHealth: () => request<CognitionHealthResponse>('/api/research-os/cognition/health'),
+  taskProposalPublication: (id: string) =>
+    request<ProposalPublicationResponse>(
+      `/api/research-os/tasks/${encodeURIComponent(id)}/proposal-publication`,
+    ),
+  publishTaskProposal: (id: string, force = false) =>
+    post<ProposalPublicationResponse>(
+      `/api/research-os/tasks/${encodeURIComponent(id)}/publish-proposal`,
+      { force },
+    ),
 
   externalRuns: () => request<ExternalRunsResponse>('/api/taskpack/runs'),
   externalRun: (id: string) =>

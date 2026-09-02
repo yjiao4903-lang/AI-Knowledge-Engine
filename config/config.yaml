@@ -25,8 +25,7 @@ qdrant:
   chunks_collection: "kb_chunks_full_v1"
   sections_collection: "kb_sections_full_v1"
 
-# I6：Cognition 第二类 Source（只读语义检索）
-# 独立 collection + 独立 catalog（与报告物理隔离，禁止混用）
+# Cognition：只读派生检索 + Proposal staging API。
 cognition:
   enabled: true
   root: "E:/CODEX/AI深度研究/cognition"
@@ -42,6 +41,9 @@ cognition:
   startup_scan: true
   periodic_reconcile_seconds: 300
   docid_prefix: "cog"
+  api_url: "http://127.0.0.1:3220/api"
+  api_timeout_seconds: 8
+  proposal_publish_enabled: true
 
 embedding:
   model: "Qwen/Qwen3-Embedding-0.6B"
@@ -116,7 +118,7 @@ inference:
   worker_start_timeout_seconds: 300
   max_consecutive_crashes: 2
 
-# I8：TaskPack 已纳入主仓生命周期；旧 D:/AI知识整合体系/taskpacks 可用迁移脚本只复制迁入。
+# I8：TaskPack 已纳入主仓生命周期；旧目录可用迁移脚本只复制迁入。
 taskpack:
   enabled: true
   root_dir: "D:/AI-Knowledge-Engine/data/taskpacks"

@@ -45,9 +45,9 @@ export function useHealth() {
 export function useSearch(qdrantAvailable?: boolean) {
   return useMutation({
     mutationFn: async (req: SearchRequest) => {
-      const requested = req.options?.mode ?? 'hybrid';
+      const requested = req.options?.mode ?? 'lexical';
       const fallback = async (reason: string) => {
-        const response = await api.search({ ...req, options: { ...req.options, mode: 'lexical' } });
+        const response = await api.search({ ...req, options: { ...req.options, mode: 'lexical', rerank: false } });
         return { ...response, fallback_from: requested, fallback_reason: reason };
       };
       if (requested !== 'lexical' && qdrantAvailable === false) {
@@ -101,6 +101,10 @@ export function useTasks() {
   });
 }
 
+export function useTaskDetail() {
+  return useMutation({ mutationFn: (id: string) => api.task(id) });
+}
+
 export function useExternalRuns() {
   return useQuery({ queryKey: ['externalTaskpackRuns'], queryFn: () => api.externalRuns() });
 }
@@ -123,6 +127,22 @@ export function useCreateTask() {
 
 export function useTaskProposalCandidates() {
   return useMutation({ mutationFn: (id: string) => api.taskProposalCandidates(id) });
+}
+
+export function useCognitionHealth() {
+  return useQuery({
+    queryKey: ['cognitionHealth'],
+    queryFn: () => api.cognitionHealth(),
+    refetchInterval: 15_000,
+  });
+}
+
+export function usePublishTaskProposal() {
+  return useMutation({ mutationFn: (id: string) => api.publishTaskProposal(id) });
+}
+
+export function useTaskProposalPublication() {
+  return useMutation({ mutationFn: (id: string) => api.taskProposalPublication(id) });
 }
 
 export function useRescanTask() {

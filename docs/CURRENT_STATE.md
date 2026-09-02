@@ -1,50 +1,80 @@
 # AI-Knowledge-Engine Current State
 
-更新日期：2026-09-01  
-阶段：I8 Research OS Integration — Phase 1
+更新日期：2026-09-02  
+阶段：I8 Research OS Integration — Phase 2
 
 ## 当前定位
 
 ```text
 AI-Knowledge-Engine
 = Evidence / Retrieval / TaskPack / Validation Engine
-+ Research OS integration host
++ Research Workflow Host
 ```
 
-正式 Cognition 写权限仍不在本仓。
+Cognition App 仍是唯一正式认知写入者。
 
-## 已完成能力
+## 已完成
 
+### Retrieval / Evidence
 - Report Parser / Chunker / SQLite / FTS / Dense / Hybrid / Reranker；
-- 全量终版报告索引与 Golden Regression；
-- Cognition Markdown 只读派生索引与独立 Qdrant collection；
-- Qdrant degraded 明确边界；
-- TaskPack V1 Builder / External Worker / Importer Gate / runs 读取；
-- I8 共享 `CognitionContextItem V1`；
-- I8 TaskPack -> Cognition Proposal Candidate 只读转换；
-- I8 Unified Research OS runtime / health / backup / restore 迁入本仓；
-- I8 TaskPack 默认根迁入 `<repo>/data/taskpacks`；
-- I8 旧 `D:\AI知识整合体系\taskpacks` 安全迁移脚本；
-- I8 Cognition + durable TaskPack backup lifecycle；
-- I8 read-only cross-system smoke script；
-- I8 KE Task Center 降级为运行/调试控制台，移除固定空 Evidence 的坏创建入口；
-- I8 Task Center 可只读查看/复制 Cognition Proposal Candidate JSON。
+- 全量报告索引与 Golden Regression；
+- Cognition Markdown 只读派生索引，独立 catalog / Qdrant collection；
+- Qdrant degraded 边界；
+- 默认工作台改为 `lexical + rerank OFF`，语义/混合显式启用；
+- Search Result 可加入 Evidence Basket；
+- Basket 以 localStorage 持久化、按 `chunk_id` 去重；
+- TaskPack Builder 仍从 catalog 权威解析 Evidence 正文。
+
+### TaskPack / External AI
+- TaskPack V1 Builder / External Worker / Importer Gate；
+- 结构化 `CognitionContextItem V1`；
+- `Search -> Evidence Basket -> Create TaskPack` 已闭环；
+- Task Center 可查看结构化 Result；
+- INVALID_RESULT 可读但不可发布 Proposal。
+
+### Cognition Integration
+- TaskPack -> Cognition Proposal Candidate 保守转换；
+- `supported` 不会升级为 `verified_fact`；
+- 新增 Cognition HTTP Gateway；
+- KE 只允许调用 Cognition `POST /api/proposals` 创建 staging candidate；
+- 新增 Proposal 发布幂等 marker：`result/proposal_publish.json`；
+- KE 不暴露 Apply / Merge / Revision / Topic Update 能力；
+- Task Center 可将通过 Gate 的结果发送到 Cognition Proposal 区；
+- 正式变化继续由 Cognition Preview + Human Apply 完成。
+
+### Runtime / Lifecycle
+- Unified runtime / health / backup / restore 已迁入主仓；
+- TaskPack 默认根 `<repo>/data/taskpacks`；
+- 旧 TaskPack 安全迁移脚本；
+- Cognition Markdown + durable TaskPack backup；
+- Report watcher 与 Cognition watcher 已拆分职责，避免重复 cognition reconcile。
+
+### CI
+GitHub Actions：`.github/workflows/i8-ci.yml`
+
+覆盖：
+- Backend I8 Phase 1 + Phase 2 contracts；
+- 前端 TypeScript/Vite build；
+- Runtime PowerShell syntax。
+
+Phase 1 CI 已 PASS；Phase 2 当前分支持续由同一 workflow 检查。
 
 ## 永久边界
 
 ```text
 Cognition App = only formal cognition writer
-KE = read-only consumer of Cognition + candidate producer
+KE = Evidence/TaskPack host + Proposal staging client
 External Worker = synthesis executor
 ```
 
 禁止：
-
 - KE 直接写 Cognition Markdown；
-- KE 自动 Apply Proposal；
+- KE 调用 Proposal Apply；
+- KE 调用 merge / revision / topic update 正式写接口；
 - Report/Cognition SQLite 合并；
 - Report/Cognition Qdrant collection 混用；
-- TaskPack `supported` 自动映射 `verified_fact`。
+- TaskPack `supported` 自动映射 `verified_fact`；
+- AI output 自动晋升正式知识。
 
 ## 当前关键 API
 
@@ -53,103 +83,79 @@ POST /api/search
 POST /api/synthesis/tasks
 GET  /api/synthesis/tasks
 GET  /api/synthesis/tasks/{task_id}
-GET  /api/synthesis/tasks/{task_id}/proposal-candidates   # I8
+GET  /api/synthesis/tasks/{task_id}/proposal-candidates
 POST /api/synthesis/tasks/{task_id}/rescan
+
+GET  /api/research-os/cognition/health
+GET  /api/research-os/tasks/{task_id}/proposal-publication
+POST /api/research-os/tasks/{task_id}/publish-proposal
+
 GET  /api/taskpack/runs
-GET  /api/search/cognition (按当前实现/配置)
 GET  /api/health
 ```
 
-## I8 Phase 1 输出
-
-### Shared Contract
-
-`backend/app/contracts/cognition.py`
-
-### Proposal Bridge
-
-`backend/app/integration/proposals.py`
-
-### Runtime / Migration
+## 当前用户路径
 
 ```text
-runtime/research-os.ps1
-runtime/start.ps1
-runtime/stop.ps1
-runtime/health.ps1
-runtime/backup.ps1
-runtime/restore.ps1
-runtime/migrate-taskpacks.ps1
+关键词/语义/混合搜索
+→ 选择 Evidence
+→ Evidence Basket
+→ 创建 TaskPack
+→ External Worker
+→ Importer Gate
+→ Result Viewer
+→ 发送到 Cognition Proposal
+→ Cognition Preview / Apply / Reject / Defer
 ```
 
-### Smoke
+## 运行配置
 
-`backend/scripts/integration_smoke.py`
-
-### Contract
-
-`docs/INTEGRATION_CONTRACT_V2.md`
-
-## TaskPack 数据迁移
-
-新默认根：
+Cognition API：
 
 ```text
-D:\AI-Knowledge-Engine\data\taskpacks
+http://127.0.0.1:3220/api
 ```
 
-旧路径如果仍有历史任务，先 dry-run：
+环境覆盖：
+
+```text
+COGNITION_API_URL
+COGNITION_DATA_ROOT
+AIKE_TASKPACK_ROOT
+AIKE_KB_ROOT
+AIKE_MODEL_ROOT
+AIKE_KE_PORT
+```
+
+## 仍需真机验收
+
+GitHub Actions 无法代替本机：
+
+- Windows + RX 7900 XTX / ROCm；
+- 真实 Qdrant corpus；
+- `E:\CODEX\AI深度研究\cognition-app`；
+- 实际 External Worker；
+- Cognition Proposal Preview / Apply；
+- 旧 TaskPack 数据迁移。
+
+本机建议：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
-```
-
-再显式：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
-```
-
-迁移器只复制、不删除旧源，并按 SHA256 检测冲突/复验。
-
-## 下一阶段（需要真实 cognition-app 代码）
-
-`AI-knowledge-combine` GitHub 仓库本身不包含真实 Cognition Vue/Node 源码，因此 I8 Phase 2 不能仅靠该仓继续改 UI。真实代码位于现有本机 Cognition App 目录。
-
-I8 Phase 2：
-
-1. 在 Cognition Evidence Basket 中增加“创建 TaskPack”；
-2. 把当前 Judgment / Question / Topic 作为结构化 Cognition Context 传入；
-3. Cognition UI 展示 Task 状态与 Result Viewer；
-4. 调用 KE `proposal-candidates`；
-5. 将返回 payload 交给既有 Cognition Proposal Center；
-6. 继续使用 Preview / Apply / Reject / Defer，不新增第二套审批系统。
-
-## 验证状态
-
-本分支已加入 deterministic unit tests 与 cross-system smoke test 脚本；但 GitHub 仓库当前没有 Actions workflow，而且 GitHub Connector 不能替代用户 Windows 主机上的 ROCm、Qdrant、Cognition 实体运行环境。因此本次远程代码整合**不宣称真机测试已经通过**。
-
-合入后在真实 Windows 环境应执行：
-
-```powershell
-# 旧 TaskPack 首次迁移（如旧目录存在）
-powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
+# 确认后
 powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
 
-# 后端回归
 .venv\Scripts\python.exe -m pytest backend\tests\ -q
-
-# 前端类型 + 构建
-cd frontend
-npm run build
-cd ..
-
-# 全栈健康
+cd frontend; npm run build; cd ..
 powershell -ExecutionPolicy Bypass -File .\runtime\health.ps1
-
-# 跨系统只读 smoke
 .venv\Scripts\python.exe backend\scripts\integration_smoke.py
-
-# 备份恢复演练建议先用隔离目录
 powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 ```
+
+## 下一批开发优先级
+
+1. Lexical metadata pre-filter：把过滤条件推进 FTS `LIMIT` 前，解决 scoped search 漏召回；
+2. Deterministic Epistemic Linter：预测/估算/强因果 overclaim 检查；
+3. Evidence Context Expansion：NONE / NEIGHBOR_1 / SECTION，仍保持独立 chunk identity；
+4. TaskPack validation cache，减少轮询重复 Gate；
+5. Personal Retrieval Feedback，建立真实用户 benchmark。

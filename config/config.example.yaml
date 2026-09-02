@@ -25,7 +25,7 @@ qdrant:
   chunks_collection: "kb_chunks_v1"
   sections_collection: "kb_sections_v1"
 
-# I6：Cognition 第二类 Source（只读语义检索）—— 示例配置
+# Cognition：只读派生检索 + Proposal staging API。
 cognition:
   enabled: true
   root: "E:/CODEX/AI深度研究/cognition"
@@ -41,6 +41,9 @@ cognition:
   startup_scan: true
   periodic_reconcile_seconds: 300
   docid_prefix: "cog"
+  api_url: "http://127.0.0.1:3220/api"
+  api_timeout_seconds: 8
+  proposal_publish_enabled: true
 
 embedding:
   model: "Qwen/Qwen3-Embedding-0.6B"

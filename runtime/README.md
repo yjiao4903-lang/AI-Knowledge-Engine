@@ -2,35 +2,22 @@
 
 本目录将原独立 `AI-knowledge-combine` 工作区中长期有价值的启动、健康检查、备份/恢复职责吸收到 `AI-Knowledge-Engine` 主仓。
 
-它**不会**合并 Cognition 数据库，也不会赋予 Knowledge Engine 正式认知写权限。
+它不会合并 Cognition 数据库。I8 Phase 2 中，Knowledge Engine 可以通过 Cognition **官方 Proposal API** 创建 staging candidate，但正式认知变化仍只能由 Cognition `Preview + Human Apply` 完成。
 
 ## 推荐入口
 
 ```powershell
-# 启动
 powershell -ExecutionPolicy Bypass -File .\runtime\start.ps1
-
-# 启动但不由本 wrapper 主动打开浏览器
-powershell -ExecutionPolicy Bypass -File .\runtime\start.ps1 -NoBrowser
-
-# 健康检查
 powershell -ExecutionPolicy Bypass -File .\runtime\health.ps1
-
-# 停止；默认保留 Qdrant
 powershell -ExecutionPolicy Bypass -File .\runtime\stop.ps1
-
-# 连 Qdrant 一起停
-powershell -ExecutionPolicy Bypass -File .\runtime\stop.ps1 -Qdrant
-
-# 备份并回读校验
 powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 ```
 
-底层统一实现为 `research-os.ps1`；兼容 wrapper 只是稳定入口，不复制逻辑。
+底层统一实现为 `research-os.ps1`；wrapper 只是稳定入口。
 
-## TaskPack 从旧 Integration Workspace 迁移
+## TaskPack 旧数据迁移
 
-I8 后默认 TaskPack 根为：
+新默认根：
 
 ```text
 <AI-Knowledge-Engine>\data\taskpacks
@@ -42,7 +29,7 @@ I8 后默认 TaskPack 根为：
 D:\AI知识整合体系\taskpacks
 ```
 
-如果旧路径存在，先 dry-run：
+先 dry-run：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
@@ -54,14 +41,7 @@ powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1
 powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
 ```
 
-迁移器：
-
-- 只复制，不删除旧源；
-- 同路径同 SHA256 自动跳过；
-- 同路径不同 SHA256 直接失败，不覆盖；
-- Apply 后逐文件 SHA256 复验。
-
-因此可以先完成代码切换，再在本机显式执行一次数据迁移。
+迁移器只复制不删除；同路径同 SHA256 跳过；不同 SHA256 拒绝覆盖；Apply 后重新校验。
 
 ## 环境变量
 
@@ -69,19 +49,23 @@ powershell -ExecutionPolicy Bypass -File .\runtime\migrate-taskpacks.ps1 -Apply
 |---|---|---|
 | `COGNITION_APP_ROOT` | `E:\CODEX\AI深度研究\cognition-app` | Cognition 程序目录 |
 | `COGNITION_DATA_ROOT` | `E:\CODEX\AI深度研究\cognition` | 正式 Cognition Markdown |
+| `COGNITION_API_URL` | `http://127.0.0.1:3220/api` | KE → Cognition Proposal staging API |
 | `AIKE_TASKPACK_ROOT` | `<repo>\data\taskpacks` | TaskPack 根 |
 | `AIKE_BACKUP_ROOT` | `<repo>\backups` | 统一备份目录 |
 | `AIKE_KE_PORT` | `8765` | Knowledge Engine API |
-| `AIKE_COGNITION_PORT` | `3220` | Cognition UI/API |
+| `AIKE_COGNITION_PORT` | `3220` | Cognition UI/API 运行端口 |
 | `AIKE_QDRANT_CONTAINER` | `ai-kb-qdrant` | Qdrant Docker 容器名 |
 | `AIKE_KB_ROOT` | config 默认值 | 报告知识库根 |
 | `AIKE_MODEL_ROOT` | config 默认值 | 本地 Embedding/Reranker 模型根 |
 
-这些与后端 `load_config()` 的 I8 override 对齐，避免 runtime 与 KE 读取不同目录。
+如果修改 `AIKE_COGNITION_PORT`，应同步设置对应的 `COGNITION_API_URL`，例如：
+
+```powershell
+$env:AIKE_COGNITION_PORT = '3330'
+$env:COGNITION_API_URL = 'http://127.0.0.1:3330/api'
+```
 
 ## 启动语义
-
-产品壳优先：
 
 ```text
 Cognition UI
@@ -92,20 +76,43 @@ Cognition UI
 Docker → Qdrant → KE → semantic retrieval
 ```
 
-因此 KE/Qdrant warming 或降级不应阻断 Cognition 的基础使用。
+KE/Qdrant warming 或降级不应阻断 Cognition 基础使用。
 
-注意：如果 Cognition 自身 `start.bat` 内部仍主动打开浏览器，则 `-NoBrowser` 只能保证本 runtime wrapper 不额外打开一次；不会改写 Cognition 自身启动脚本。
+## Cognition 写入边界
+
+允许：
+
+```text
+KE -> POST /api/proposals
+```
+
+用途仅为创建 Proposal staging candidate。
+
+禁止 KE 调用：
+
+```text
+Proposal apply
+merge
+judgment revision
+topic update
+archive target
+```
+
+因此完整正式链仍是：
+
+```text
+TaskPack Result
+→ Proposal Candidate
+→ Cognition Proposal
+→ Preview
+→ Human Apply / Reject / Defer
+```
 
 ## 备份语义
 
 ### Tier 1A：Formal Cognition
 
-备份 Cognition Markdown，全量保留；排除可重建的：
-
-- `index.qlite`
-- `index.qlite-wal`
-- `index.qlite-shm`
-- `90_系统\backups` 历史嵌套目录
+备份 Cognition Markdown；排除可重建 SQLite/WAL 和历史嵌套 backup。
 
 ### Tier 1B：Durable TaskPack Research Artifacts
 
@@ -113,46 +120,29 @@ Docker → Qdrant → KE → semantic retrieval
 
 - `completed/`
 - `archive/`
-- `failed/`（用于审计和恢复）
+- `failed/`
 - `data/taskpack_golden/runs/`（存在时）
 
-默认不备份：
+`result/proposal_publish.json` 随 TaskPack 一并备份。
 
-- `outbox/`
-- `processing/`
+默认不长期备份：`outbox/`、`processing/`。
 
-因为这些属于未完成执行状态。
-
-SQLite / FTS / Qdrant 仍属于可重建派生资产，不作为唯一备份。
+SQLite / FTS / Qdrant 属于可重建派生资产。
 
 ## 恢复
 
-先做 manifest-only 校验：
+默认先做 manifest-only 验证：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\runtime\restore.ps1 -Backup <时间戳或完整路径>
 ```
 
-默认**不会覆盖任何数据**。
-
-在隔离目录演练恢复：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\runtime\restore.ps1 `
-  -Backup <时间戳> `
-  -RestoreCognitionDir D:\RestoreDrill\cognition `
-  -RestoreTaskpackDir D:\RestoreDrill\taskpacks `
-  -Force
-```
-
-推荐先在隔离目录验证，再考虑恢复正式目录。恢复后应重建派生索引。
+推荐恢复到隔离目录演练后，再考虑正式恢复。
 
 ## 永久边界
 
 ```text
 Cognition App = 唯一正式认知写入者
-AI Knowledge Engine = Evidence / Retrieval / TaskPack Engine
+AI Knowledge Engine = Evidence / Retrieval / TaskPack / Proposal-staging client
 runtime = orchestration only
 ```
-
-TaskPack 结果只能生成 Proposal Candidate；正式变更仍需 Cognition `Preview + Apply`。

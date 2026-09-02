@@ -1,10 +1,11 @@
+import { CheckOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, Space, Tag, Tooltip, Typography, message } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HighlightText } from './highlight';
+import type { SearchResult } from '../api/types';
 import ContentTypeTag from './ContentTypeTag';
 import EvidenceTag from './EvidenceTag';
-import type { SearchResult } from '../api/types';
+import { HighlightText } from './highlight';
 
 const { Text, Paragraph } = Typography;
 
@@ -12,7 +13,14 @@ function fmtScore(v: number | null | undefined, digits = 4): string {
   return v == null ? '—' : v.toFixed(digits);
 }
 
-const ResultCard: React.FC<{ result: SearchResult; query: string }> = ({ result, query }) => {
+interface Props {
+  result: SearchResult;
+  query: string;
+  selected?: boolean;
+  onToggleEvidence?: (result: SearchResult) => void;
+}
+
+const ResultCard: React.FC<Props> = ({ result, query, selected = false, onToggleEvidence }) => {
   const navigate = useNavigate();
   const s = result.scores;
 
@@ -43,7 +51,7 @@ const ResultCard: React.FC<{ result: SearchResult; query: string }> = ({ result,
     ) : null;
 
   return (
-    <Card size="small" style={{ marginBottom: 12 }}>
+    <Card size="small" style={{ marginBottom: 12, borderColor: selected ? '#1677ff' : undefined }}>
       <div style={{ display: 'flex', gap: 12 }}>
         <div
           style={{
@@ -58,18 +66,15 @@ const ResultCard: React.FC<{ result: SearchResult; query: string }> = ({ result,
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <Space size={6} wrap style={{ marginBottom: 4 }}>
-            <Text strong style={{ fontSize: 15 }}>
-              {result.title}
-            </Text>
+            <Text strong style={{ fontSize: 15 }}>{result.title}</Text>
             <EvidenceTag level={result.evidence_level} />
             <ContentTypeTag type={result.content_type} />
             <Tag>{result.document_id}</Tag>
+            {selected && <Tag color="processing">已加入 Evidence</Tag>}
           </Space>
           {result.heading_path && (
             <div>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {result.heading_path}
-              </Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>{result.heading_path}</Text>
             </div>
           )}
           <Paragraph style={{ marginTop: 6, marginBottom: 8 }} className="snippet">
@@ -84,13 +89,19 @@ const ResultCard: React.FC<{ result: SearchResult; query: string }> = ({ result,
             <Tag style={{ fontFamily: 'monospace' }}>{result.chunk_id}</Tag>
           </Space>
           <div style={{ marginTop: 8 }}>
-            <Space>
-              <Button type="primary" size="small" onClick={openContext}>
-                查看上下文
-              </Button>
-              <Button size="small" onClick={copyCitation}>
-                复制引用
-              </Button>
+            <Space wrap>
+              <Button type="primary" size="small" onClick={openContext}>查看上下文</Button>
+              <Button size="small" onClick={copyCitation}>复制引用</Button>
+              {onToggleEvidence && (
+                <Button
+                  size="small"
+                  type={selected ? 'default' : 'dashed'}
+                  icon={selected ? <CheckOutlined /> : <PlusOutlined />}
+                  onClick={() => onToggleEvidence(result)}
+                >
+                  {selected ? '移出 Evidence' : '加入 Evidence'}
+                </Button>
+              )}
             </Space>
           </div>
         </div>
