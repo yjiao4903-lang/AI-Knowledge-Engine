@@ -129,6 +129,7 @@ def create_task(body: SynthesisRequest, request: Request) -> dict:
             task_type=body.task_type,
             query=body.query,
             evidence_refs=body.evidence_refs,
+            evidence_context_mode=body.evidence_context_mode,
             cognition_context=body.cognition_context or None,
         )
     except (EvidenceNotFoundError, EvidenceStaleError, AppError) as exc:
@@ -225,7 +226,7 @@ def rescan_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/archive")
 def archive_task(task_id: str, request: Request) -> dict:
-    _, importer = _require_task(request, task_id)
+    _, importer = _require_task(request)
     try:
         target = importer.archive_task(task_id)
     except FileExistsError as exc:
