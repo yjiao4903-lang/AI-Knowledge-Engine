@@ -19,7 +19,13 @@ import {
 } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateTask, useDocuments, useHealth, useSearch } from '../api/hooks';
+import {
+  useCreateTask,
+  useDocuments,
+  useHealth,
+  useRetrievalFeedback,
+  useSearch,
+} from '../api/hooks';
 import type {
   DebugInfo,
   EvidenceContextMode,
@@ -165,6 +171,7 @@ const SearchPage: React.FC = () => {
 
   const health = useHealth();
   const search = useSearch(health.data?.retrieval?.qdrant_available);
+  const retrievalFeedback = useRetrievalFeedback();
   const createTask = useCreateTask();
   const documentsQuery = useDocuments();
   const documents = documentsQuery.data?.documents ?? [];
@@ -191,10 +198,35 @@ const SearchPage: React.FC = () => {
   };
 
   const toggleEvidence = (result: SearchResult) => {
+    const exists = selectedChunkIds.has(result.chunk_id);
     setBasket((current) => {
-      const exists = current.some((item) => item.chunk_id === result.chunk_id);
       if (exists) return current.filter((item) => item.chunk_id !== result.chunk_id);
       return [...current, resultToEvidence(result)];
+    });
+
+    const searchId = search.data?.search_id;
+    if (searchId) {
+      retrievalFeedback.mutate(
+        {
+          search_id: searchId,
+          chunk_id: result.chunk_id,
+          selected_as_evidence: !exists,
+        },
+        {
+          onError: (error) =>
+            void message.warning(`Evidence 已更新，但检索反馈记录失败：${(error as Error).message}`),
+        },
+      );
+    }
+  };
+
+  const submitResultFeedback = async (result: SearchResult, useful: boolean) => {
+    const searchId = search.data?.search_id;
+    if (!searchId) throw new Error('当前搜索没有可用的 feedback search_id');
+    await retrievalFeedback.mutateAsync({
+      search_id: searchId,
+      chunk_id: result.chunk_id,
+      useful,
     });
   };
 
@@ -362,6 +394,9 @@ const SearchPage: React.FC = () => {
               「{search.data.query}」共 {results.length} 条结果（mode: {search.data.mode}
               {rerank ? '，rerank ON' : ''}）
             </Text>
+            {search.data.search_id && (
+              <Text type="secondary">有用/无用与 Evidence 选择仅用于积累个人检索反馈，不会自动调整排序参数。</Text>
+            )}
             <Button size="small" icon={<ReloadOutlined />} onClick={runSearch}>重跑</Button>
           </Space>
 
@@ -385,11 +420,12 @@ const SearchPage: React.FC = () => {
           ) : (
             results.map((result) => (
               <ResultCard
-                key={result.chunk_id}
+                key={`${search.data.search_id ?? 'no-feedback'}:${result.chunk_id}`}
                 result={result}
                 query={submittedQuery}
                 selected={selectedChunkIds.has(result.chunk_id)}
                 onToggleEvidence={toggleEvidence}
+                onFeedback={search.data.search_id ? submitResultFeedback : undefined}
               />
             ))
           )}
