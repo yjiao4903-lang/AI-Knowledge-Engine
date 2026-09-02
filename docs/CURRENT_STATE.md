@@ -26,6 +26,18 @@ Cognition App 仍是唯一正式认知写入者。
 - Basket 以 localStorage 持久化、按 `chunk_id` 去重；
 - TaskPack Builder 仍从 catalog 权威解析 Evidence 正文。
 
+### Personal Retrieval Feedback
+- 新增本地 append-only 账本：`data/retrieval_feedback.jsonl`，不新增外部分析平台或云端依赖；
+- 每次成功 `/api/search` 会生成独立 `search_id`，自动记录实际返回 Top-K 的 impression；
+- impression 至少记录 `query / chunk_id / document_id / rank / mode / rerank / timestamp`；
+- ResultCard 增加低干扰 `有用 / 无用` 反馈；
+- `加入 Evidence / 移出 Evidence` 同步记录 `selected_as_evidence=true/false`；
+- action 与 impression 通过同一 `search_id` 关联，便于后续按一次真实搜索还原排名与用户选择；
+- 反馈账本由服务端写入 UTC timestamp，并带 `schema_version=1.0`；
+- 搜索 impression 写入是 best-effort：反馈文件异常不会让搜索失败；
+- 当前只采集数据，不自动调整 Dense/FTS/RRF/Reranker 参数，不做在线学习；
+- Feedback 不属于正式 Cognition，也不会触发 Proposal / Apply / TaskPack mutation。
+
 ### Evidence Context Expansion
 - TaskPack 创建支持 `none / neighbor_1 / section` 三种上下文模式；
 - `none`：只使用用户在 Evidence Basket 显式选择的 anchor chunk；
@@ -88,6 +100,7 @@ GitHub Actions：`.github/workflows/i8-ci.yml`
 覆盖：
 - Backend Research OS contracts；
 - Retrieval regression / lexical metadata pre-filter regression；
+- Personal Retrieval Feedback deterministic contracts；
 - Deterministic Epistemic Linter unit + Proposal integration contracts；
 - Evidence Context Expansion deterministic contracts；
 - TaskPack Validation Cache deterministic contracts；
@@ -115,6 +128,9 @@ External Worker = synthesis executor
 - Evidence Context Expansion 隐式启动新的检索或模型调用；
 - Validation Cache 跳过 catalog stale-evidence 检查；
 - Validation Cache 改变 TaskPack 状态机或把旧 validation 结果当作永久事实；
+- Retrieval Feedback 直接在线修改 retrieval 参数或自动训练排序器；
+- Retrieval Feedback 写入失败阻断正常 Search；
+- Retrieval Feedback 自动晋升为正式 Cognition；
 - Epistemic Linter 自动改写 Claim state；
 - AI output 自动晋升正式知识。
 
@@ -122,6 +138,7 @@ External Worker = synthesis executor
 
 ```text
 POST /api/search
+POST /api/retrieval-feedback
 POST /api/synthesis/tasks
 GET  /api/synthesis/tasks
 GET  /api/synthesis/tasks/{task_id}
@@ -140,7 +157,9 @@ GET  /api/health
 
 ```text
 关键词/语义/混合搜索
-→ 选择 Anchor Evidence
+→ 自动记录 Top-K impression（仅本地 feedback ledger）
+→ 可选标记 有用 / 无用
+→ 选择 Anchor Evidence（同步记录 selected_as_evidence）
 → Evidence Basket
 → 选择 Evidence Context：none / neighbor_1 / section
 → 创建显式 chunk identity 的 TaskPack
@@ -171,6 +190,14 @@ AIKE_MODEL_ROOT
 AIKE_KE_PORT
 ```
 
+本地非正式反馈数据：
+
+```text
+<paths.data_dir>/retrieval_feedback.jsonl
+```
+
+该文件是个人检索行为数据，不属于 Cognition 正式知识，不进入模型 prompt，不驱动实时排序。
+
 ## 仍需真机验收
 
 GitHub Actions 无法代替本机：
@@ -182,7 +209,8 @@ GitHub Actions 无法代替本机：
 - Cognition Proposal Preview / Apply；
 - 旧 TaskPack 数据迁移；
 - 真实长报告上的 `neighbor_1 / section` 上下文体量与研究体验；
-- 大量历史 COMPLETED TaskPack 下 Task Center 轮询的实际 IO / latency 改善幅度。
+- 大量历史 COMPLETED TaskPack 下 Task Center 轮询的实际 IO / latency 改善幅度；
+- 至少约 100 次真实搜索后，检查 feedback ledger 的 impression / useful / Evidence-select 覆盖度与可分析性。
 
 本机建议：
 
@@ -200,6 +228,6 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. Personal Retrieval Feedback：记录真实 `query / chunk_id / rank / mode / useful / selected_as_evidence / timestamp`，先积累使用数据，不立即调整 retrieval 参数；
-2. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传 TaskPack 路径与 instruction，不把 OpenAI / Claude SDK 或模型 API key 塞回 KE；
-3. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构。
+1. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传 TaskPack 路径与 instruction，不把 OpenAI / Claude SDK 或模型 API key 塞回 KE；
+2. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构；
+3. Retrieval 参数调优：至少积累约 100 次真实搜索后，再基于 feedback ledger 评估 `dense_k / terms_k / trigram_k / RRF weights / reranker / chunk size`，当前阶段不提前调整。
