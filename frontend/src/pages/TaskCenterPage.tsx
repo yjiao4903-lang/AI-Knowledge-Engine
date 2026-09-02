@@ -7,15 +7,17 @@ import {
   EyeOutlined,
   FolderOpenOutlined,
   InboxOutlined,
+  PlayCircleOutlined,
   RedoOutlined,
   SendOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Alert, App, Button, Card, Divider, List, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
+import { Alert, App, Button, Card, Divider, Dropdown, List, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
 import React from 'react';
 import {
   useArchiveTask,
   useCognitionHealth,
+  useLaunchWorker,
   useOpenTaskFolder,
   usePublishTaskProposal,
   useRescanTask,
@@ -23,8 +25,10 @@ import {
   useTaskPrompt,
   useTaskProposalCandidates,
   useTasks,
+  useWorkerLaunchers,
 } from '../api/hooks';
 import type { SynthesisClaim, TaskInfo, TaskResultEnvelope, TaskStatus, TaskType } from '../api/types';
+import type { WorkerLauncherId } from '../api/workerLauncherTypes';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -144,6 +148,8 @@ const TaskCenterPage: React.FC = () => {
   const { message } = App.useApp();
   const tasksQuery = useTasks();
   const cognitionHealth = useCognitionHealth();
+  const workerLaunchers = useWorkerLaunchers();
+  const launchWorker = useLaunchWorker();
   const taskDetail = useTaskDetail();
   const rescanTask = useRescanTask();
   const archiveTask = useArchiveTask();
@@ -156,6 +162,17 @@ const TaskCenterPage: React.FC = () => {
   const refresh = () => {
     tasksQuery.refetch().catch(() => undefined);
     cognitionHealth.refetch().catch(() => undefined);
+    workerLaunchers.refetch().catch(() => undefined);
+  };
+
+  const onLaunchWorker = (record: TaskInfo, launcher: WorkerLauncherId) => {
+    launchWorker.mutate(
+      { taskId: record.task_id, launcher },
+      {
+        onSuccess: (r) => void message.success(`${r.launcher} 已启动，任务进入 PROCESSING`),
+        onError: (e) => void message.error(`启动 Worker 失败：${(e as Error).message}`),
+      },
+    );
   };
 
   const onCopyPrompt = (record: TaskInfo) => {
@@ -310,6 +327,13 @@ const TaskCenterPage: React.FC = () => {
     });
   };
 
+  const launcherItems = (workerLaunchers.data?.launchers ?? []).map((item) => ({
+    key: item.id,
+    label: item.available ? item.label : `${item.label}（未安装 / PATH 不可见）`,
+    disabled: !item.available,
+  }));
+  const hasAvailableLauncher = (workerLaunchers.data?.launchers ?? []).some((item) => item.available);
+
   const columns = [
     {
       title: '任务 ID', dataIndex: 'task_id', key: 'task_id', width: 220,
@@ -338,11 +362,22 @@ const TaskCenterPage: React.FC = () => {
       render: (v: string | null) => (v ? new Date(v).toLocaleString() : '—'),
     },
     {
-      title: '操作', key: 'actions', width: 650,
+      title: '操作', key: 'actions', width: 760,
       render: (_: unknown, r: TaskInfo) => (
         <Space size={4} wrap>
           <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(r)} disabled={r.status === 'ARCHIVED'}>目录</Button>
           <Button size="small" icon={<CopyOutlined />} onClick={() => onCopyPrompt(r)}>启动词</Button>
+          <Dropdown
+            menu={{
+              items: launcherItems,
+              onClick: ({ key }) => onLaunchWorker(r, key as WorkerLauncherId),
+            }}
+            disabled={r.status !== 'READY' || !hasAvailableLauncher || workerLaunchers.isLoading}
+          >
+            <Button size="small" type="primary" icon={<PlayCircleOutlined />} loading={launchWorker.isPending}>
+              启动 Worker
+            </Button>
+          </Dropdown>
           <Button size="small" icon={<RedoOutlined />} onClick={() => onRescan(r)} disabled={!['COMPLETED', 'INVALID_RESULT'].includes(r.status)} loading={rescanTask.isPending}>Gate</Button>
           <Button size="small" icon={<EyeOutlined />} onClick={() => onViewResult(r)} disabled={!['COMPLETED', 'IMPORTED', 'INVALID_RESULT'].includes(r.status)} loading={taskDetail.isPending}>结果</Button>
           <Button size="small" icon={<ExportOutlined />} onClick={() => onProposalCandidates(r)} disabled={!['COMPLETED', 'IMPORTED'].includes(r.status)} loading={proposalCandidates.isPending}>候选</Button>
@@ -372,8 +407,8 @@ const TaskCenterPage: React.FC = () => {
         <Alert
           type="info"
           showIcon
-          message="Research Workflow：TaskPack → Result → Cognition Proposal"
-          description="TaskPack 由搜索页 Evidence Basket 创建；通过 Gate 后可查看结构化结果，并发送到 Cognition Proposal 候选区。正式认知仍必须 Preview + Human Apply。"
+          message="Research Workflow：TaskPack → External Worker → Result → Cognition Proposal"
+          description="READY 任务可直接启动本机 Codex CLI / Claude Code；KE 只负责本地进程与 TaskPack 生命周期，不嵌模型 SDK 或 API key。也保留“启动词”复制作为手工 fallback。"
         />
 
         {cognitionHealth.data?.reachable ? (
@@ -384,6 +419,15 @@ const TaskCenterPage: React.FC = () => {
             showIcon
             message="Cognition Proposal API 当前不可达"
             description={cognitionHealth.data?.error ?? '正在检测；TaskPack 检索与结果查看不受影响。'}
+          />
+        )}
+
+        {workerLaunchers.isError && (
+          <Alert
+            type="warning"
+            showIcon
+            message="Worker Launcher 状态读取失败"
+            description="仍可使用“启动词”复制 + 手工打开目录执行 TaskPack。"
           />
         )}
 
@@ -406,7 +450,7 @@ const TaskCenterPage: React.FC = () => {
           />
         ) : (
           <Card title={<span>Task Center（共 {tasks.length} 个任务）</span>}>
-            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} scroll={{ x: 1500 }} />
+            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} scroll={{ x: 1650 }} />
           </Card>
         )}
 
@@ -421,7 +465,7 @@ const TaskCenterPage: React.FC = () => {
             <Tag>ARCHIVED</Tag>
           </Space>
           <div style={{ marginTop: 8 }}>
-            <Text type="secondary">External Worker → result.json + DONE → Importer Gate → Result Viewer → Cognition Proposal → Preview / Human Apply。</Text>
+            <Text type="secondary">Launcher → External Worker → result.json + DONE/FAILED → lifecycle supervisor → Importer Gate → Result Viewer → Cognition Proposal → Preview / Human Apply。</Text>
           </div>
         </Card>
       </Space>
