@@ -11,6 +11,7 @@
   证据（用 chunk_id 作为稳定引用标识）。
 - epistemic_state（主计划 §8）：supported / inference / hypothesis / uncertain /
   contradicted 固定枚举。
+- Evidence Context Expansion 只扩展为更多显式 chunk identity，不拼接匿名上下文。
 - LLM Context Envelope 中的证据统一以 `[En|chunk_id]` 形式呈现，模型须逐字引用
   chunk_id（Citation Rules §9），禁止虚构来源。
 """
@@ -30,6 +31,8 @@ TASK_TYPES: tuple[str, ...] = (
     "causal_synthesis",
     "tension_extraction",
 )
+EvidenceContextMode = Literal["none", "neighbor_1", "section"]
+
 # 事实性（需要证据绑定）与断言性之分的依据：
 # supported / inference / hypothesis / contradicted 均构成"断言"；
 # uncertain 表示证据不足，不作为事实断言（不要求 evidence_refs）。
@@ -122,16 +125,18 @@ class SynthesisDraft(BaseModel):
 class SynthesisRequest(BaseModel):
     """POST /api/synthesis/tasks 请求体。
 
-    Evidence 与 Cognition Context 都必须由调用方显式选择；KE 仅固化为 TaskPack，
-    不自行检索扩展，不获得 Cognition 写权限。
+    Evidence 与 Cognition Context 都必须由调用方显式选择。Evidence Context Expansion
+    仅允许在用户选中 chunk 的相邻 chunk / 同 section 内做 deterministic 扩展；KE 不做
+    新检索，不把扩展正文拼成匿名文本，也不获得 Cognition 写权限。
     """
 
     task_type: Literal["summary", "comparison", "causal_synthesis", "tension_extraction"]
     query: str = Field(..., min_length=1, max_length=1000)
     evidence_refs: list[EvidenceRef] = Field(
         ...,
-        description="用户显式选定的证据（固定输入，Worker 不得自行检索）",
+        description="用户显式选定的 anchor evidence；Builder 可按 evidence_context_mode 扩展",
     )
+    evidence_context_mode: EvidenceContextMode = "none"
     cognition_context: list[CognitionContextItem] = Field(
         default_factory=list,
         description="可选的正式 Cognition 对象只读快照；与 TaskPack contract 完全一致",

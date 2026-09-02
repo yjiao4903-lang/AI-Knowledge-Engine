@@ -26,6 +26,17 @@ Cognition App 仍是唯一正式认知写入者。
 - Basket 以 localStorage 持久化、按 `chunk_id` 去重；
 - TaskPack Builder 仍从 catalog 权威解析 Evidence 正文。
 
+### Evidence Context Expansion
+- TaskPack 创建支持 `none / neighbor_1 / section` 三种上下文模式；
+- `none`：只使用用户在 Evidence Basket 显式选择的 anchor chunk；
+- `neighbor_1`：按文档阅读顺序加入 anchor 前后各 1 个 chunk；
+- `section`：加入 anchor 所在 section 的全部 chunk；
+- 扩展仅发生在 TaskPack Builder / SQLite catalog 解析阶段，不触发新的 Search / Dense / LLM 调用；
+- 扩展后的每个 Evidence 仍作为独立 `TaskPackEvidence` 行写入 `evidence.jsonl`，保留独立 `chunk_id / content_hash / section_id / line range`；
+- 多 anchor 重叠上下文按 `chunk_id` deterministic 去重；
+- 扩展后重新检查 `taskpack.max_evidence`，超限显式报错并清理半成品 TaskPack，不做静默截断；
+- Search 工作台创建 TaskPack 时可直接选择上下文模式，默认仍为 `none`。
+
 ### TaskPack / External AI
 - TaskPack V1 Builder / External Worker / Importer Gate；
 - 结构化 `CognitionContextItem V1`；
@@ -66,6 +77,7 @@ GitHub Actions：`.github/workflows/i8-ci.yml`
 - Backend Research OS contracts；
 - Retrieval regression / lexical metadata pre-filter regression；
 - Deterministic Epistemic Linter unit + Proposal integration contracts；
+- Evidence Context Expansion deterministic contracts；
 - 前端 TypeScript/Vite build；
 - Runtime PowerShell syntax。
 
@@ -86,6 +98,8 @@ External Worker = synthesis executor
 - Report/Cognition SQLite 合并；
 - Report/Cognition Qdrant collection 混用；
 - TaskPack `supported` 自动映射 `verified_fact`；
+- Evidence Context Expansion 拼接丢失 `chunk_id` 的匿名上下文；
+- Evidence Context Expansion 隐式启动新的检索或模型调用；
 - Epistemic Linter 自动改写 Claim state；
 - AI output 自动晋升正式知识。
 
@@ -111,9 +125,10 @@ GET  /api/health
 
 ```text
 关键词/语义/混合搜索
-→ 选择 Evidence
+→ 选择 Anchor Evidence
 → Evidence Basket
-→ 创建 TaskPack
+→ 选择 Evidence Context：none / neighbor_1 / section
+→ 创建显式 chunk identity 的 TaskPack
 → External Worker
 → Importer Gate
 → Result Viewer
@@ -150,7 +165,8 @@ GitHub Actions 无法代替本机：
 - `E:\CODEX\AI深度研究\cognition-app`；
 - 实际 External Worker；
 - Cognition Proposal Preview / Apply；
-- 旧 TaskPack 数据迁移。
+- 旧 TaskPack 数据迁移；
+- 真实长报告上的 `neighbor_1 / section` 上下文体量与研究体验。
 
 本机建议：
 
@@ -168,7 +184,6 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. Evidence Context Expansion：NONE / NEIGHBOR_1 / SECTION，仍保持独立 `chunk_id` identity；
-2. TaskPack Validation Cache：按 `result_hash + validation_version` 避免轮询重复完整 Gate；
-3. Personal Retrieval Feedback：积累真实 `useful / selected_as_evidence` 数据后再调 retrieval；
-4. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传路径，不把外部模型 SDK 塞回 KE。
+1. TaskPack Validation Cache：按 `result_hash + validation_version` 避免轮询重复完整 Gate；
+2. Personal Retrieval Feedback：积累真实 `useful / selected_as_evidence` 数据后再调 retrieval；
+3. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传路径，不把外部模型 SDK 塞回 KE。

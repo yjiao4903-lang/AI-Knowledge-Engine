@@ -129,6 +129,7 @@ def create_task(body: SynthesisRequest, request: Request) -> dict:
             task_type=body.task_type,
             query=body.query,
             evidence_refs=body.evidence_refs,
+            evidence_context_mode=body.evidence_context_mode,
             cognition_context=body.cognition_context or None,
         )
     except (EvidenceNotFoundError, EvidenceStaleError, AppError) as exc:

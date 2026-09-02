@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateTask, useDocuments, useHealth, useSearch } from '../api/hooks';
 import type {
   DebugInfo,
+  EvidenceContextMode,
   EvidenceRefInput,
   SearchMode,
   SearchResult,
@@ -41,6 +42,18 @@ const TASK_TYPE_OPTIONS: { value: TaskType; label: string }[] = [
   { value: 'causal_synthesis', label: '因果合成 Causal Synthesis' },
   { value: 'tension_extraction', label: '张力提取 Tension Extraction' },
 ];
+
+const CONTEXT_MODE_OPTIONS: { value: EvidenceContextMode; label: string }[] = [
+  { value: 'none', label: '仅选中 Chunk' },
+  { value: 'neighbor_1', label: '邻接 ±1 Chunk' },
+  { value: 'section', label: '整个 Section' },
+];
+
+type CreateTaskForm = {
+  task_type: TaskType;
+  query: string;
+  evidence_context_mode: EvidenceContextMode;
+};
 
 function loadBasket(): EvidenceRefInput[] {
   try {
@@ -148,7 +161,7 @@ const SearchPage: React.FC = () => {
   const [basket, setBasket] = useState<EvidenceRefInput[]>(loadBasket);
   const [basketOpen, setBasketOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [form] = Form.useForm<{ task_type: TaskType; query: string }>();
+  const [form] = Form.useForm<CreateTaskForm>();
 
   const health = useHealth();
   const search = useSearch(health.data?.retrieval?.qdrant_available);
@@ -194,16 +207,18 @@ const SearchPage: React.FC = () => {
     form.setFieldsValue({
       task_type: 'summary',
       query: submittedQuery || query.trim() || '',
+      evidence_context_mode: 'none',
     });
     setCreateOpen(true);
   };
 
-  const submitTask = (values: { task_type: TaskType; query: string }) => {
+  const submitTask = (values: CreateTaskForm) => {
     createTask.mutate(
       {
         task_type: values.task_type,
         query: values.query.trim(),
         evidence_refs: basket,
+        evidence_context_mode: values.evidence_context_mode,
         cognition_context: [],
       },
       {
@@ -298,8 +313,8 @@ const SearchPage: React.FC = () => {
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          message={`Evidence Basket 已选择 ${basket.length} 条证据`}
-          description="TaskPack Builder 会按 chunk_id 从权威 catalog 重新解析正文；Basket 中的 excerpt 仅用于界面预览。"
+          message={`Evidence Basket 已选择 ${basket.length} 条 anchor evidence`}
+          description="TaskPack Builder 会按 chunk_id 从权威 catalog 重新解析正文；创建任务时可选择仅当前 chunk、邻接 ±1 或整个 section。"
           action={
             <Space>
               <Button size="small" onClick={() => setBasketOpen(true)}>查看 Basket</Button>
@@ -407,12 +422,25 @@ const SearchPage: React.FC = () => {
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          message={`固定证据集：${basket.length} 条`}
-          description="外部 Worker 只能引用本次 TaskPack 中显式提供的 Evidence。"
+          message={`Anchor evidence：${basket.length} 条`}
+          description="上下文扩展只会加入相邻或同 section 的独立 chunk；每条仍保留自己的 chunk_id，外部 Worker 只能引用最终 TaskPack 中显式提供的 Evidence。"
         />
-        <Form form={form} layout="vertical" onFinish={submitTask} initialValues={{ task_type: 'summary' }}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={submitTask}
+          initialValues={{ task_type: 'summary', evidence_context_mode: 'none' }}
+        >
           <Form.Item label="任务类型" name="task_type" rules={[{ required: true }]}>
             <Select options={TASK_TYPE_OPTIONS} />
+          </Form.Item>
+          <Form.Item
+            label="Evidence 上下文"
+            name="evidence_context_mode"
+            rules={[{ required: true }]}
+            extra="默认仅使用选中的 chunk。比较、因果和机制类任务可按需扩大上下文；若扩展后超过 TaskPack 上限会直接提示，不会静默截断。"
+          >
+            <Radio.Group optionType="button" buttonStyle="solid" options={CONTEXT_MODE_OPTIONS} />
           </Form.Item>
           <Form.Item
             label="研究问题"

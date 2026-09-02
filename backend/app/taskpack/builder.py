@@ -10,6 +10,7 @@
 正文与身份字段一律按 chunk_id 从 KE catalog 权威解析（EvidenceResolver，
 F2 纪律），不信任调用方传入的 excerpt；document_id / section_id /
 content_hash 以 catalog 为准，作为 Importer stale Gate（§48）的比对基准。
+Evidence Context Expansion 只增加更多显式 chunk identity，不拼接匿名上下文。
 chunk 不存在 / hash 不一致时分别抛 404 / 409，由 API 层映射。
 """
 
@@ -26,7 +27,7 @@ import yaml
 
 from app.core.config import Config
 from app.synthesis.grounding import EvidenceResolver
-from app.synthesis.schemas import EvidenceRef
+from app.synthesis.schemas import EvidenceContextMode, EvidenceRef
 from app.taskpack.manifest import build_manifest, sha256_file
 from app.taskpack.schemas import (
     CognitionContextItem,
@@ -135,6 +136,7 @@ class TaskPackBuilder:
         task_type: str,
         query: str,
         evidence_refs: list,
+        evidence_context_mode: EvidenceContextMode = "none",
         cognition_context: list | None = None,
         task_specific_instruction: str | None = None,
         max_claims: int | None = None,
@@ -162,7 +164,8 @@ class TaskPackBuilder:
         try:
             return self._write_task_pack(
                 pack=pack, task_id=task_id, task_type=task_type, query=query,
-                evidence_refs=evidence_refs, cognition_context=cognition_context,
+                evidence_refs=evidence_refs, evidence_context_mode=evidence_context_mode,
+                cognition_context=cognition_context,
                 task_specific_instruction=task_specific_instruction,
                 max_claims=max_claims, now=now,
             )
@@ -172,13 +175,20 @@ class TaskPackBuilder:
 
     def _write_task_pack(
         self, *, pack: Path, task_id: str, task_type: str, query: str, evidence_refs: list,
-        cognition_context: list | None, task_specific_instruction: str | None,
-        max_claims: int | None, now: datetime,
+        evidence_context_mode: EvidenceContextMode, cognition_context: list | None,
+        task_specific_instruction: str | None, max_claims: int | None, now: datetime,
     ) -> CreatedTask:
         """Write a reserved pack; caller removes it on any failure/interruption."""
 
         created_at = now.isoformat(timespec="seconds")
-        evidence = self._resolve_evidence(evidence_refs)
+        expanded_refs = self.resolver.expand_refs(evidence_refs, evidence_context_mode)
+        if len(expanded_refs) > self.cfg.taskpack.max_evidence:
+            raise ValueError(
+                f"Evidence Context Expansion 后证据数量（{len(expanded_refs)}）超过配置上限"
+                f" taskpack.max_evidence={self.cfg.taskpack.max_evidence}；"
+                "请减少 anchor evidence 或缩小 evidence_context_mode"
+            )
+        evidence = self._resolve_evidence(expanded_refs)
         cog_items = [
             CognitionContextItem.model_validate(c) for c in (cognition_context or [])
         ]
@@ -188,6 +198,7 @@ class TaskPackBuilder:
             task_type=task_type,
             query=query,
             created_at=created_at,
+            evidence_context_mode=evidence_context_mode,
             task_specific_instruction=task_specific_instruction,
             constraints=Constraints(
                 max_claims=max_claims or self.cfg.taskpack.max_claims
