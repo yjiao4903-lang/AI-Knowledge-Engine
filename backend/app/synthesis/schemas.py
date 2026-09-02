@@ -6,6 +6,7 @@
 设计要点：
 - `EvidenceRef`：与 Integration Contract V1 §3 的持久 Identity 保持一致
   （source_type/document_id/section_id/chunk_id/content_hash/start_line/end_line）。
+- `CognitionContextItem`：与 TaskPack 共用的只读 Cognition Context V1 contract。
 - Claim 级 grounding（主计划 §7）：每个事实性 Claim 的 `evidence_refs` 显式绑定
   证据（用 chunk_id 作为稳定引用标识）。
 - epistemic_state（主计划 §8）：supported / inference / hypothesis / uncertain /
@@ -19,6 +20,8 @@ from __future__ import annotations
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
+
+from app.contracts.cognition import CognitionContextItem
 
 SCHEMA_VERSION = "1.0"
 TASK_TYPES: tuple[str, ...] = (
@@ -117,17 +120,21 @@ class SynthesisDraft(BaseModel):
 
 
 class SynthesisRequest(BaseModel):
-    """POST /api/synthesis 请求体（主计划 §14/§15：L1A 只 read+generate+return）。"""
+    """POST /api/synthesis/tasks 请求体。
+
+    Evidence 与 Cognition Context 都必须由调用方显式选择；KE 仅固化为 TaskPack，
+    不自行检索扩展，不获得 Cognition 写权限。
+    """
 
     task_type: Literal["summary", "comparison", "causal_synthesis", "tension_extraction"]
     query: str = Field(..., min_length=1, max_length=1000)
     evidence_refs: list[EvidenceRef] = Field(
         ...,
-        description="用户显式选定的证据（L1A 固定输入，LLM 不得自行检索）",
+        description="用户显式选定的证据（固定输入，Worker 不得自行检索）",
     )
-    cognition_context: list[str] = Field(
+    cognition_context: list[CognitionContextItem] = Field(
         default_factory=list,
-        description="可选认知上下文摘要（如：当前与该主题相关的既有判断/问题），仅作背景",
+        description="可选的正式 Cognition 对象只读快照；与 TaskPack contract 完全一致",
     )
 
 

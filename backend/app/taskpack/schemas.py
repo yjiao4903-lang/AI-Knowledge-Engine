@@ -7,7 +7,7 @@ Importer 按八步 Gate 校验后导入（方案 §46）。所有 Schema 显式�
 
 - TaskYaml：task.yaml（§7），任务身份/权限/约束/期望输出。
 - TaskPackEvidence：evidence.jsonl 每行（§9），Fixed Evidence Set 成员快照。
-- CognitionContextItem：cognition_context.jsonl 每行（§10，可选）。
+- CognitionContextItem：cognition_context.jsonl 每行（§10，可选），定义于共享 contract。
 - Manifest：manifest.json（§11），不可变输入 sha256 清单，Importer 必校验。
 - RunMeta：result/run_meta.json（§23），Worker 运行溯源。
 - ResultEnvelope：result/result.json（§13），SynthesisDraft V1 的 TaskPack 派生
@@ -23,6 +23,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.contracts.cognition import CognitionContextItem
 from app.synthesis.schemas import Claim, Tension
 
 TASKPACK_VERSION = "1.0"
@@ -146,17 +147,6 @@ class TaskPackEvidence(BaseModel):
     heading_path: list[str] = Field(default_factory=list)
     start_line: int | None = None
     end_line: int | None = None
-    excerpt: str | None = None
-
-
-class CognitionContextItem(BaseModel):
-    """cognition_context.jsonl 单行（§10，可选）：最小必要的既有认知快照，只读。"""
-
-    context_id: str = Field(..., min_length=1)
-    object_type: str = Field(..., min_length=1)
-    object_id: str = Field(..., min_length=1)
-    content_hash: str | None = None
-    title: str | None = None
     excerpt: str | None = None
 
 

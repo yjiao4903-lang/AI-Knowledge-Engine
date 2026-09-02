@@ -17,8 +17,12 @@ index/
 *.db-wal
 *.db-shm
 
-# Logs
+# Logs / runtime state / local backups
 logs/
+backups/
+runtime/research-os-pids.json
+runtime/*.local.ps1
+runtime/*.local.json
 
 # IDE / OS
 .idea/

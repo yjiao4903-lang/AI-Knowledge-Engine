@@ -31,7 +31,6 @@ cognition:
   root: "E:/CODEX/AI深度研究/cognition"
   catalog_path: "D:/AI-Knowledge-Engine/data/catalog_cognition.db"
   chunks_collection: "kb_cognition_chunks_v1"
-  # 白名单（默认索引对象）；候选/收件箱/模板/系统/归档自动排除
   include_dirs:
     - "02_来源与阅读"
     - "03_问题池"
@@ -74,7 +73,7 @@ reranker:
     Given a query for a private research knowledge base, judge whether the
     document passage is highly relevant and useful for answering the query.
   cpu_max_candidates: 8
-  batch_size: 2               # M7 真实文档 benchmark: 2 最优（24 docs 808ms；batch8 因 padding 反而 1056ms）
+  batch_size: 2
 
 chunking:
   target_chars: 900
@@ -99,7 +98,7 @@ fusion:
   dense_weight: 1.0
   terms_weight: 0.9
   trigram_weight: 0.7
-  parent_boost: 1.08        # Section Parent Boost（spec §19）
+  parent_boost: 1.08
   parent_boost_sections_k: 8
   parent_boost_enabled: true
 
@@ -109,19 +108,19 @@ indexing:
   watcher_enabled: true
 
 inference:
-  preferred_device: "auto"      # auto | cpu
+  preferred_device: "auto"
   preferred_gpu_name: "RX 7900 XTX"
-  force_device: null            # 如 "cuda:1"；优先级最高
+  force_device: null
   worker_timeout_seconds: 120
   worker_start_timeout_seconds: 300
   max_consecutive_crashes: 2
 
-# L1：TaskPack 外部模型工作流（V3.0 方案：不再运行内部文本 LLM）—— 示例配置
+# I8：TaskPack 数据默认归入主仓 data/taskpacks；可用 AIKE_TASKPACK_ROOT 覆盖。
 taskpack:
   enabled: true
-  root_dir: "D:/AI知识整合体系/taskpacks"
+  root_dir: "D:/AI-Knowledge-Engine/data/taskpacks"
   prompt_version: "taskpack-synthesis-v1"
   max_evidence: 20
   evidence_max_chars: 900
   max_claims: 12
-  periodic_scan_seconds: 0   # 0 = 仅 API 调用时扫描（on-demand）
+  periodic_scan_seconds: 0

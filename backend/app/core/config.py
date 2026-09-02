@@ -1,7 +1,8 @@
-"""配置加载（M1-02）。
+"""配置加载（M1-02 + I8 Research OS runtime overrides）。
 
-以 config/config.yaml 为准（不存在时回退 config.example.yaml），
-全部参数可用 pydantic 模型校验与默认值兜底。
+以 config/config.yaml 为准（不存在时回退 config.example.yaml），全部参数可用
+pydantic 模型校验与默认值兜底。I8 增加少量显式环境变量覆盖，使统一 runtime、
+备份脚本与后端实际读取路径保持一致。
 """
 
 from __future__ import annotations
@@ -47,24 +48,19 @@ class QdrantConfig(BaseModel):
 
 
 class CognitionConfig(BaseModel):
-    """I6：Cognition 第二类 Source（只读语义检索）。
-
-    独立 collection 与独立 catalog（与报告物理隔离，禁止混用）；
-    include_dirs 为顶层子目录白名单（默认索引对象），白名单之外（候选/收件箱/
-    模板/系统/归档）一律不索引（主计划 §49）。
-    """
+    """I6：Cognition 第二类 Source（只读语义检索）。"""
 
     enabled: bool = True
     root: str = "E:/CODEX/AI深度研究/cognition"
     catalog_path: str = str(PROJECT_ROOT / "data" / "catalog_cognition.db")
     chunks_collection: str = "kb_cognition_chunks_v1"
     include_dirs: list[str] = Field(default_factory=lambda: [
-        "02_来源与阅读",   # Reading Record
-        "03_问题池",       # Question
-        "04_判断台账",     # Judgment
-        "05_主题页",       # Topic
-        "06_研究项目",     # Project
-        "07_复盘",         # Review
+        "02_来源与阅读",
+        "03_问题池",
+        "04_判断台账",
+        "05_主题页",
+        "06_研究项目",
+        "07_复盘",
     ])
     startup_scan: bool = True
     periodic_reconcile_seconds: int = 300
@@ -100,12 +96,11 @@ class RerankerConfig(BaseModel):
     max_tokens: int = 3072
     candidate_k: int = 24
     enabled: bool = True
-    batch_size: int = 8  # M7 benchmark 选定：24 docs 252ms，全 finite
+    batch_size: int = 8
     instruction: str = (
         "Given a query for a private research knowledge base, judge whether the "
         "document passage is highly relevant and useful for answering the query."
     )
-    # CPU 设备下 rerank 极慢（fp32 ~30s/对），候选数上限
     cpu_max_candidates: int = 8
 
 
@@ -134,7 +129,6 @@ class FusionConfig(BaseModel):
     dense_weight: float = 1.0
     terms_weight: float = 0.9
     trigram_weight: float = 0.7
-    # Section Parent Boost（spec §19）：section dense prior 对子 chunk 的轻量加成
     parent_boost: float = 1.08
     parent_boost_sections_k: int = 8
     parent_boost_enabled: bool = True
@@ -147,36 +141,26 @@ class IndexingConfig(BaseModel):
 
 
 class InferenceConfig(BaseModel):
-    """显式推理设备配置（Addendum §17）。
+    """显式推理设备配置（Addendum §17）。"""
 
-    优先级：force_device > preferred_gpu_name > 最大显存 > CPU fallback。
-    """
-
-    preferred_device: str = "auto"  # auto | cpu
+    preferred_device: str = "auto"
     preferred_gpu_name: str = "RX 7900 XTX"
-    force_device: str | None = None  # 如 "cuda:1"
+    force_device: str | None = None
     worker_timeout_seconds: float = 120.0
     worker_start_timeout_seconds: float = 300.0
-    max_consecutive_crashes: int = 2  # 连续崩溃后转 CPU fallback（Addendum §17）
+    max_consecutive_crashes: int = 2
 
 
 class TaskPackConfig(BaseModel):
-    """L1：TaskPack 外部模型工作流配置（V3.0 方案 §21/§29）。
-
-    - Research OS 不再运行任何内部文本 LLM；综合生成由外部 Worker
-      （Trae / Codex / Claude Code 等）读取 TaskPack 目录完成。
-    - root_dir 为 TaskPack 根目录（templates/outbox/processing/completed/
-      failed/archive），Research OS 只操作本地文件，不感知模型与 Worker。
-    - Synthesis 为 Optional Capability：taskpack 不可用不影响 V1 Core。
-    """
+    """TaskPack 外部模型工作流配置。"""
 
     enabled: bool = True
-    root_dir: str = "D:/AI知识整合体系/taskpacks"
+    root_dir: str = str(PROJECT_ROOT / "data" / "taskpacks")
     prompt_version: str = "taskpack-synthesis-v1"
-    max_evidence: int = 20          # Context Envelope 单次最多注入的 Evidence 条数
-    evidence_max_chars: int = 1200  # 每条 Evidence 注入的最大字符数（截断正文）
-    max_claims: int = 12            # constraints.max_claims（V3.0 方案 §7）
-    periodic_scan_seconds: int = 0  # 0 = 仅 API 调用时扫描（on-demand，§43）
+    max_evidence: int = 20
+    evidence_max_chars: int = 1200
+    max_claims: int = 12
+    periodic_scan_seconds: int = 0
 
 
 class Config(BaseModel):
@@ -196,9 +180,32 @@ class Config(BaseModel):
     taskpack: TaskPackConfig = Field(default_factory=TaskPackConfig)
 
 
+def _apply_runtime_env_overrides(cfg: Config) -> Config:
+    """Apply the small set of path overrides shared with runtime/research-os.ps1.
+
+    These are explicit operational overrides, not a second configuration system.
+    They are intentionally limited to paths/ports that must stay aligned across
+    the backend and the integrated runtime/backup layer.
+    """
+
+    if os.environ.get("AIKE_KE_PORT"):
+        cfg.app.port = int(os.environ["AIKE_KE_PORT"])
+    if os.environ.get("COGNITION_DATA_ROOT"):
+        cfg.cognition.root = os.environ["COGNITION_DATA_ROOT"]
+    if os.environ.get("AIKE_TASKPACK_ROOT"):
+        cfg.taskpack.root_dir = os.environ["AIKE_TASKPACK_ROOT"]
+    if os.environ.get("AIKE_KB_ROOT"):
+        cfg.knowledge_base.roots = [os.environ["AIKE_KB_ROOT"]]
+    if os.environ.get("AIKE_MODEL_ROOT"):
+        model_root = Path(os.environ["AIKE_MODEL_ROOT"])
+        cfg.paths.model_dir = str(model_root)
+        cfg.embedding.local_path = str(model_root / "Qwen3-Embedding-0.6B")
+        cfg.reranker.local_path = str(model_root / "Qwen3-Reranker-0.6B")
+    return cfg
+
+
 def load_config(path: str | Path | None = None) -> Config:
-    """加载配置；path 缺省时依次尝试 KE_CONFIG 环境变量、config/config.yaml
-    与 config.example.yaml（I0：全量索引与 dev 语料用独立配置切换）。"""
+    """加载配置；支持 KE_CONFIG 与 I8 runtime 显式环境覆盖。"""
     if path is None:
         env = os.environ.get("KE_CONFIG")
         if env:
@@ -210,11 +217,10 @@ def load_config(path: str | Path | None = None) -> Config:
                 path = c
                 break
     if path is None or not Path(path).exists():
-        return Config()
+        return _apply_runtime_env_overrides(Config())
     data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    return Config.model_validate(data)
+    return _apply_runtime_env_overrides(Config.model_validate(data))
 
 
-# 版本常量（写入 meta 表，供 reindex 判断，见 spec §48）
 SCHEMA_VERSION = "1.0.0"
-LEXICAL_VERSION = "4.0.0"  # M4: NFKC + identifier 保护 + jieba + tech_terms
+LEXICAL_VERSION = "4.0.0"

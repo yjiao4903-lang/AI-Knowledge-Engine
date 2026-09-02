@@ -1,14 +1,16 @@
-"""Synthesis TaskPack API（V3.0 方案 §34-§36）。
+"""Synthesis TaskPack API（V3.0 + I8 Research OS Integration）。
 
-废弃旧的同步 POST /api/synthesis（.py 不再注册；见 Task 1 移除 LLM runtime）。
-新增：
-    POST /api/synthesis/tasks                 创建 TaskPack（立即返回 READY）
-    GET  /api/synthesis/tasks                 列出全部任务（Task Center，§38）
-    GET  /api/synthesis/tasks/{task_id}       单任务详情
-    POST /api/synthesis/tasks/{task_id}/rescan 触发 Watcher 导入（§43）
-    POST /api/synthesis/tasks/{task_id}/archive 归档（§40）
+废弃旧的同步 POST /api/synthesis（.py 不再注册；内部文本 LLM 已移除）。
+当前端点：
+    POST /api/synthesis/tasks
+    GET  /api/synthesis/tasks
+    GET  /api/synthesis/tasks/{task_id}
+    GET  /api/synthesis/tasks/{task_id}/proposal-candidates
+    POST /api/synthesis/tasks/{task_id}/rescan
+    POST /api/synthesis/tasks/{task_id}/archive
 
-禁止：POST /api/synthesis/run-model（已随 Task 1 移除）。
+I8 原则：proposal-candidates 仅生成 Cognition Proposal 的候选 payload，绝不由
+Knowledge Engine 自动写入 Cognition；正式变化继续走 Cognition Preview + Apply。
 """
 
 from __future__ import annotations
@@ -20,7 +22,8 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
 
 from app.core.errors import AppError, EvidenceNotFoundError, EvidenceStaleError
-from app.synthesis.schemas import EvidenceRef, SynthesisRequest
+from app.integration.proposals import build_cognition_proposal_payload
+from app.synthesis.schemas import SynthesisRequest
 from app.taskpack.builder import TaskPackBuilder
 from app.taskpack.importer import (
     ARCHIVED,
@@ -30,6 +33,7 @@ from app.taskpack.importer import (
     READY,
     TaskPackImporter,
 )
+from app.taskpack.schemas import ResultEnvelope, TaskPackEvidence
 
 router = APIRouter(prefix="/api/synthesis", tags=["synthesis"])
 
@@ -63,6 +67,31 @@ def _require_task(request: Request, task_id: str):
     return pack, importer
 
 
+def _read_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"无法解析 {path.name}: {exc}") from exc
+
+
+def _read_taskpack_evidence(pack: Path) -> list[TaskPackEvidence]:
+    path = pack / "evidence.jsonl"
+    if not path.exists():
+        raise HTTPException(status_code=422, detail="evidence.jsonl 缺失")
+    evidence: list[TaskPackEvidence] = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            evidence.append(TaskPackEvidence.model_validate_json(line))
+        except Exception as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=f"evidence.jsonl 第 {lineno} 行无效: {exc}",
+            ) from exc
+    return evidence
+
+
 def _task_detail(pack: Path, importer: TaskPackImporter) -> dict:
     info = importer._make_task_info(pack)
     detail = {
@@ -79,8 +108,9 @@ def _task_detail(pack: Path, importer: TaskPackImporter) -> dict:
         "stale": info.stale,
         "error": info.error,
     }
-    # 已完成或已导入：附带 result.json 视图（stale 允许查看 snapshot，§48）
-    if info.status in (COMPLETED, IMPORTED):
+    # COMPLETED / IMPORTED / INVALID_RESULT 都允许查看 result snapshot；
+    # INVALID 只代表 Gate 未通过，不应迫使用户回文件系统排障。
+    if info.status in (COMPLETED, IMPORTED, INVALID_RESULT):
         result_path = pack / "result" / "result.json"
         if result_path.exists():
             try:
@@ -92,7 +122,7 @@ def _task_detail(pack: Path, importer: TaskPackImporter) -> dict:
 
 @router.post("/tasks")
 def create_task(body: SynthesisRequest, request: Request) -> dict:
-    """创建 TaskPack，立即返回 READY（§34）。"""
+    """创建 TaskPack，立即返回 READY。"""
     builder, _ = _require_taskpack(request)
     try:
         created = builder.create_task(
@@ -114,7 +144,7 @@ def create_task(body: SynthesisRequest, request: Request) -> dict:
 
 @router.get("/tasks")
 def list_tasks(request: Request) -> dict:
-    """Task Center 列表（§38）：先触发一次 Watcher 扫描，再返回全部状态。"""
+    """Task Center 列表：先触发一次 Watcher 扫描，再返回全部状态。"""
     _, importer = _require_taskpack(request)
     importer.scan()
     tasks = [{
@@ -140,10 +170,45 @@ def get_task(task_id: str, request: Request) -> dict:
     return _task_detail(pack, importer)
 
 
+@router.get("/tasks/{task_id}/proposal-candidates")
+def get_proposal_candidates(task_id: str, request: Request) -> dict:
+    """把已验证 TaskPack 结果转换成 Cognition Proposal 候选 payload。
+
+    只读端点：返回的 ``proposal_payload`` 可由 Cognition App 显式提交到其
+    ``POST /api/proposals``，但 KE 本身不调用该写接口，也不获得认知写权限。
+    """
+    pack, importer = _require_task(request, task_id)
+    info = importer._make_task_info(pack)
+    if info.status not in (COMPLETED, IMPORTED):
+        raise HTTPException(
+            status_code=409,
+            detail=f"只有通过 TaskPack Gate 的任务可生成 Proposal 候选；当前状态={info.status}",
+        )
+    result_path = pack / "result" / "result.json"
+    if not result_path.exists():
+        raise HTTPException(status_code=422, detail="result/result.json 缺失")
+    try:
+        result = ResultEnvelope.model_validate(_read_json(result_path))
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"result.json 不符合 ResultEnvelope: {exc}") from exc
+    evidence = _read_taskpack_evidence(pack)
+    payload, warnings = build_cognition_proposal_payload(result, evidence)
+    return {
+        "task_id": task_id,
+        "source_status": info.status,
+        "auto_apply": False,
+        "target_contract": "Cognition Proposal API V0.2 / POST /api/proposals",
+        "proposal_payload": payload,
+        "warnings": warnings,
+    }
+
+
 @router.post("/tasks/{task_id}/rescan")
 def rescan_task(task_id: str, request: Request) -> dict:
-    """触发对单个任务的 Watcher 导入（§43：前端轮询时触发 scan）。"""
-    pack, importer = _require_task(request, task_id)
+    """触发对单个任务的 Watcher 导入。"""
+    _pack, importer = _require_task(request, task_id)
     report = importer.rescan_task(task_id)
     if report is None:
         raise HTTPException(status_code=400, detail="任务尚无 result/DONE，无法导入")
@@ -164,18 +229,13 @@ def archive_task(task_id: str, request: Request) -> dict:
     try:
         target = importer.archive_task(task_id)
     except FileExistsError as exc:
-        # Archive collision is a client-visible conflict; source task remains intact.
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     return {"task_id": task_id, "status": ARCHIVED, "task_path": str(target)}
 
 
 @router.post("/tasks/{task_id}/open-folder")
 def open_task_folder(task_id: str, request: Request) -> dict:
-    """"打开任务目录"（§39）：白名单校验根目录内路径后调用系统文件管理器。
-
-    复用 KE 既有 open-original 的受控打开思想，但校验基准是 TaskPack 根目录
-    （cfg.taskpack.root_dir），而非知识库 roots。禁止任意路径执行。
-    """
+    """白名单校验根目录内路径后调用系统文件管理器。"""
     pack, importer = _require_task(request, task_id)
     root = importer.root.resolve()
     resolved = pack.resolve()
@@ -191,10 +251,7 @@ def open_task_folder(task_id: str, request: Request) -> dict:
 
 @router.get("/tasks/{task_id}/prompt")
 def get_task_prompt(task_id: str, request: Request) -> dict:
-    """复制启动提示词（§38）：返回 AGENT_INSTRUCTION.md 明文。
-
-    纯只读；提示词必须与任务目录内实际文件一致（prompt_sha Gate 校验对象）。
-    """
+    """返回任务目录中的 AGENT_INSTRUCTION.md 明文。"""
     pack, _ = _require_task(request, task_id)
     instr = pack / "AGENT_INSTRUCTION.md"
     if not instr.exists():
@@ -213,5 +270,4 @@ def sha256_file_wrapper(path: Path) -> str:
     return sha256_file(path)
 
 
-# 明文标记：废弃端点不再注册（保留符号以便定位，不挂路由）
 _DEPRECATED_SYNC_SYNTHESIS = "POST /api/synthesis 已废弃（V3.0 改为 TaskPack 外部 Worker）"
