@@ -31,9 +31,12 @@ class CognitionGateway:
 
     def _request(self, method: str, path: str, *, json_body: dict | None = None) -> dict:
         url = f"{self.base_url}/{path.lstrip('/')}"
+        kwargs: dict[str, Any] = {}
+        if json_body is not None:
+            kwargs["json"] = json_body
         try:
             with httpx.Client(timeout=self.timeout_seconds) as client:
-                response = client.request(method, url, json=json_body)
+                response = client.request(method, url, **kwargs)
         except httpx.HTTPError as exc:
             raise CognitionGatewayError(f"Cognition API 不可达: {exc}") from exc
 
