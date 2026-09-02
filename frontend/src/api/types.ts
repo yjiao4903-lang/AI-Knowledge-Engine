@@ -60,11 +60,7 @@ export interface SearchTiming {
 }
 
 export interface DebugInfo {
-  sources: {
-    dense: unknown[];
-    terms: unknown[];
-    trigram: unknown[];
-  };
+  sources: { dense: unknown[]; terms: unknown[]; trigram: unknown[] };
   boosted_sections: unknown[];
   candidates_before_filter: number;
   fused_top: unknown[];
@@ -307,8 +303,39 @@ export interface RescanResponse {
   unsupported_claim_rate: number | null;
 }
 
+export interface SynthesisClaim {
+  id: string;
+  text: string;
+  epistemic_state: string;
+  evidence_refs: string[];
+  rationale?: string | null;
+}
+
+export interface SynthesisTension {
+  id: string;
+  text: string;
+  epistemic_state?: string | null;
+  evidence_refs: string[];
+}
+
+export interface TaskResultEnvelope {
+  schema_version?: string;
+  task_id?: string;
+  task_type?: TaskType;
+  query?: string;
+  summary?: string;
+  claims?: SynthesisClaim[];
+  tensions?: SynthesisTension[];
+  uncertainties?: string[];
+  open_questions?: string[];
+  additional_evidence_needed?: Array<{ question: string; reason: string }>;
+  worker?: { tool?: string; model?: string | null };
+  generated_at?: string;
+  [key: string]: unknown;
+}
+
 export interface TaskDetail extends TaskInfo {
-  result?: unknown;
+  result?: TaskResultEnvelope | null;
 }
 
 export interface PromptResponse {
@@ -336,6 +363,32 @@ export interface ProposalCandidatesResponse {
   target_contract: string;
   proposal_payload: CognitionProposalPayload;
   warnings: string[];
+}
+
+export interface CognitionHealthResponse {
+  reachable: boolean;
+  api_url: string;
+  settings?: Record<string, unknown>;
+  error?: string;
+}
+
+export interface ProposalPublication {
+  schema_version: string;
+  task_id: string;
+  proposal_id: string;
+  origin_ref: string | null;
+  published_at: string;
+  cognition_api_url: string;
+  auto_apply: false;
+}
+
+export interface ProposalPublicationResponse {
+  task_id: string;
+  published: boolean;
+  reused?: boolean;
+  publication: ProposalPublication | null;
+  warnings?: string[];
+  auto_apply?: false;
 }
 
 export interface JobInfo {
