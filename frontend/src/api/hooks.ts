@@ -1,7 +1,13 @@
 // TanStack Query hooks：数据获取与缓存。
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import type { ChunkDetail, CreateTaskRequest, Section, SearchRequest } from './types';
+import type {
+  ChunkDetail,
+  CreateTaskRequest,
+  RetrievalFeedbackUpdate,
+  Section,
+  SearchRequest,
+} from './types';
 
 export function useDocuments() {
   return useQuery({ queryKey: ['documents'], queryFn: () => api.documents(), staleTime: 60_000 });
@@ -62,6 +68,12 @@ export function useSearch(qdrantAvailable?: boolean) {
         throw error;
       }
     },
+  });
+}
+
+export function useRetrievalFeedback() {
+  return useMutation({
+    mutationFn: (req: RetrievalFeedbackUpdate) => api.retrievalFeedback(req),
   });
 }
 
