@@ -7,12 +7,14 @@ import {
   EyeOutlined,
   FolderOpenOutlined,
   InboxOutlined,
+  MoreOutlined,
   PlayCircleOutlined,
   RedoOutlined,
   SendOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
 import { Alert, App, Button, Card, Divider, Dropdown, List, Modal, Space, Spin, Table, Tag, Typography } from 'antd';
+import type { MenuProps } from 'antd';
 import React from 'react';
 import {
   useArchiveTask,
@@ -334,6 +336,106 @@ const TaskCenterPage: React.FC = () => {
   }));
   const hasAvailableLauncher = (workerLaunchers.data?.launchers ?? []).some((item) => item.available);
 
+  const moreItems = (record: TaskInfo): MenuProps['items'] => {
+    const items: NonNullable<MenuProps['items']> = [];
+    if (record.status !== 'ARCHIVED') {
+      items.push({ key: 'folder', label: '打开任务目录', icon: <FolderOpenOutlined /> });
+      items.push({ key: 'prompt', label: '复制启动词', icon: <CopyOutlined /> });
+    }
+    if (['COMPLETED', 'INVALID_RESULT'].includes(record.status)) {
+      items.push({ key: 'gate', label: '重新运行 Gate', icon: <RedoOutlined /> });
+    }
+    if (['COMPLETED', 'IMPORTED'].includes(record.status)) {
+      items.push({ key: 'candidate', label: '查看 Proposal 候选', icon: <ExportOutlined /> });
+    }
+    if (record.status !== 'ARCHIVED') {
+      items.push({ key: 'archive', label: '归档任务', danger: true });
+    }
+    return items;
+  };
+
+  const onMoreAction = (record: TaskInfo, key: string) => {
+    if (key === 'folder') onOpenFolder(record);
+    if (key === 'prompt') onCopyPrompt(record);
+    if (key === 'gate') onRescan(record);
+    if (key === 'candidate') onProposalCandidates(record);
+    if (key === 'archive') onArchive(record);
+  };
+
+  const renderActions = (record: TaskInfo) => {
+    const resultReadable = ['COMPLETED', 'IMPORTED', 'INVALID_RESULT'].includes(record.status);
+    const canPublish = ['COMPLETED', 'IMPORTED'].includes(record.status);
+    const menuItems = moreItems(record) ?? [];
+
+    return (
+      <Space size={6} wrap>
+        {record.status === 'READY' && (
+          hasAvailableLauncher ? (
+            <Dropdown
+              menu={{
+                items: launcherItems,
+                onClick: ({ key }) => onLaunchWorker(record, key as WorkerLauncherId),
+              }}
+              disabled={workerLaunchers.isLoading}
+            >
+              <Button size="small" type="primary" icon={<PlayCircleOutlined />} loading={launchWorker.isPending}>
+                启动 Worker
+              </Button>
+            </Dropdown>
+          ) : (
+            <Button size="small" type="primary" icon={<CopyOutlined />} onClick={() => onCopyPrompt(record)} loading={copyPrompt.isPending}>
+              复制启动词
+            </Button>
+          )
+        )}
+
+        {record.status === 'PROCESSING' && (
+          <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(record)} loading={openFolder.isPending}>
+            查看目录
+          </Button>
+        )}
+
+        {record.status === 'FAILED' && (
+          <Button size="small" danger icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(record)} loading={openFolder.isPending}>
+            检查失败
+          </Button>
+        )}
+
+        {resultReadable && (
+          <Button size="small" type="primary" icon={<EyeOutlined />} onClick={() => onViewResult(record)} loading={taskDetail.isPending}>
+            查看结果
+          </Button>
+        )}
+
+        {record.status === 'INVALID_RESULT' && (
+          <Button size="small" icon={<RedoOutlined />} onClick={() => onRescan(record)} loading={rescanTask.isPending}>
+            重新 Gate
+          </Button>
+        )}
+
+        {canPublish && (
+          <Button
+            size="small"
+            icon={<SendOutlined />}
+            onClick={() => onPublishProposal(record)}
+            disabled={cognitionHealth.data?.reachable !== true}
+            loading={publishProposal.isPending}
+          >
+            发到 Cognition
+          </Button>
+        )}
+
+        {record.status === 'ARCHIVED' && <Text type="secondary">已归档</Text>}
+
+        {menuItems.length > 0 && (
+          <Dropdown menu={{ items: menuItems, onClick: ({ key }) => onMoreAction(record, key) }}>
+            <Button size="small" icon={<MoreOutlined />}>更多</Button>
+          </Dropdown>
+        )}
+      </Space>
+    );
+  };
+
   const columns = [
     {
       title: '任务 ID', dataIndex: 'task_id', key: 'task_id', width: 220,
@@ -362,38 +464,8 @@ const TaskCenterPage: React.FC = () => {
       render: (v: string | null) => (v ? new Date(v).toLocaleString() : '—'),
     },
     {
-      title: '操作', key: 'actions', width: 760,
-      render: (_: unknown, r: TaskInfo) => (
-        <Space size={4} wrap>
-          <Button size="small" icon={<FolderOpenOutlined />} onClick={() => onOpenFolder(r)} disabled={r.status === 'ARCHIVED'}>目录</Button>
-          <Button size="small" icon={<CopyOutlined />} onClick={() => onCopyPrompt(r)}>启动词</Button>
-          <Dropdown
-            menu={{
-              items: launcherItems,
-              onClick: ({ key }) => onLaunchWorker(r, key as WorkerLauncherId),
-            }}
-            disabled={r.status !== 'READY' || !hasAvailableLauncher || workerLaunchers.isLoading}
-          >
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />} loading={launchWorker.isPending}>
-              启动 Worker
-            </Button>
-          </Dropdown>
-          <Button size="small" icon={<RedoOutlined />} onClick={() => onRescan(r)} disabled={!['COMPLETED', 'INVALID_RESULT'].includes(r.status)} loading={rescanTask.isPending}>Gate</Button>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => onViewResult(r)} disabled={!['COMPLETED', 'IMPORTED', 'INVALID_RESULT'].includes(r.status)} loading={taskDetail.isPending}>结果</Button>
-          <Button size="small" icon={<ExportOutlined />} onClick={() => onProposalCandidates(r)} disabled={!['COMPLETED', 'IMPORTED'].includes(r.status)} loading={proposalCandidates.isPending}>候选</Button>
-          <Button
-            size="small"
-            type="primary"
-            icon={<SendOutlined />}
-            onClick={() => onPublishProposal(r)}
-            disabled={!['COMPLETED', 'IMPORTED'].includes(r.status) || cognitionHealth.data?.reachable !== true}
-            loading={publishProposal.isPending}
-          >
-            发到 Cognition
-          </Button>
-          <Button size="small" danger onClick={() => onArchive(r)} disabled={r.status === 'ARCHIVED'}>归档</Button>
-        </Space>
-      ),
+      title: '下一步', key: 'actions', width: 360,
+      render: (_: unknown, r: TaskInfo) => renderActions(r),
     },
   ];
 
@@ -408,7 +480,7 @@ const TaskCenterPage: React.FC = () => {
           type="info"
           showIcon
           message="Research Workflow：TaskPack → External Worker → Result → Cognition Proposal"
-          description="READY 任务可直接启动本机 Codex CLI / Claude Code；KE 只负责本地进程与 TaskPack 生命周期，不嵌模型 SDK 或 API key。也保留“启动词”复制作为手工 fallback。"
+          description="Task Center 只突出每个状态的当前主要动作；目录、启动词、Gate、候选与归档等辅助操作收进“更多”。正式认知仍必须经过 Cognition Preview + Human Apply。"
         />
 
         {cognitionHealth.data?.reachable ? (
@@ -427,7 +499,7 @@ const TaskCenterPage: React.FC = () => {
             type="warning"
             showIcon
             message="Worker Launcher 状态读取失败"
-            description="仍可使用“启动词”复制 + 手工打开目录执行 TaskPack。"
+            description="READY 任务仍可使用“复制启动词” + 手工打开目录执行 TaskPack。"
           />
         )}
 
@@ -450,7 +522,7 @@ const TaskCenterPage: React.FC = () => {
           />
         ) : (
           <Card title={<span>Task Center（共 {tasks.length} 个任务）</span>}>
-            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} scroll={{ x: 1650 }} />
+            <Table rowKey="task_id" columns={columns} dataSource={tasks} size="small" pagination={{ pageSize: 20 }} scroll={{ x: 1300 }} />
           </Card>
         )}
 
