@@ -111,6 +111,25 @@ _SCHEMA_SQL = [
         deleted_at TEXT NOT NULL
     )
     """,
+    # Personal Retrieval Feedback：每次 search result exposure 一行，后续原位更新用户反馈。
+    """
+    CREATE TABLE IF NOT EXISTS retrieval_feedback (
+        id TEXT PRIMARY KEY,
+        search_id TEXT NOT NULL,
+        query TEXT NOT NULL,
+        chunk_id TEXT NOT NULL,
+        rank INTEGER NOT NULL,
+        mode TEXT NOT NULL,
+        useful INTEGER,
+        selected_as_evidence INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(search_id, chunk_id)
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_created ON retrieval_feedback(created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_chunk ON retrieval_feedback(chunk_id)",
+    "CREATE INDEX IF NOT EXISTS idx_retrieval_feedback_mode ON retrieval_feedback(mode)",
     # FTS Terms（lexical_text 已由 Python 分词）
     """
     CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts_terms USING fts5(
