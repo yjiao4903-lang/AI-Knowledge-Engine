@@ -129,7 +129,9 @@ class ExternalWorkerLauncher:
                 executable,
             ]
             kwargs: dict = {
-                "cwd": str(target),
+                # The supervisor must not use the moving TaskPack as *its own* cwd;
+                # otherwise Windows can prevent processing/ -> completed/failed rename.
+                "cwd": str(self.root),
                 "stdin": subprocess.DEVNULL,
                 "stdout": subprocess.DEVNULL,
                 "stderr": subprocess.DEVNULL,
