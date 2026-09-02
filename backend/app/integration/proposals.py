@@ -1,23 +1,16 @@
 """Convert a validated TaskPack result into a Cognition Proposal candidate batch.
 
-This module is intentionally one-way and side-effect free:
-
-TaskPack result -> proposal payload candidate
-
-It never calls the Cognition write API. Formal Cognition changes remain owned by
-the Cognition application and must still pass Preview + Human Apply.
+TaskPack result -> Proposal candidate. Formal Cognition changes still require the
+Cognition control plane's Preview + Human Apply.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable
 
+from app.synthesis.epistemic_linter import lint_result
 from app.taskpack.schemas import ResultEnvelope, TaskPackEvidence
 
-# TaskPack grounding state is *not* equivalent to Cognition truth status.
-# The mapping is deliberately conservative: `supported` only means supported by
-# the fixed evidence set, so it is downgraded to Cognition `inference` until a
-# human approves/promotes it in the Cognition control plane.
 GROUNDING_TO_COGNITION = {
     "supported": "inference",
     "inference": "inference",
@@ -77,10 +70,10 @@ def build_cognition_proposal_payload(
     result: ResultEnvelope,
     evidence: list[TaskPackEvidence],
 ) -> tuple[dict, list[str]]:
-    """Return a Cognition `/api/proposals` compatible payload and warnings.
+    """Return a Cognition `/api/proposals` compatible candidate and warnings.
 
-    The payload is a candidate batch only. The caller must not interpret this as
-    approval or as permission to modify formal Cognition objects.
+    Warnings include deterministic epistemic lint findings. They never rewrite
+    the result and do not by themselves apply any formal cognition change.
     """
 
     by_chunk = {item.chunk_id: item for item in evidence}
@@ -143,7 +136,9 @@ def build_cognition_proposal_payload(
                     "支持证据": "",
                     "反方证据": "",
                     "什么会证明它错": "",
-                    "来源定位": _source_markdown(result, "open_question", "（来自 TaskPack open_questions）"),
+                    "来源定位": _source_markdown(
+                        result, "open_question", "（来自 TaskPack open_questions）"
+                    ),
                 },
             }
         )
@@ -171,6 +166,9 @@ def build_cognition_proposal_payload(
 
     if result.uncertainties:
         warnings.extend(f"TaskPack uncertainty: {item}" for item in result.uncertainties)
+
+    # Deterministic guardrail: warning only. Human review remains authoritative.
+    warnings.extend(finding.display() for finding in lint_result(result, evidence))
 
     worker = result.worker.tool
     if result.worker.model:
