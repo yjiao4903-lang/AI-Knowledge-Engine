@@ -167,12 +167,18 @@ def build_cognition_proposal_payload(
     if result.uncertainties:
         warnings.extend(f"TaskPack uncertainty: {item}" for item in result.uncertainties)
 
-    # Deterministic guardrail: warning only. Human review remains authoritative.
     warnings.extend(finding.display() for finding in lint_result(result, evidence))
 
     worker = result.worker.tool
     if result.worker.model:
         worker += f":{result.worker.model}"
+
+    description = result.summary
+    if warnings:
+        lint_block = "\n".join(f"- {warning}" for warning in warnings)
+        description = (
+            f"{description}\n\n[Research OS Review Warnings]\n{lint_block}".strip()
+        )
 
     payload = {
         "title": f"TaskPack 研究结算：{_truncate_title(result.query, 48)}",
@@ -180,7 +186,7 @@ def build_cognition_proposal_payload(
         "origin_ref": result.task_id,
         "origin_title": result.query,
         "generator": worker,
-        "description": result.summary,
+        "description": description,
         "topics": [],
         "items": items,
     }
