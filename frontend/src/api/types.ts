@@ -21,6 +21,34 @@ export interface SearchRequest {
   options?: SearchOptions;
 }
 
+export type RetrievalFeedbackEventType =
+  | 'impression'
+  | 'useful'
+  | 'evidence_select'
+  | 'evidence_remove';
+
+export interface RetrievalFeedbackEvent {
+  search_id: string;
+  query: string;
+  chunk_id: string;
+  document_id?: string | null;
+  rank: number;
+  mode: SearchMode;
+  rerank: boolean;
+  event_type: RetrievalFeedbackEventType;
+  useful: boolean | null;
+  selected_as_evidence: boolean | null;
+}
+
+export interface RetrievalFeedbackBatch {
+  events: RetrievalFeedbackEvent[];
+}
+
+export interface RetrievalFeedbackResponse {
+  recorded: number;
+  schema_version: string;
+}
+
 export interface ResultScores {
   dense_rank: number | null;
   terms_rank: number | null;
@@ -45,6 +73,9 @@ export interface SearchResult {
   start_line: number;
   end_line: number;
   scores: ResultScores;
+  search_id?: string;
+  search_mode?: SearchMode;
+  rerank_enabled?: boolean;
 }
 
 export interface SearchTiming {
@@ -69,7 +100,8 @@ export interface DebugInfo {
 
 export interface SearchResponse {
   query: string;
-  mode: string;
+  mode: SearchMode;
+  search_id?: string;
   results: SearchResult[];
   timing_ms: SearchTiming;
   debug?: DebugInfo;
