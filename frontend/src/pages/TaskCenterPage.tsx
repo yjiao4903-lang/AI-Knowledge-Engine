@@ -337,7 +337,7 @@ const TaskCenterPage: React.FC = () => {
   const hasAvailableLauncher = (workerLaunchers.data?.launchers ?? []).some((item) => item.available);
 
   const moreItems = (record: TaskInfo): MenuProps['items'] => {
-    const items: MenuProps['items'] = [];
+    const items: NonNullable<MenuProps['items']> = [];
     if (record.status !== 'ARCHIVED') {
       items.push({ key: 'folder', label: '打开任务目录', icon: <FolderOpenOutlined /> });
       items.push({ key: 'prompt', label: '复制启动词', icon: <CopyOutlined /> });
@@ -365,7 +365,7 @@ const TaskCenterPage: React.FC = () => {
   const renderActions = (record: TaskInfo) => {
     const resultReadable = ['COMPLETED', 'IMPORTED', 'INVALID_RESULT'].includes(record.status);
     const canPublish = ['COMPLETED', 'IMPORTED'].includes(record.status);
-    const menuItems = moreItems(record);
+    const menuItems = moreItems(record) ?? [];
 
     return (
       <Space size={6} wrap>
