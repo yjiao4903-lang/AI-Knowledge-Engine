@@ -1,7 +1,7 @@
 # AI-Knowledge-Engine Current State
 
 更新日期：2026-09-02  
-阶段：I8 Research OS Integration — Phase 2
+阶段：Research OS 实用化 / P1 研究质量增强
 
 ## 当前定位
 
@@ -21,6 +21,7 @@ Cognition App 仍是唯一正式认知写入者。
 - Cognition Markdown 只读派生索引，独立 catalog / Qdrant collection；
 - Qdrant degraded 边界；
 - 默认工作台改为 `lexical + rerank OFF`，语义/混合显式启用；
+- Lexical metadata filter 已推进 FTS `LIMIT` 前，scoped search 不再因全库 Top-K 截断弱排名目标；
 - Search Result 可加入 Evidence Basket；
 - Basket 以 localStorage 持久化、按 `chunk_id` 去重；
 - TaskPack Builder 仍从 catalog 权威解析 Evidence 正文。
@@ -32,9 +33,18 @@ Cognition App 仍是唯一正式认知写入者。
 - Task Center 可查看结构化 Result；
 - INVALID_RESULT 可读但不可发布 Proposal。
 
+### Research Quality / Epistemic Review
+- Deterministic Epistemic Linter 已接入 Proposal Candidate；
+- `FORECAST_MARKED_SUPPORTED`：预测/估算/目标类 claim 标成 `supported` 时 warning；
+- `CAUSAL_STRENGTH_UNDERGROUNDED`：claim 使用强因果，但引用 Evidence 快照没有显式强因果措辞时 warning；
+- `TENSION_INSUFFICIENT_EVIDENCE_DIVERSITY`：tension 少于 2 条不同 Evidence 引用时 warning；
+- Linter 仅提供 deterministic review warning，不做 semantic entailment；
+- Linter 不修改 `ResultEnvelope`、Claim state，不把 warning 升级成 INVALID_RESULT；
+- Warning 会进入 Proposal `warnings[]` 与 `[Research OS Review Warnings]` description 区块，供 Human Preview 复核。
+
 ### Cognition Integration
 - TaskPack -> Cognition Proposal Candidate 保守转换；
-- `supported` 不会升级为 `verified_fact`；
+- `supported` 不会升级为 `verified_fact`，仍固定映射为 Cognition `inference`；
 - 新增 Cognition HTTP Gateway；
 - KE 只允许调用 Cognition `POST /api/proposals` 创建 staging candidate；
 - 新增 Proposal 发布幂等 marker：`result/proposal_publish.json`；
@@ -53,11 +63,13 @@ Cognition App 仍是唯一正式认知写入者。
 GitHub Actions：`.github/workflows/i8-ci.yml`
 
 覆盖：
-- Backend I8 Phase 1 + Phase 2 contracts；
+- Backend Research OS contracts；
+- Retrieval regression / lexical metadata pre-filter regression；
+- Deterministic Epistemic Linter unit + Proposal integration contracts；
 - 前端 TypeScript/Vite build；
 - Runtime PowerShell syntax。
 
-Phase 1 CI 已 PASS；Phase 2 当前分支持续由同一 workflow 检查。
+CI 保持 lightweight：不安装本地 Embedding/Reranker 模型，不要求 Qdrant / ROCm / 真实 Cognition App。
 
 ## 永久边界
 
@@ -74,6 +86,7 @@ External Worker = synthesis executor
 - Report/Cognition SQLite 合并；
 - Report/Cognition Qdrant collection 混用；
 - TaskPack `supported` 自动映射 `verified_fact`；
+- Epistemic Linter 自动改写 Claim state；
 - AI output 自动晋升正式知识。
 
 ## 当前关键 API
@@ -104,6 +117,7 @@ GET  /api/health
 → External Worker
 → Importer Gate
 → Result Viewer
+→ Deterministic Epistemic Warning
 → 发送到 Cognition Proposal
 → Cognition Preview / Apply / Reject / Defer
 ```
@@ -154,8 +168,7 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. Lexical metadata pre-filter：把过滤条件推进 FTS `LIMIT` 前，解决 scoped search 漏召回；
-2. Deterministic Epistemic Linter：预测/估算/强因果 overclaim 检查；
-3. Evidence Context Expansion：NONE / NEIGHBOR_1 / SECTION，仍保持独立 chunk identity；
-4. TaskPack validation cache，减少轮询重复 Gate；
-5. Personal Retrieval Feedback，建立真实用户 benchmark。
+1. Evidence Context Expansion：NONE / NEIGHBOR_1 / SECTION，仍保持独立 `chunk_id` identity；
+2. TaskPack Validation Cache：按 `result_hash + validation_version` 避免轮询重复完整 Gate；
+3. Personal Retrieval Feedback：积累真实 `useful / selected_as_evidence` 数据后再调 retrieval；
+4. External Worker Launcher：只负责启动外部程序 / 设置 cwd / 传路径，不把外部模型 SDK 塞回 KE。
