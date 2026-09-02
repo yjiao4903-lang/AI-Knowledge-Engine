@@ -1,6 +1,11 @@
-import { CheckOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  DislikeOutlined,
+  LikeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { Button, Card, Empty, Space, Tag, Tooltip, Typography, message } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SearchResult } from '../api/types';
 import ContentTypeTag from './ContentTypeTag';
@@ -18,11 +23,20 @@ interface Props {
   query: string;
   selected?: boolean;
   onToggleEvidence?: (result: SearchResult) => void;
+  onFeedback?: (result: SearchResult, useful: boolean) => Promise<void>;
 }
 
-const ResultCard: React.FC<Props> = ({ result, query, selected = false, onToggleEvidence }) => {
+const ResultCard: React.FC<Props> = ({
+  result,
+  query,
+  selected = false,
+  onToggleEvidence,
+  onFeedback,
+}) => {
   const navigate = useNavigate();
   const s = result.scores;
+  const [usefulFeedback, setUsefulFeedback] = useState<boolean | null>(null);
+  const [feedbackPending, setFeedbackPending] = useState(false);
 
   const openContext = () => {
     navigate(`/document/${encodeURIComponent(result.document_id)}?line=${result.start_line}&chunk=${encodeURIComponent(result.chunk_id)}`);
@@ -40,6 +54,19 @@ const ResultCard: React.FC<Props> = ({ result, query, selected = false, onToggle
       void message.success('引用已复制到剪贴板');
     } catch {
       void message.error('复制失败（剪贴板不可用）');
+    }
+  };
+
+  const submitFeedback = async (value: boolean) => {
+    if (!onFeedback || feedbackPending) return;
+    setFeedbackPending(true);
+    try {
+      await onFeedback(result, value);
+      setUsefulFeedback(value);
+    } catch (error) {
+      void message.error(`反馈记录失败：${(error as Error).message}`);
+    } finally {
+      setFeedbackPending(false);
     }
   };
 
@@ -92,6 +119,33 @@ const ResultCard: React.FC<Props> = ({ result, query, selected = false, onToggle
             <Space wrap>
               <Button type="primary" size="small" onClick={openContext}>查看上下文</Button>
               <Button size="small" onClick={copyCitation}>复制引用</Button>
+              {onFeedback && (
+                <>
+                  <Tooltip title="标记这条结果对当前查询有帮助，用于后续检索调优">
+                    <Button
+                      size="small"
+                      type={usefulFeedback === true ? 'primary' : 'text'}
+                      icon={<LikeOutlined />}
+                      disabled={feedbackPending}
+                      onClick={() => void submitFeedback(true)}
+                    >
+                      有用
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="标记这条结果对当前查询无帮助">
+                    <Button
+                      size="small"
+                      type={usefulFeedback === false ? 'primary' : 'text'}
+                      danger={usefulFeedback === false}
+                      icon={<DislikeOutlined />}
+                      disabled={feedbackPending}
+                      onClick={() => void submitFeedback(false)}
+                    >
+                      无用
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
               {onToggleEvidence && (
                 <Button
                   size="small"
