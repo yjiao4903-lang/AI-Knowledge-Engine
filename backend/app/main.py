@@ -24,6 +24,7 @@ from app.api import (
     settings,
     synthesis,
     taskpack_runs,
+    topic_candidates,
 )
 from app.core.config import Config, load_config
 from app.core.errors import AppError
@@ -272,6 +273,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(research_os.router)
     app.include_router(dossiers.router)
     app.include_router(increment_analysis.router)
+    app.include_router(topic_candidates.router)
 
     @app.get("/api/health")
     def health() -> dict:
