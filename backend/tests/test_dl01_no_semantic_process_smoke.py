@@ -38,8 +38,8 @@ from app.core.config import Config
 from app.main import create_app
 
 
-REPORT_MARKER = "BASESMOKE_REPORT_917"
-COGNITION_MARKER = "BASESMOKE_COG_918"
+REPORT_MARKER = "BASESMOKEREPORT917"
+COGNITION_MARKER = "BASESMOKECOG918"
 REPORT_ID = "M99"
 
 with tempfile.TemporaryDirectory(prefix="aike-dl01f-", ignore_cleanup_errors=True) as temp:
