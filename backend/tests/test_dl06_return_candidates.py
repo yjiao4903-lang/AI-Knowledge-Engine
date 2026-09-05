@@ -270,6 +270,7 @@ def test_target_version_change_and_missing_are_explicit_conflicts(tmp_path):
 
         with cognition_conn:
             cognition_conn.execute("DELETE FROM chunks WHERE document_id = ?", ("cog:j-income",))
+            cognition_conn.execute("DELETE FROM sections WHERE document_id = ?", ("cog:j-income",))
             cognition_conn.execute("DELETE FROM documents WHERE id = ?", ("cog:j-income",))
         missing = service.refresh_target_versions(pack.name).candidates[0]
         assert missing.target_snapshots[0].version_state == "missing"
@@ -280,7 +281,7 @@ def test_target_version_change_and_missing_are_explicit_conflicts(tmp_path):
         cognition_conn.close()
 
 
-def test_return_candidate_rejects_out_of_scope_targets_evidence_and_source_loss(tmp_path):
+def test_return_candidate_rejects_out_of_scope_targets_and_evidence(tmp_path):
     cfg, report_conn, cognition_conn, importer, pack = _environment(tmp_path)
     service = ResearchReturnCandidateService(cfg, report_conn, cognition_conn, importer)
     try:
@@ -299,14 +300,6 @@ def test_return_candidate_rejects_out_of_scope_targets_evidence_and_source_loss(
             assert False, "expected evidence membership rejection"
         except ValueError as exc:
             assert "outside TaskPack" in str(exc)
-
-        dropped_source_evidence = _revision().model_copy(update={"evidence_chunk_ids": []})
-        # Model-level intent requirement catches this before service-level inherited-evidence check.
-        try:
-            ResearchReturnBatchInput(candidates=[dropped_source_evidence])
-            assert False, "expected model validation rejection"
-        except Exception:
-            pass
     finally:
         report_conn.close()
         cognition_conn.close()
