@@ -14,14 +14,16 @@ import logging
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import sqlite3
 
 from app.core.config import Config
 from app.lexical.fts_search import LexicalSearcher
-from app.retrieval.dense import DenseRetriever
 from app.retrieval.fusion import weighted_rrf
+
+if TYPE_CHECKING:
+    from app.retrieval.dense import DenseRetriever
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ class Candidate:
 
 
 class SearchEngine:
-    def __init__(self, cfg: Config, conn: sqlite3.Connection, dense: DenseRetriever,
+    def __init__(self, cfg: Config, conn: sqlite3.Connection, dense: "DenseRetriever",
                  reranker: "RerankerService | None" = None, *,
                  chunks_collection: str | None = None,
                  sections_collection: str | None = None,

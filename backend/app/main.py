@@ -44,7 +44,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        from app.indexing.pipeline import EmbedderAdapter, IndexPipeline
+        from app.indexing.catalog_pipeline import CatalogIndexPipeline
         from app.indexing.scanner import scan
         from app.storage.migrations import init_schema
         from app.storage.sqlite import connect
@@ -53,6 +53,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.index_lock = threading.Lock()
         app.state.conn = connect(cfg.sqlite.path, check_same_thread=False)
         init_schema(app.state.conn)
+        # DL-01B: authoritative report ingestion is SQLite/FTS-only and never
+        # depends on Qdrant or local model availability.
+        app.state.catalog_pipeline = CatalogIndexPipeline(cfg, app.state.conn)
 
         # TaskPack is a local file protocol; no internal text-generation LLM is started.
         app.state.taskpack_builder = None
@@ -83,12 +86,20 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.pipeline = None
         app.state.qdrant_available = False
         try:
+            # Keep qdrant_client and the semantic indexing module outside the
+            # base startup dependency surface. Missing optional packages/services
+            # degrade semantic capability only; lexical catalog/search stays live.
+            from app.indexing.pipeline import EmbedderAdapter, IndexPipeline
+
             app.state.pipeline = IndexPipeline(
                 cfg, app.state.conn, EmbedderAdapter(cfg, app.state.manager)
             )
             app.state.qdrant_available = True
         except Exception:
-            logger.exception("Qdrant unavailable; indexing and dense search disabled")
+            logger.exception(
+                "Qdrant unavailable; vector indexing and dense search disabled; "
+                "SQLite/FTS catalog remains available"
+            )
         logger.info(
             "retrieval runtime ready: qdrant_available=%s, inference_worker=lazy",
             app.state.qdrant_available,
@@ -99,6 +110,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         if cfg.cognition.enabled:
             try:
                 from app.cognition.pipeline import CognitionPipeline
+                from app.indexing.pipeline import EmbedderAdapter
 
                 cog_conn = connect(cfg.cognition.catalog_path, check_same_thread=False)
                 init_schema(cog_conn)
@@ -148,11 +160,11 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 with app.state.index_lock:
                     try:
                         result = scan(cfg, app.state.conn)
-                        if result.has_changes and app.state.pipeline is not None:
-                            stats = app.state.pipeline.apply_scan(result)
-                            logger.info("startup report reconcile: %s", stats)
+                        if result.has_changes:
+                            stats = app.state.catalog_pipeline.apply_scan(result)
+                            logger.info("startup report catalog reconcile: %s", stats)
                         else:
-                            logger.info("startup report reconcile: no changes")
+                            logger.info("startup report catalog reconcile: no changes")
                     except Exception:
                         logger.exception("startup report reconcile 失败")
 
@@ -173,7 +185,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 name="startup-cognition-reconcile",
             ).start()
 
-        # Report watcher owns reports only.
+        # Report watcher owns reports only and updates the model-free catalog.
         if cfg.indexing.periodic_reconcile_seconds > 0:
             def _watcher():
                 interval = cfg.indexing.periodic_reconcile_seconds
@@ -182,9 +194,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                         continue
                     try:
                         result = scan(cfg, app.state.conn)
-                        if result.has_changes and app.state.pipeline is not None:
-                            stats = app.state.pipeline.apply_scan(result)
-                            logger.info("periodic report reconcile: %s", stats)
+                        if result.has_changes:
+                            stats = app.state.catalog_pipeline.apply_scan(result)
+                            logger.info("periodic report catalog reconcile: %s", stats)
                     except Exception:
                         logger.exception("periodic report reconcile 失败")
                     finally:
@@ -235,13 +247,17 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     @app.get("/api/health")
     def health() -> dict:
         body = collect_health(cfg)
+        catalog = getattr(app.state, "catalog_pipeline", None)
+        vector_pending = len(catalog.pending_vector_sync()) if catalog is not None else 0
         body["retrieval"] = {
+            "lexical_search": "available",
             "qdrant_available": getattr(app.state, "qdrant_available", False),
             "dense_search": (
                 "available"
                 if getattr(app.state, "qdrant_available", False)
                 else "unavailable"
             ),
+            "vector_pending": vector_pending,
         }
         mgr = getattr(app.state, "manager", None)
         if mgr is not None:
