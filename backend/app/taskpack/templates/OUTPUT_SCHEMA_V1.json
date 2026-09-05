@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "taskpack-result-v1",
   "title": "TaskPack Result V1 (SynthesisDraftV1)",
-  "description": "外部 Worker 唯一机器输出（V3.0 方案 §13）。evidence_refs 必须逐字使用 evidence.jsonl 中的 chunk_id（§16）；membership、coverage 与 stale 校验由 Research OS Importer Gate（§46-§48）独立执行。",
+  "description": "外部 Worker 唯一机器输出（V3.0 方案 §13）。evidence_refs 必须逐字使用 evidence.jsonl 中的 chunk_id（§16）；membership、coverage 与 stale 校验由 Research OS Importer Gate（§46-§48）独立执行。research_return_candidates 为向后兼容的可选 staging 建议，不是正式 Cognition 写入。",
   "type": "object",
   "required": [
     "schema_version",
@@ -18,63 +18,30 @@
     "generated_at"
   ],
   "properties": {
-    "schema_version": {
-      "const": "1.0"
-    },
+    "schema_version": { "const": "1.0" },
     "task_id": {
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"
     },
     "task_type": {
-      "enum": [
-        "summary",
-        "comparison",
-        "causal_synthesis",
-        "tension_extraction"
-      ]
+      "enum": ["summary", "comparison", "causal_synthesis", "tension_extraction"]
     },
-    "query": {
-      "type": "string",
-      "minLength": 1
-    },
-    "summary": {
-      "type": "string"
-    },
+    "query": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string" },
     "claims": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "text",
-          "epistemic_state",
-          "evidence_refs"
-        ],
+        "required": ["id", "text", "epistemic_state", "evidence_refs"],
         "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "description": "如 claim_001"
-          },
-          "text": {
-            "type": "string",
-            "minLength": 1
-          },
+          "id": { "type": "string", "minLength": 1, "description": "如 claim_001" },
+          "text": { "type": "string", "minLength": 1 },
           "epistemic_state": {
-            "enum": [
-              "supported",
-              "inference",
-              "hypothesis",
-              "uncertain",
-              "contradicted"
-            ]
+            "enum": ["supported", "inference", "hypothesis", "uncertain", "contradicted"]
           },
           "evidence_refs": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            },
+            "items": { "type": "string", "minLength": 1 },
             "description": "必须逐字复制 evidence.jsonl 中的 chunk_id"
           },
           "rationale": {
@@ -89,27 +56,13 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "text",
-          "evidence_refs"
-        ],
+        "required": ["id", "text", "evidence_refs"],
         "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "description": "如 tension_001"
-          },
-          "text": {
-            "type": "string",
-            "minLength": 1
-          },
+          "id": { "type": "string", "minLength": 1, "description": "如 tension_001" },
+          "text": { "type": "string", "minLength": 1 },
           "evidence_refs": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
+            "items": { "type": "string", "minLength": 1 }
           }
         },
         "additionalProperties": true
@@ -117,62 +70,86 @@
     },
     "uncertainties": {
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     },
     "open_questions": {
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     },
     "additional_evidence_needed": {
       "type": "array",
       "description": "证据不足时的显式缺口声明（§17）：禁止用包外知识补洞",
       "items": {
         "type": "object",
-        "required": [
-          "question",
-          "reason"
-        ],
+        "required": ["question", "reason"],
         "properties": {
-          "question": {
-            "type": "string",
-            "minLength": 1
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 1
-          }
+          "question": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
         },
         "additionalProperties": true
+      }
+    },
+    "research_return_candidates": {
+      "type": "array",
+      "description": "可选的成果回流 staging 建议。仅当 TaskPack Evidence 与 Cognition Context 足以表达影响时填写；KE 仍会重新校验，且不会自动 Preview/Apply。",
+      "items": {
+        "type": "object",
+        "required": ["intent", "proposed_text", "reason"],
+        "properties": {
+          "intent": {
+            "enum": [
+              "new_judgment",
+              "add_evidence",
+              "revise_judgment",
+              "suggest_retract",
+              "advance_question",
+              "relation_change"
+            ]
+          },
+          "target_cognition_object_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "description": "除 new_judgment 外必须逐字复制 cognition_context.jsonl 的 object_id"
+          },
+          "proposed_text": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "evidence_chunk_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "description": "事实性变化必须逐字复制 evidence.jsonl 的 chunk_id"
+          },
+          "source_claim_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "source_tension_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "source_open_question_indexes": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 0 }
+          },
+          "source_additional_evidence_indexes": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 0 }
+          },
+          "proposer": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
       }
     },
     "worker": {
       "type": "object",
       "description": "生成工具溯源，模型无关（§51）：不预设任何 provider/model",
-      "required": [
-        "tool"
-      ],
+      "required": ["tool"],
       "properties": {
-        "tool": {
-          "type": "string",
-          "minLength": 1
-        },
-        "model": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
+        "tool": { "type": "string", "minLength": 1 },
+        "model": { "type": ["string", "null"] }
       },
       "additionalProperties": true
     },
-    "generated_at": {
-      "type": "string",
-      "minLength": 1
-    }
+    "generated_at": { "type": "string", "minLength": 1 }
   },
   "additionalProperties": true
 }
