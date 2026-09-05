@@ -2,6 +2,14 @@
 
 本地个人研究系统的 **Evidence / Retrieval / TaskPack Engine**。
 
+## 下一轮开发主线：个人深度学习平台（2026-09-05）
+
+目标：持续摄入 AI 分析报告，建立有依据的知识联系，发现研究缺口与选题，并向外部窗口交付可接续的研究上下文，最终将成果回流为个人认识的更新。
+
+**后续开发优先阅读：[产品需求](docs/DEEP_LEARNING_PLATFORM_REQUIREMENTS.md) → [开发任务与验收](docs/DEEP_LEARNING_PLATFORM_DEVELOPMENT_PLAN.md)。从 DL-00 开始，先完成单主题闭环。**
+
+本轮仅完成需求规划，功能均待开发；已实现事实仍以 [CURRENT_STATE](docs/CURRENT_STATE.md) 与当前代码为准。正式 Cognition 写入边界保持不变。通用 UI 微调、检索调参、新模型接入置于本主线之后，用户另有安排时遵从。
+
 当前仓库已经吸收原 `AI-knowledge-combine` 中长期需要维护的 Integration Contract、统一 Runtime、Health、Backup 与跨系统 Smoke 能力；正式 Cognition Markdown 仍由独立 Cognition App 负责写入，数据库不合并。
 
 ## 系统定位

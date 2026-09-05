@@ -3,6 +3,8 @@
 更新日期：2026-09-02  
 阶段：Research OS 实用化 / P1 研究质量增强
 
+> **2026-09-05 开发方向增补（待实施）**：用户已明确下一阶段为个人深度学习平台：报告增量、知识联系、主题研究地图、候选选题、外部窗口研究上下文与成果回流。新窗口先读[产品需求](DEEP_LEARNING_PLATFORM_REQUIREMENTS.md)和[开发计划](DEEP_LEARNING_PLATFORM_DEVELOPMENT_PLAN.md)，默认从 DL-00 开始。此处仅调整工作优先级，不将规划登记为已完成功能；下方历史实现条目日期保持原样。
+
 ## 当前定位
 
 ```text
@@ -251,6 +253,14 @@ powershell -ExecutionPolicy Bypass -File .\runtime\backup.ps1 -VerifyAfter
 
 ## 下一批开发优先级
 
-1. Task Center / Search 工作台的小型可用性优化：只基于真实使用痛点收敛，不做大规模 UI 重构；
-2. Launcher 真机验收后再决定是否需要极少量 Windows 兼容修正，不在未验证前扩展为 Worker Scheduler；
-3. Retrieval 参数调优：至少积累约 100 次真实搜索后，再基于 feedback ledger 评估 `dense_k / terms_k / trigram_k / RRF weights / reranker / chunk size`，当前阶段不提前调整。
+2026-09-05 起，按[个人深度学习平台开发计划](DEEP_LEARNING_PLATFORM_DEVELOPMENT_PLAN.md)执行：
+
+1. DL-00：核对真实 Cognition 契约、对象归属与试点主题；
+2. DL-01 / DL-02：无模型基础路径与主题研究档案；
+3. DL-03：已有认知选择及研究上下文包；
+4. DL-04 / DL-05 / DL-06：报告增量、知识联系、候选选题与成果修订回流；
+5. DL-07：单主题真实端到端验收，通过后再开展 P1 学习复用与多主题扩展。
+
+以上均为待开发任务。2026-09-03 远端 main 已包含 External Worker Launcher 与 Task Center 操作层级调整；规划时本地工作目录尚未包含这两项代码，后续先核对远端，避免重复开发。Launcher 真机兼容性验收仍需独立证据。
+
+通用 UI 微调、新模型与检索调参低于上述主线；Retrieval 参数调整仍需真实反馈与相应回归。用户后续指定的优先事项优先。
