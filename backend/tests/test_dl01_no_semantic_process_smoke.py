@@ -14,6 +14,7 @@ def test_real_base_runtime_without_qdrant_or_model_stack():
 
     code = r'''
 import importlib.abc
+import logging
 import sys
 import tempfile
 from pathlib import Path
@@ -39,6 +40,7 @@ from app.main import create_app
 
 REPORT_MARKER = "BASESMOKE_REPORT_917"
 COGNITION_MARKER = "BASESMOKE_COG_918"
+REPORT_ID = "M99"
 
 with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
     root = Path(temp)
@@ -51,7 +53,9 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
     reports.mkdir(parents=True)
     questions.mkdir(parents=True)
 
-    report_path = reports / "SMOKE_REPORT.md"
+    # Report scanner intentionally indexes only final products. Use the formal
+    # final-report naming contract rather than weakening the ingestion policy.
+    report_path = reports / "M99_最终报告.md"
     report_path.write_text(
         "# Base Runtime Report\n\n"
         "## Evidence\n\n"
@@ -103,7 +107,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         # Report catalog: real API scan -> lexical search.
         scan_response = client.post("/api/index/scan")
         assert scan_response.status_code == 200, scan_response.text
-        assert scan_response.json()["applied"]["indexed"] == 1
+        assert scan_response.json()["applied"]["indexed"] == 1, scan_response.text
 
         report_search = client.post(
             "/api/search",
@@ -118,7 +122,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         assert any(REPORT_MARKER in (hit.get("snippet") or "") for hit in report_hits)
 
         # Evidence read uses the actual catalog chunk created above.
-        chunks_response = client.get("/api/documents/SMOKE_REPORT/chunks")
+        chunks_response = client.get(f"/api/documents/{REPORT_ID}/chunks")
         assert chunks_response.status_code == 200, chunks_response.text
         chunks = chunks_response.json()["chunks"]
         assert chunks
@@ -159,7 +163,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
                 "evidence_refs": [
                     {
                         "source_type": "report",
-                        "document_id": "SMOKE_REPORT",
+                        "document_id": REPORT_ID,
                         "section_id": evidence["section_id"],
                         "chunk_id": evidence["id"],
                         "start_line": evidence["start_line"],
@@ -186,6 +190,10 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         assert client.app.state.manager.is_alive() is False
         assert "torch" not in sys.modules
         assert "transformers" not in sys.modules
+
+    # In production the OS releases logging handles on process exit. This smoke
+    # removes its temporary directory before child exit, so close them explicitly.
+    logging.shutdown()
 
 print("DL01F_BASE_RUNTIME_OK")
 '''
