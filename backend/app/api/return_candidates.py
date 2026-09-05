@@ -57,6 +57,16 @@ def _raise(exc: Exception) -> None:
     raise exc
 
 
+def _find_candidate(record, candidate_id: str):
+    candidate = next(
+        (item for item in record.candidates if item.candidate_id == candidate_id),
+        None,
+    )
+    if candidate is None:
+        raise HTTPException(status_code=404, detail=f"return candidate not found: {candidate_id}")
+    return candidate
+
+
 @router.post("")
 def ingest_return_candidates(
     task_id: str,
@@ -88,6 +98,53 @@ def refresh_return_candidate_targets(task_id: str, request: Request) -> dict:
     return _response(record, count=len(record.candidates))
 
 
+@router.get("/{candidate_id}/preflight")
+def preflight_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
+    """Refresh targets and expose an explainable KE preflight, not Cognition Preview."""
+
+    try:
+        record = _service(request).refresh_target_versions(task_id)
+    except (KeyError, ReturnCandidateStateError, ValueError) as exc:
+        _raise(exc)
+    candidate = _find_candidate(record, candidate_id)
+    targets = [
+        {
+            "object_id": target.object_id,
+            "object_type": target.object_type,
+            "baseline": {
+                "content_hash": target.baseline_content_hash,
+                "title": target.baseline_title,
+                "excerpt": target.baseline_excerpt,
+            },
+            "current": {
+                "content_hash": target.current_content_hash,
+                "title": target.current_title,
+                "excerpt": target.current_excerpt,
+            },
+            "version_state": target.version_state,
+            "checked_at": target.checked_at,
+        }
+        for target in candidate.target_snapshots
+    ]
+    return {
+        "task_id": task_id,
+        "candidate_id": candidate_id,
+        "intent": candidate.intent,
+        "status": candidate.status,
+        "proposed_text": candidate.proposed_text,
+        "reason": candidate.reason,
+        "evidence_chunk_ids": candidate.evidence_chunk_ids,
+        "targets": targets,
+        "has_version_conflict": candidate.has_version_conflict,
+        "version_check_incomplete": candidate.version_check_incomplete,
+        "ke_preflight_only": True,
+        "formal_preview_supported": False,
+        "formal_apply_supported": False,
+        "auto_apply": False,
+        "formal_write_performed": False,
+    }
+
+
 @router.post("/{candidate_id}/review")
 def review_return_candidate(
     task_id: str,
@@ -99,7 +156,7 @@ def review_return_candidate(
         record = _service(request).review(task_id, candidate_id, body)
     except (KeyError, ReturnCandidateStateError, ValueError) as exc:
         _raise(exc)
-    candidate = next(item for item in record.candidates if item.candidate_id == candidate_id)
+    candidate = _find_candidate(record, candidate_id)
     return _response(
         record,
         candidate=candidate.model_dump(mode="json"),
