@@ -115,7 +115,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         assert report_search.status_code == 200, report_search.text
         report_hits = report_search.json()["results"]
         assert report_hits
-        assert any(REPORT_MARKER in (hit.get("text") or hit.get("plain_text") or "") for hit in report_hits)
+        assert any(REPORT_MARKER in (hit.get("snippet") or "") for hit in report_hits)
 
         # Evidence read uses the actual catalog chunk created above.
         chunks_response = client.get("/api/documents/SMOKE_REPORT/chunks")
@@ -146,6 +146,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         assert cognition_search.status_code == 200, cognition_search.text
         cognition_hits = cognition_search.json()["results"]
         assert cognition_hits
+        assert any(COGNITION_MARKER in (hit.get("snippet") or "") for hit in cognition_hits)
         assert cognition_search.json()["scope"] == "cognition"
 
         # Planning/TaskPack path consumes explicit Evidence without any model call.
