@@ -15,6 +15,7 @@ from fastapi import FastAPI
 
 from app.api import (
     documents,
+    dossiers,
     evaluation,
     index,
     research_os,
@@ -268,6 +269,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(synthesis.router)
     app.include_router(taskpack_runs.router)
     app.include_router(research_os.router)
+    app.include_router(dossiers.router)
 
     @app.get("/api/health")
     def health() -> dict:
