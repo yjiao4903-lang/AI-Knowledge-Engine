@@ -1,10 +1,9 @@
 """Model-free Topic Research Dossier projection (DL-02A).
 
-A dossier is KE-owned *research planning metadata*, not formal cognition.  It
-stores user-authored direction/scope plus stable references to formal Cognition
-objects and report Evidence.  Formal text is always re-resolved from the local
-read-only Cognition/report catalogs.  A saved source snapshot is retained so a
-later read can explain which referenced sources changed or disappeared.
+A dossier is KE-owned research-planning metadata, not formal cognition. It stores
+user-authored direction/scope plus stable references to formal Cognition objects
+and report Evidence. Formal text is re-resolved from the read-only catalogs on
+every read. A saved source-version snapshot makes later changes explainable.
 """
 
 from __future__ import annotations
@@ -53,7 +52,7 @@ class DossierUpsert(BaseModel):
 
 
 class DossierStore:
-    """Small file store for durable planning metadata and saved projections."""
+    """Small durable file store for KE-owned planning metadata."""
 
     def __init__(self, data_dir: str | Path) -> None:
         self.root = Path(data_dir) / "research_dossiers"
@@ -84,7 +83,9 @@ class DossierStore:
         result: list[DossierDefinition] = []
         for path in sorted(self.root.glob("*/definition.json")):
             try:
-                result.append(DossierDefinition.model_validate_json(path.read_text(encoding="utf-8")))
+                result.append(
+                    DossierDefinition.model_validate_json(path.read_text(encoding="utf-8"))
+                )
             except Exception:
                 continue
         return sorted(result, key=lambda item: item.updated_at, reverse=True)
@@ -98,22 +99,25 @@ class DossierStore:
     @staticmethod
     def _atomic_json(path: Path, payload: dict) -> None:
         tmp = path.with_suffix(path.suffix + ".tmp")
-        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        tmp.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
         tmp.replace(path)
 
 
 class TopicDossierService:
-    """Resolve a dossier from authoritative local report/Cognition catalogs."""
+    """Resolve dossiers from authoritative report/Cognition catalogs."""
 
     def __init__(self, cfg, report_conn, cognition_conn) -> None:
         self.cfg = cfg
-        self.report_conn = report_conn
-        self.cognition_conn = cognition_conn
         self.store = DossierStore(cfg.paths.data_dir)
         self._report_docs = DocumentRepository(report_conn)
-        self._report_chunks = ChunkRepository(report_conn)
-        self._cognition_docs = DocumentRepository(cognition_conn) if cognition_conn is not None else None
-        self._cognition_chunks = ChunkRepository(cognition_conn) if cognition_conn is not None else None
+        self._cognition_docs = (
+            DocumentRepository(cognition_conn) if cognition_conn is not None else None
+        )
+        self._cognition_chunks = (
+            ChunkRepository(cognition_conn) if cognition_conn is not None else None
+        )
         self._evidence = EvidenceResolver(cfg, report_conn, cognition_conn)
 
     def list_dossiers(self) -> list[dict]:
@@ -129,23 +133,22 @@ class TopicDossierService:
         ]
 
     def upsert(self, dossier_id: str, body: DossierUpsert) -> dict:
-        self.store._dir(dossier_id)  # validate before touching sources/files
+        self.store._dir(dossier_id)
         definition = DossierDefinition(
             dossier_id=dossier_id,
             title=body.title.strip(),
             direction=body.direction.strip(),
             scope_include=_dedupe(body.scope_include),
             scope_exclude=_dedupe(body.scope_exclude),
-            topic_object_id=body.topic_object_id,
+            topic_object_id=_optional_text(body.topic_object_id),
             question_ids=_dedupe(body.question_ids),
             judgment_ids=_dedupe(body.judgment_ids),
             other_cognition_ids=_dedupe(body.other_cognition_ids),
             evidence_refs=_dedupe_evidence(body.evidence_refs),
             updated_at=_now(),
         )
-        # Saving a dossier is an explicit action: every supplied reference must be
-        # valid at save time. Later disappearance/version change is reported as
-        # stale instead of silently mutating the saved snapshot.
+        # Explicit save is strict: stale or absent references are rejected before
+        # any planning metadata is persisted.
         current = self._project(definition, strict=True)
         saved_snapshot = {
             "schema_version": DOSSIER_SCHEMA_VERSION,
@@ -194,7 +197,9 @@ class TopicDossierService:
             cognition_refs.append(("topic", "topic", definition.topic_object_id))
         cognition_refs.extend(("questions", "question", item) for item in definition.question_ids)
         cognition_refs.extend(("judgments", "judgment", item) for item in definition.judgment_ids)
-        cognition_refs.extend(("other_cognition", "other", item) for item in definition.other_cognition_ids)
+        cognition_refs.extend(
+            ("other_cognition", "other", item) for item in definition.other_cognition_ids
+        )
 
         for bucket, role, object_id in cognition_refs:
             item = self._resolve_cognition(object_id, role)
@@ -202,18 +207,20 @@ class TopicDossierService:
             if item is None:
                 if strict:
                     raise ValueError(f"cognition object not found: {object_id}")
-                sources[bucket].append({"object_id": object_id, "role": role, "missing": True})
+                sources[bucket].append(
+                    {"object_id": object_id, "role": role, "missing": True}
+                )
                 versions[key] = None
             else:
                 sources[bucket].append(item)
                 versions[key] = item["content_hash"]
 
         for ref in definition.evidence_refs:
-            item = self._resolve_evidence(ref)
+            item = self._resolve_evidence(ref, verify_hash=strict)
             key = f"evidence:{ref.chunk_id}"
             if item is None:
                 if strict:
-                    raise ValueError(f"evidence chunk not found: {ref.chunk_id}")
+                    raise ValueError(f"evidence chunk not found or stale: {ref.chunk_id}")
                 sources["evidence"].append({"chunk_id": ref.chunk_id, "missing": True})
                 versions[key] = None
             else:
@@ -229,23 +236,27 @@ class TopicDossierService:
         if doc is None:
             return None
         chunks = self._cognition_chunks.list_for_document(object_id)
-        excerpt = _join_excerpt(chunks, 6000)
         return {
             "object_id": object_id,
             "role": role,
             "title": doc.get("title") or doc.get("file_name") or object_id,
             "content_hash": doc.get("sha256"),
             "indexed_at": doc.get("indexed_at"),
-            "source_bucket": _source_bucket(self.cfg.cognition.root, doc.get("source_path")),
-            "excerpt": excerpt,
+            "source_bucket": _source_bucket(
+                self.cfg.cognition.root, doc.get("source_path")
+            ),
+            "excerpt": _join_excerpt(chunks, 6000),
             "missing": False,
         }
 
-    def _resolve_evidence(self, ref: EvidenceRef) -> dict | None:
-        # Reuse the same authoritative resolver discipline as TaskPack creation;
-        # caller-supplied title/excerpt/document identity is never trusted as text.
+    def _resolve_evidence(self, ref: EvidenceRef, *, verify_hash: bool) -> dict | None:
+        # At save time the caller's hash is checked. On later reads, stable
+        # chunk_id resolves the current authoritative version so a changed hash is
+        # reported as `changed`, not incorrectly collapsed into `missing`.
         try:
-            chunk = self._evidence.load_chunk(ref.chunk_id, ref.content_hash)
+            chunk = self._evidence.load_chunk(
+                ref.chunk_id, ref.content_hash if verify_hash else None
+            )
         except Exception:
             return None
         doc = self._report_docs.get(chunk.get("document_id") or ref.document_id) or {}
@@ -259,13 +270,22 @@ class TopicDossierService:
             "heading_path": chunk.get("heading_path") or ref.heading_path,
             "start_line": chunk.get("start_line"),
             "end_line": chunk.get("end_line"),
-            "excerpt": (chunk.get("plain_text") or chunk.get("raw_markdown") or "")[:4000],
+            "excerpt": (
+                chunk.get("plain_text") or chunk.get("raw_markdown") or ""
+            )[:4000],
             "missing": False,
         }
 
 
 def _now() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def _optional_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    value = value.strip()
+    return value or None
 
 
 def _dedupe(values: list[str]) -> list[str]:
@@ -290,7 +310,9 @@ def _dedupe_evidence(values: list[EvidenceRef]) -> list[EvidenceRef]:
 
 
 def _join_excerpt(chunks: list[dict], limit: int) -> str:
-    text = "\n\n".join((item.get("plain_text") or "").strip() for item in chunks).strip()
+    text = "\n\n".join(
+        (item.get("plain_text") or "").strip() for item in chunks
+    ).strip()
     return text[:limit]
 
 
@@ -304,7 +326,9 @@ def _source_bucket(root: str, source_path: str | None) -> str | None:
     return rel.parts[0] if rel.parts else None
 
 
-def _compare_versions(saved: dict[str, str | None], current: dict[str, str | None]) -> list[dict]:
+def _compare_versions(
+    saved: dict[str, str | None], current: dict[str, str | None]
+) -> list[dict]:
     changes: list[dict] = []
     for key in sorted(set(saved) | set(current)):
         before = saved.get(key)
@@ -317,5 +341,7 @@ def _compare_versions(saved: dict[str, str | None], current: dict[str, str | Non
             kind = "new"
         else:
             kind = "changed"
-        changes.append({"source": key, "change": kind, "saved": before, "current": after})
+        changes.append(
+            {"source": key, "change": kind, "saved": before, "current": after}
+        )
     return changes
