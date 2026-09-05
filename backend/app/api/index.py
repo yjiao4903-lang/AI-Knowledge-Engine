@@ -1,9 +1,9 @@
-"""Index API（M10，spec §34）。"""
+"""Index API（M10，spec §34 + DL-01B catalog/vector split）。"""
 
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.errors import AppError
 
@@ -32,43 +32,115 @@ def index_status(request: Request) -> dict:
     last_scan = conn.execute(
         "SELECT value FROM meta WHERE key = 'last_full_scan'").fetchone()
     worker = request.app.state.manager.health() if request.app.state.manager else {"alive": False}
-    return {"counts": counts, "consistent":
-            counts["chunks"] == counts["fts_terms"] == counts["fts_trigram"],
-            "last_full_scan": last_scan["value"] if last_scan else None,
-            "inference_worker": worker}
+    catalog = getattr(request.app.state, "catalog_pipeline", None)
+    vector_pending = catalog.pending_vector_sync() if catalog is not None else []
+    return {
+        "counts": counts,
+        "consistent": counts["chunks"] == counts["fts_terms"] == counts["fts_trigram"],
+        "last_full_scan": last_scan["value"] if last_scan else None,
+        "vector_pending": len(vector_pending),
+        "vector_pending_documents": [item["document_id"] for item in vector_pending[:20]],
+        "inference_worker": worker,
+    }
 
 
 @router.post("/scan")
 def index_scan(request: Request) -> dict:
-    """全量 manifest 扫描并应用变更（同步返回；全量语料耗时与规模成正比）。"""
+    """Scan and update the model-free SQLite/FTS catalog only."""
+
     app = request.app
-    if getattr(app.state, "pipeline", None) is None:
-        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
+    catalog = getattr(app.state, "catalog_pipeline", None)
+    if catalog is None:
+        raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
     with app.state.index_lock:
         try:
             from app.indexing.scanner import scan
 
             result = scan(app.state.cfg, app.state.conn)
-            stats = app.state.pipeline.apply_scan(result)
-            return {"scan": {s: len(result.by_status(s)) for s in
-                             ("NEW", "MODIFIED", "RENAMED", "DELETED", "UNCHANGED", "ERROR")},
-                    "applied": stats}
+            stats = catalog.apply_scan(result)
+            return {
+                "scan": {
+                    s: len(result.by_status(s))
+                    for s in ("NEW", "MODIFIED", "RENAMED", "DELETED", "UNCHANGED", "ERROR")
+                },
+                "applied": stats,
+            }
         except AppError as exc:
             raise HTTPException(status_code=500, detail=f"{exc.code}: {exc}") from exc
 
 
 @router.post("/reindex-document/{doc_id}")
 def reindex_document(doc_id: str, request: Request) -> dict:
+    """Rebuild one document's local catalog/FTS entry; vector sync stays pending."""
+
     app = request.app
-    if getattr(app.state, "pipeline", None) is None:
-        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
+    catalog = getattr(app.state, "catalog_pipeline", None)
+    if catalog is None:
+        raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
     row = app.state.conn.execute(
         "SELECT source_path FROM documents WHERE id = ?", (doc_id,)).fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail=f"document not found: {doc_id}")
     with app.state.index_lock:
-        result = app.state.pipeline.index_file(row["source_path"])
+        result = catalog.index_file(row["source_path"], doc_id=doc_id)
     return result
+
+
+class VectorSyncBody(BaseModel):
+    limit: int = Field(default=20, ge=1, le=100)
+
+
+@router.post("/vector-sync")
+def vector_sync(body: VectorSyncBody, request: Request) -> dict:
+    """Explicitly synchronize pending derived vectors.
+
+    This is the only DL-01B endpoint in this slice that may start the inference
+    worker or require Qdrant. Failures leave their durable pending marker intact.
+    """
+
+    app = request.app
+    catalog = getattr(app.state, "catalog_pipeline", None)
+    semantic = getattr(app.state, "pipeline", None)
+    if catalog is None:
+        raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
+    if semantic is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Qdrant/向量索引不可用；全文检索仍可用，待服务恢复后再执行 vector-sync",
+        )
+
+    pending = catalog.pending_vector_sync()[: body.limit]
+    synced = 0
+    errors: list[dict] = []
+    with app.state.index_lock:
+        for item in pending:
+            doc_id = item["document_id"]
+            operation = item.get("operation", "upsert")
+            source_path = item.get("source_path") or ""
+            try:
+                if operation == "delete":
+                    semantic.remove_document(doc_id, source_path)
+                else:
+                    semantic.index_file(source_path, doc_id=doc_id)
+                catalog.clear_vector_pending(doc_id)
+                synced += 1
+            except Exception as exc:
+                errors.append(
+                    {
+                        "document_id": doc_id,
+                        "operation": operation,
+                        "error": f"{type(exc).__name__}: {exc}",
+                    }
+                )
+
+    remaining = len(catalog.pending_vector_sync())
+    return {
+        "requested": len(pending),
+        "synced": synced,
+        "failed": len(errors),
+        "remaining": remaining,
+        "errors": errors,
+    }
 
 
 class RebuildBody(BaseModel):
@@ -80,15 +152,17 @@ def index_rebuild(body: RebuildBody, request: Request) -> dict:
     if body.confirm != "yes":
         raise HTTPException(status_code=400, detail='rebuild 需要 {"confirm": "yes"}')
     app = request.app
-    if getattr(app.state, "pipeline", None) is None:
-        raise HTTPException(status_code=503, detail="Qdrant 不可用，索引服务暂不可用")
+    catalog = getattr(app.state, "catalog_pipeline", None)
+    if catalog is None:
+        raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
     with app.state.index_lock:
         try:
+            from pathlib import Path
+
+            from app.lexical.fts_search import LexicalSearcher
             from app.storage.sqlite import connect
 
             app.state.conn.close()
-            from pathlib import Path
-
             db = Path(app.state.cfg.sqlite.path)
             for suffix in ("", "-wal", "-shm"):
                 p = Path(str(db) + suffix)
@@ -96,14 +170,22 @@ def index_rebuild(body: RebuildBody, request: Request) -> dict:
                     p.unlink()
             app.state.conn = connect(db)
             app.state.engine.conn = app.state.conn
-            app.state.pipeline.conn = app.state.conn
+            app.state.engine.lexical = LexicalSearcher(app.state.conn)
+            app.state.catalog_pipeline.conn = app.state.conn
+            if getattr(app.state, "pipeline", None) is not None:
+                app.state.pipeline.conn = app.state.conn
             from app.indexing.scanner import scan
 
             result = scan(app.state.cfg, app.state.conn)
-            stats = app.state.pipeline.apply_scan(result)
-            return {"rebuild": "done", "scan": {s: len(result.by_status(s)) for s in
-                                                ("NEW", "MODIFIED", "RENAMED", "DELETED", "UNCHANGED", "ERROR")},
-                    "applied": stats}
+            stats = app.state.catalog_pipeline.apply_scan(result)
+            return {
+                "rebuild": "done",
+                "scan": {
+                    s: len(result.by_status(s))
+                    for s in ("NEW", "MODIFIED", "RENAMED", "DELETED", "UNCHANGED", "ERROR")
+                },
+                "applied": stats,
+            }
         except AppError as exc:
             raise HTTPException(status_code=500, detail=f"{exc.code}: {exc}") from exc
 
