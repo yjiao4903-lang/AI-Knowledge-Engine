@@ -1,5 +1,10 @@
 // 类型化 API client。所有请求走 /api 前缀（Vite dev server 代理到 127.0.0.1:8765）。
 import type {
+  DossierDetail,
+  DossierListResponse,
+  DossierUpsertRequest,
+} from './dossierTypes';
+import type {
   ChunkDetail,
   CognitionHealthResponse,
   CreateTaskRequest,
@@ -81,6 +86,14 @@ function post<T>(path: string, body?: unknown): Promise<T> {
   });
 }
 
+function put<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
 export const api = {
   health: () => request<HealthResponse>('/api/health'),
   search: (req: SearchRequest) => post<SearchResponse>('/api/search', req),
@@ -124,6 +137,11 @@ export const api = {
     request<PromptResponse>(`/api/synthesis/tasks/${encodeURIComponent(id)}/prompt`),
 
   cognitionHealth: () => request<CognitionHealthResponse>('/api/research-os/cognition/health'),
+  dossiers: () => request<DossierListResponse>('/api/research-os/dossiers'),
+  dossier: (id: string) =>
+    request<DossierDetail>(`/api/research-os/dossiers/${encodeURIComponent(id)}`),
+  upsertDossier: (id: string, body: DossierUpsertRequest) =>
+    put<DossierDetail>(`/api/research-os/dossiers/${encodeURIComponent(id)}`, body),
   taskProposalPublication: (id: string) =>
     request<ProposalPublicationResponse>(
       `/api/research-os/tasks/${encodeURIComponent(id)}/proposal-publication`,
