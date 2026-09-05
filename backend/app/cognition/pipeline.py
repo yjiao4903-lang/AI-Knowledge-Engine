@@ -18,6 +18,7 @@ from pathlib import Path
 from qdrant_client import models as qm
 
 from app.chunking.semantic_chunker import SemanticChunker
+from app.cognition.identity import cognition_doc_id
 from app.core.config import SCHEMA_VERSION, Config
 from app.core.errors import SourceFileError
 from app.indexing.scanner import FileState, sha256_file
@@ -31,16 +32,6 @@ from app.storage.repositories.knowledge import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def cognition_doc_id(cfg: Config, path: str | Path) -> str:
-    """doc_id = '{prefix}:{相对路径(去扩展名)}'，如 cog:03_问题池/变压器瓶颈…。
-
-    相对路径保证 cognition collection 内唯一且可追溯源文件。
-    """
-    root = Path(cfg.cognition.root)
-    rel = Path(path).relative_to(root).with_suffix("")
-    return f"{cfg.cognition.docid_prefix}:{rel.as_posix()}"
 
 
 def ensure_cognition_collection(cfg: Config) -> None:
@@ -71,8 +62,20 @@ class CognitionPipeline:
         init_schema(conn)
         ensure_cognition_collection(cfg)
 
-    def index_file(self, path: str | Path, *, state: FileState | None = None) -> dict:
-        """NEW/MODIFIED：staging 全部成功后才原子替换（语义同报告 pipeline）。"""
+    def index_file(
+        self,
+        path: str | Path,
+        *,
+        state: FileState | None = None,
+        doc_id: str | None = None,
+    ) -> dict:
+        """NEW/MODIFIED：staging 全部成功后才原子替换。
+
+        ``doc_id`` can be supplied by the derived catalog manifest. This is
+        required after a pure rename: the scanner intentionally preserves the
+        previous id, so a later modification must not derive a second id from the
+        new path.
+        """
         path = Path(path)
         t0 = time.perf_counter()
         try:
@@ -82,7 +85,8 @@ class CognitionPipeline:
         except UnicodeDecodeError as exc:
             raise SourceFileError(f"编码错误: {path}: {exc}") from exc
 
-        doc_id = cognition_doc_id(self.cfg, path)
+        doc_id = doc_id or (state.document_id if state is not None else None)
+        doc_id = doc_id or cognition_doc_id(self.cfg, path)
         parsed = parse_markdown(text)
         chunks = self.chunker.chunk_document(parsed, doc_id)
         if not chunks:
@@ -199,14 +203,18 @@ class CognitionPipeline:
             )
 
     def apply_scan(self, scan_result, *, reindex_modified: bool = True) -> dict:
-        """按 ScanResult 执行全部变更。doc_id 由相对路径确定，无需 docid_policy。"""
+        """按 ScanResult 执行全部变更；已有 manifest id 优先于路径派生 id。"""
         stats = {"indexed": 0, "renamed": 0, "deleted": 0, "unchanged": 0, "errors": []}
         for st in scan_result.states:
             try:
                 if st.status == "UNCHANGED":
                     stats["unchanged"] += 1
                 elif st.status in ("NEW", "MODIFIED") and reindex_modified:
-                    self.index_file(st.path, state=st)
+                    self.index_file(
+                        st.path,
+                        state=st,
+                        doc_id=st.document_id or cognition_doc_id(self.cfg, st.path),
+                    )
                     stats["indexed"] += 1
                 elif st.status == "RENAMED":
                     self.rename_document(st.document_id, st.renamed_from, st.path)
