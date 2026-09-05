@@ -12,10 +12,11 @@ from __future__ import annotations
 import json
 import logging
 import re
-import sqlite3
 import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
+
+import sqlite3
 
 from app.core.config import Config
 from app.lexical.fts_search import LexicalSearcher
@@ -23,7 +24,6 @@ from app.retrieval.fusion import weighted_rrf
 
 if TYPE_CHECKING:
     from app.retrieval.dense import DenseRetriever
-    from app.retrieval.rerank import RerankerService
 
 logger = logging.getLogger(__name__)
 
@@ -90,215 +90,223 @@ class SearchEngine:
             dense_scores = {h["payload"]["chunk_id"]: h for h in dense_hits}
             for cid, h in dense_scores.items():
                 candidates.setdefault(cid, Candidate(chunk_id=cid)).ranks["dense"] = None
-                candidates[cid].document_id = h["payload"].get("document_id", "")
-                candidates[cid].section_id = h["payload"].get("section_id", "")
+            for rank, cid in enumerate(ranked_lists["dense"], 1):
+                candidates[cid].ranks["dense"] = rank
             if debug:
-                debug_trace["sources"]["dense"] = [
-                    {"chunk_id": h["payload"]["chunk_id"], "score": h.get("score")}
-                    for h in dense_hits[:20]
-                ]
+                debug_trace["sources"]["dense"] = ranked_lists["dense"][:10]
 
-        # 2) Lexical：terms + trigram（在 FTS LIMIT 前应用 metadata pre-filter）。
+        # 2) Lexical：metadata filter 在 FTS ORDER BY/LIMIT 前执行。
         if mode in ("hybrid", "lexical"):
-            lexical_results, lex_timing = self.lexical.search_combined(
-                query,
-                terms_k=cfg.retrieval.terms_k,
-                trigram_k=cfg.retrieval.trigram_k,
-                rrf_k=cfg.retrieval.rrf_k,
-                terms_weight=cfg.retrieval.terms_weight,
-                trigram_weight=cfg.retrieval.trigram_weight,
-                filters=filters,
-            )
-            timing.update(lex_timing)
-            ranked_lists["lexical"] = [cid for cid, _, _ in lexical_results]
-            for cid, _score, ranks in lexical_results:
-                candidate = candidates.setdefault(cid, Candidate(chunk_id=cid))
-                for source, rank in ranks.items():
-                    candidate.ranks[source] = rank
+            t0 = time.perf_counter()
+            terms_hits = self.lexical.search_terms(
+                query, k=cfg.retrieval.fts_terms_k, filters=filters)
+            timing["terms_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+            t0 = time.perf_counter()
+            trigram_hits = self.lexical.search_trigram(
+                query, k=cfg.retrieval.fts_trigram_k, filters=filters)
+            timing["trigram_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+            ranked_lists["terms"] = [h.chunk_id for h in terms_hits]
+            ranked_lists["trigram"] = [h.chunk_id for h in trigram_hits]
+            for rank, cid in enumerate(ranked_lists["terms"], 1):
+                candidates.setdefault(cid, Candidate(chunk_id=cid)).ranks["terms"] = rank
+            for rank, cid in enumerate(ranked_lists["trigram"], 1):
+                candidates.setdefault(cid, Candidate(chunk_id=cid)).ranks["trigram"] = rank
             if debug:
-                debug_trace["sources"]["lexical"] = [
-                    {"chunk_id": cid, "score": score, "ranks": ranks}
-                    for cid, score, ranks in lexical_results[:20]
-                ]
+                debug_trace["sources"]["terms"] = ranked_lists["terms"][:10]
+                debug_trace["sources"]["trigram"] = ranked_lists["trigram"][:10]
 
-        # 3) Weighted RRF across the active source lists.
+        # 3) Weighted RRF
         t0 = time.perf_counter()
-        rrf_lists: list[list[str]] = []
-        rrf_weights: list[float] = []
-        if ranked_lists.get("dense"):
-            rrf_lists.append(ranked_lists["dense"])
-            rrf_weights.append(cfg.retrieval.dense_weight)
-        if ranked_lists.get("lexical"):
-            rrf_lists.append(ranked_lists["lexical"])
-            rrf_weights.append(1.0)
-        if rrf_lists:
-            fused = weighted_rrf(rrf_lists, rrf_weights, k=cfg.retrieval.rrf_k)
-            for cid, score in fused:
-                candidates.setdefault(cid, Candidate(chunk_id=cid)).rrf_score = score
+        fused = weighted_rrf(
+            ranked_lists,
+            rrf_k=cfg.fusion.rrf_k,
+            weights={
+                "dense": cfg.fusion.dense_weight,
+                "terms": cfg.fusion.terms_weight,
+                "trigram": cfg.fusion.trigram_weight,
+            },
+        )
+        for cid, score, ranks in fused:
+            c = candidates[cid]
+            c.rrf_score = score
+            c.ranks = {**c.ranks, **{k: v for k, v in ranks.items()}}
         timing["fusion_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-        # 4) Canonical SQLite enrichment + final metadata filter.
+        # 4) Section Parent Boost
+        if (mode == "hybrid" and cfg.fusion.parent_boost_enabled
+                and self.section_boost_enabled and "dense" in ranked_lists):
+            t0 = time.perf_counter()
+            try:
+                section_hits, _ = self.dense.search(
+                    query, k=cfg.fusion.parent_boost_sections_k,
+                    collection=self.sections_collection)
+            except Exception:
+                logger.warning("section boost 查询失败，退回 RRF 排序", exc_info=True)
+                section_hits = []
+            boost_prefixes = {
+                f"{h['payload']['document_id']}:{h['payload']['section_id']}:" for h in section_hits
+            }
+            for cid, c in candidates.items():
+                if any(cid.startswith(p) for p in boost_prefixes):
+                    c.section_boost = cfg.fusion.parent_boost
+                c.final_score = c.rrf_score * c.section_boost
+            timing["section_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+            if debug:
+                debug_trace["boosted_sections"] = sorted(
+                    f"{h['payload']['document_id']}:{h['payload']['section_id']}" for h in section_hits)
+        else:
+            for c in candidates.values():
+                c.final_score = c.rrf_score
+
+        # 5) 最终 Metadata 过滤：即使各召回路已 pre-filter，也保留统一 correctness gate。
         t0 = time.perf_counter()
-        candidates = self._enrich_and_filter(candidates, filters)
+        ordered = sorted(candidates.values(), key=lambda c: c.final_score, reverse=True)
+        if filters:
+            ordered = self._apply_filters(ordered, filters)
+        fused_k = cfg.retrieval.fused_k
+        ordered = ordered[:fused_k]
         timing["filter_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-        # 5) Optional parent-section semantic boost. Dense is lazy, so lexical mode
-        # never reaches this path unless semantic section boosting is relevant.
-        if self.section_boost_enabled and mode in ("hybrid", "dense") and candidates:
+        # 6) 组装结果 / optional rerank
+        final_k = top_k or cfg.retrieval.final_k
+        rows = self._fetch_rows([c.chunk_id for c in ordered])
+        rows_by_id = {r["id"]: r for r in rows}
+        timing_rerank = 0.0
+        rerank_trace: list[dict] | None = None
+        pre_rank_map: dict[str, int] = {}
+        score_by_id: dict[str, float] = {}
+
+        if rerank and self.reranker is not None and ordered:
             t0 = time.perf_counter()
-            self._apply_section_boost(query, candidates)
-            timing["section_ms"] = round((time.perf_counter() - t0) * 1000, 2)
-
-        for candidate in candidates.values():
-            candidate.final_score = candidate.rrf_score * candidate.section_boost
-
-        ordered = sorted(candidates.values(), key=lambda c: c.final_score, reverse=True)
-        limit = top_k or cfg.retrieval.top_k
-        ordered = ordered[:limit]
-
-        results = self._materialize(ordered)
-
-        # 6) Optional reranker: explicit only and never required by lexical base path.
-        if rerank and self.reranker is not None and results:
-            try:
-                results = self.reranker.rerank(query, results, top_k=limit)
-            except Exception as exc:
-                logger.warning("rerank failed; keep retrieval order: %s", exc)
-                if debug:
-                    debug_trace["rerank_error"] = f"{type(exc).__name__}: {exc}"
-
-        timing["total_ms"] = round((time.perf_counter() - t_start) * 1000, 2)
-        response: dict[str, Any] = {
-            "query": query,
-            "mode": mode,
-            "results": results,
-            "timing_ms": timing,
-        }
-        if debug:
-            debug_trace["final"] = [
-                {
-                    "chunk_id": c.chunk_id,
-                    "rrf_score": c.rrf_score,
-                    "section_boost": c.section_boost,
-                    "final_score": c.final_score,
-                    "ranks": c.ranks,
-                }
-                for c in ordered
-            ]
-            response["debug"] = debug_trace
-        return response
-
-    def _enrich_and_filter(
-        self,
-        candidates: dict[str, Candidate],
-        filters: dict | None,
-    ) -> dict[str, Candidate]:
-        if not candidates:
-            return candidates
-        ids = list(candidates)
-        enriched: dict[str, Candidate] = {}
-        for start in range(0, len(ids), 500):
-            batch = ids[start:start + 500]
-            placeholders = ",".join("?" for _ in batch)
-            rows = self.conn.execute(
-                f"SELECT c.id, c.document_id, c.section_id, c.content_type, "
-                f"c.evidence_level, d.domain, d.completed_at "
-                f"FROM chunks c LEFT JOIN documents d ON d.id = c.document_id "
-                f"WHERE c.id IN ({placeholders})",
-                batch,
-            ).fetchall()
-            for row in rows:
-                if not self._matches_filters(row, filters):
+            rerank_candidates = []
+            for c in ordered:
+                r = rows_by_id.get(c.chunk_id)
+                if r is None:
                     continue
-                candidate = candidates[row["id"]]
-                candidate.document_id = row["document_id"]
-                candidate.section_id = row["section_id"] or ""
-                enriched[row["id"]] = candidate
-        return enriched
+                rerank_candidates.append({
+                    "chunk_id": c.chunk_id, "title": r["title"],
+                    "heading_path": r["heading_path"], "content_type": r["content_type"],
+                    "evidence_level": r["evidence_level"], "plain_text": r["plain_text"],
+                })
+            try:
+                reranked = self.reranker.rerank(query, rerank_candidates)
+                pre_rank_map = {c.chunk_id: i for i, c in enumerate(ordered, 1)}
+                score_by_id = {x["chunk_id"]: x["reranker_score"] for x in reranked}
+                ordered = sorted(
+                    ordered,
+                    key=lambda c: score_by_id.get(c.chunk_id, float("-inf")),
+                    reverse=True,
+                )
+                timing_rerank = round((time.perf_counter() - t0) * 1000, 2)
+                if debug:
+                    rerank_trace = [
+                        {"chunk_id": x["chunk_id"], "reranker_score": round(x["reranker_score"], 4),
+                         "pre_rerank_rank": pre_rank_map.get(x["chunk_id"])}
+                        for x in reranked
+                    ]
+            except Exception as exc:
+                logger.warning("rerank 失败，退回 RRF 排序: %s", exc)
 
-    @staticmethod
-    def _matches_filters(row, filters: dict | None) -> bool:
-        if not filters:
-            return True
-        if filters.get("document_ids") and row["document_id"] not in filters["document_ids"]:
-            return False
-        if filters.get("domains") and row["domain"] not in filters["domains"]:
-            return False
-        if filters.get("content_types") and row["content_type"] not in filters["content_types"]:
-            return False
-        if filters.get("evidence_levels") and row["evidence_level"] not in filters["evidence_levels"]:
-            return False
-        if filters.get("date_from") and (row["completed_at"] or "") < filters["date_from"]:
-            return False
-        if filters.get("date_to") and (row["completed_at"] or "") > filters["date_to"]:
-            return False
-        return True
-
-    def _apply_section_boost(self, query: str, candidates: dict[str, Candidate]) -> None:
-        section_ids = sorted({c.section_id for c in candidates.values() if c.section_id})
-        if not section_ids:
-            return
-        hits, _embed_ms = self.dense.search(
-            query,
-            k=max(len(section_ids), min(self.cfg.retrieval.section_k, 100)),
-            collection=self.sections_collection,
-        )
-        scores: dict[str, float] = {}
-        for hit in hits:
-            payload = hit.get("payload") or {}
-            sid = payload.get("section_id")
-            if sid:
-                scores[sid] = float(hit.get("score") or 0.0)
-        for candidate in candidates.values():
-            section_score = scores.get(candidate.section_id)
-            if section_score is None:
-                continue
-            candidate.section_boost = 1.0 + max(0.0, section_score) * self.cfg.retrieval.section_boost
-
-    def _materialize(self, ordered: list[Candidate]) -> list[dict[str, Any]]:
-        if not ordered:
-            return []
-        ids = [c.chunk_id for c in ordered]
-        rows_by_id: dict[str, Any] = {}
-        for start in range(0, len(ids), 500):
-            batch = ids[start:start + 500]
-            placeholders = ",".join("?" for _ in batch)
-            rows = self.conn.execute(
-                f"SELECT c.id, c.document_id, c.section_id, c.heading, c.heading_path, "
-                f"c.text, c.start_line, c.end_line, c.content_type, c.evidence_level, "
-                f"d.title AS document_title, d.domain, d.completed_at "
-                f"FROM chunks c LEFT JOIN documents d ON d.id = c.document_id "
-                f"WHERE c.id IN ({placeholders})",
-                batch,
-            ).fetchall()
-            rows_by_id.update({row["id"]: row for row in rows})
-
-        results: list[dict[str, Any]] = []
-        for rank, candidate in enumerate(ordered, start=1):
-            row = rows_by_id.get(candidate.chunk_id)
+        results = []
+        for rank, c in enumerate(ordered[:final_k], 1):
+            row = rows_by_id.get(c.chunk_id)
             if row is None:
                 continue
-            text = row["text"] or ""
-            snippet = re.sub(r"\s+", " ", text).strip()[:500]
-            result = {
+            snippet = _make_snippet(row["plain_text"], query)
+            results.append({
                 "rank": rank,
-                "chunk_id": candidate.chunk_id,
+                "chunk_id": c.chunk_id,
                 "document_id": row["document_id"],
-                "document_title": row["document_title"] or row["document_id"],
-                "heading": row["heading"] or "",
-                "heading_path": row["heading_path"] or "",
-                "snippet": snippet,
-                "text": text,
-                "start_line": row["start_line"],
-                "end_line": row["end_line"],
+                "title": row["title"],
+                "section_id": row["section_id"],
+                "heading_path": row["heading_path"],
                 "content_type": row["content_type"],
                 "evidence_level": row["evidence_level"],
-                "domain": row["domain"],
-                "completed_at": row["completed_at"],
-                "score": candidate.final_score,
-                "rrf_score": candidate.rrf_score,
-                "section_boost": candidate.section_boost,
-                "ranks": candidate.ranks,
-            }
-            results.append(result)
-        return results
+                "snippet": snippet,
+                "start_line": row["start_line"],
+                "end_line": row["end_line"],
+                "scores": {
+                    "dense_rank": c.ranks.get("dense"),
+                    "terms_rank": c.ranks.get("terms"),
+                    "trigram_rank": c.ranks.get("trigram"),
+                    "rrf": round(c.rrf_score, 6),
+                    "section_boost": c.section_boost,
+                    "final": round(c.final_score, 6),
+                    "reranker": round(score_by_id[c.chunk_id], 4) if rerank and score_by_id.get(c.chunk_id) is not None else None,
+                    "pre_rerank_rank": pre_rank_map.get(c.chunk_id) if rerank else None,
+                },
+            })
+
+        timing["rerank_ms"] = timing_rerank
+        timing["total_ms"] = round((time.perf_counter() - t_start) * 1000, 2)
+        resp: dict[str, Any] = {"query": query, "mode": mode, "results": results, "timing_ms": timing}
+        if debug:
+            debug_trace["candidates_before_filter"] = len(candidates)
+            debug_trace["fused_top"] = [
+                {"chunk_id": c.chunk_id, "ranks": c.ranks, "rrf": round(c.rrf_score, 6),
+                 "boost": c.section_boost} for c in ordered[:20]]
+            debug_trace["filters"] = filters or {}
+            if rerank_trace is not None:
+                debug_trace["rerank"] = rerank_trace
+            resp["debug"] = debug_trace
+        return resp
+
+    def _fetch_rows(self, chunk_ids: list[str]) -> list[sqlite3.Row]:
+        if not chunk_ids:
+            return []
+        marks = ",".join("?" * len(chunk_ids))
+        return self.conn.execute(
+            f"SELECT c.id, c.document_id, c.section_id, c.heading_path, c.content_type, "
+            f"c.evidence_level, c.plain_text, c.start_line, c.end_line, d.title "
+            f"FROM chunks c LEFT JOIN documents d ON d.id = c.document_id "
+            f"WHERE c.id IN ({marks})",
+            chunk_ids,
+        ).fetchall()
+
+    def _apply_filters(self, candidates: list[Candidate], filters: dict) -> list[Candidate]:
+        """Final filter across fused candidates."""
+        clauses, params = [], []
+        if filters.get("document_ids"):
+            marks = ",".join("?" * len(filters["document_ids"]))
+            clauses.append(f"document_id IN ({marks})")
+            params += filters["document_ids"]
+        if filters.get("domains"):
+            marks = ",".join("?" * len(filters["domains"]))
+            clauses.append(f"document_id IN (SELECT id FROM documents WHERE domain IN ({marks}))")
+            params += filters["domains"]
+        if filters.get("content_types"):
+            marks = ",".join("?" * len(filters["content_types"]))
+            clauses.append(f"content_type IN ({marks})")
+            params += filters["content_types"]
+        if filters.get("evidence_levels"):
+            marks = ",".join("?" * len(filters["evidence_levels"]))
+            clauses.append(f"evidence_level IN ({marks})")
+            params += filters["evidence_levels"]
+        if filters.get("date_from"):
+            clauses.append("document_id IN (SELECT id FROM documents WHERE completed_at >= ?)")
+            params.append(filters["date_from"])
+        if filters.get("date_to"):
+            clauses.append("document_id IN (SELECT id FROM documents WHERE completed_at <= ?)")
+            params.append(filters["date_to"])
+        if not clauses:
+            return candidates
+        sql = f"SELECT id FROM chunks WHERE {' AND '.join(clauses)}"
+        allowed = {r["id"] for r in self.conn.execute(sql, params).fetchall()}
+        return [c for c in candidates if c.chunk_id in allowed]
+
+
+def _make_snippet(plain_text: str, query: str, width: int = 200) -> str:
+    """优先取首个查询词命中窗口，否则取开头。"""
+    from app.lexical.normalizer import extract_identifiers
+
+    terms = extract_identifiers(query) + [t for t in query.split() if len(t) >= 2]
+    pos = -1
+    for t in terms:
+        pos = plain_text.find(t)
+        if pos >= 0:
+            break
+    if pos < 0:
+        return plain_text[:width] + ("…" if len(plain_text) > width else "")
+    start = max(0, pos - width // 4)
+    return ("…" if start > 0 else "") + plain_text[start : start + width] + (
+        "…" if start + width < len(plain_text) else "")
