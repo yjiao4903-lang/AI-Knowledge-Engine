@@ -1,4 +1,4 @@
-"""Index API（M10，spec §34 + DL-01B catalog/vector split）。"""
+"""Index API（M10，spec §34 + DL-01 catalog/vector split）。"""
 
 from __future__ import annotations
 
@@ -92,10 +92,10 @@ class VectorSyncBody(BaseModel):
 
 @router.post("/vector-sync")
 def vector_sync(body: VectorSyncBody, request: Request) -> dict:
-    """Explicitly synchronize pending derived vectors.
+    """Explicitly synchronize pending report-derived vectors.
 
-    This is the only DL-01B endpoint in this slice that may start the inference
-    worker or require Qdrant. Failures leave their durable pending marker intact.
+    This endpoint may start the inference worker or require Qdrant. Failures leave
+    their durable pending marker intact.
     """
 
     app = request.app
@@ -122,6 +122,93 @@ def vector_sync(body: VectorSyncBody, request: Request) -> dict:
                     semantic.remove_document(doc_id, source_path)
                 else:
                     semantic.index_file(source_path, doc_id=doc_id)
+                catalog.clear_vector_pending(doc_id)
+                synced += 1
+            except Exception as exc:
+                errors.append(
+                    {
+                        "document_id": doc_id,
+                        "operation": operation,
+                        "error": f"{type(exc).__name__}: {exc}",
+                    }
+                )
+
+    remaining = len(catalog.pending_vector_sync())
+    return {
+        "requested": len(pending),
+        "synced": synced,
+        "failed": len(errors),
+        "remaining": remaining,
+        "errors": errors,
+    }
+
+
+@router.get("/cognition/status")
+def cognition_index_status(request: Request) -> dict:
+    """Capability/pending status for KE's read-only Cognition-derived index."""
+
+    cog = getattr(request.app.state, "cognition", None) or {}
+    if not cog.get("enabled"):
+        return {
+            "enabled": False,
+            "lexical_available": False,
+            "semantic_available": False,
+            "vector_pending": 0,
+            "vector_pending_documents": [],
+        }
+    catalog = cog.get("catalog_pipeline")
+    pending = catalog.pending_vector_sync() if catalog is not None else []
+    return {
+        "enabled": True,
+        "lexical_available": catalog is not None,
+        "semantic_available": bool(cog.get("semantic_available")),
+        "vector_pending": len(pending),
+        "vector_pending_documents": [item["document_id"] for item in pending[:20]],
+    }
+
+
+@router.post("/cognition/vector-sync")
+def cognition_vector_sync(body: VectorSyncBody, request: Request) -> dict:
+    """Explicitly synchronize pending Cognition-derived vectors.
+
+    The local catalog owns the stable derived ``document_id``. That id is passed
+    explicitly to the semantic pipeline so a rename followed by modification
+    cannot create a second path-derived vector identity. Source Cognition Markdown
+    remains read-only.
+    """
+
+    app = request.app
+    cog = getattr(app.state, "cognition", None) or {}
+    if not cog.get("enabled"):
+        raise HTTPException(status_code=404, detail="cognition 只读索引未启用")
+    catalog = cog.get("catalog_pipeline")
+    semantic = cog.get("semantic_pipeline")
+    if catalog is None:
+        raise HTTPException(status_code=503, detail="cognition 本地全文目录未初始化")
+    if semantic is None or not cog.get("semantic_available", False):
+        raise HTTPException(
+            status_code=503,
+            detail="cognition 语义索引不可用；lexical 检索仍可用，pending 状态已保留",
+        )
+
+    pending = catalog.pending_vector_sync()[: body.limit]
+    synced = 0
+    errors: list[dict] = []
+    with app.state.index_lock:
+        for item in pending:
+            doc_id = item["document_id"]
+            operation = item.get("operation", "upsert")
+            source_path = item.get("source_path") or ""
+            try:
+                if operation == "delete":
+                    semantic.remove_document(doc_id, source_path)
+                else:
+                    result = semantic.index_file(source_path, doc_id=doc_id)
+                    if result.get("document_id") != doc_id:
+                        raise RuntimeError(
+                            f"semantic document_id mismatch: expected {doc_id}, "
+                            f"got {result.get('document_id')}"
+                        )
                 catalog.clear_vector_pending(doc_id)
                 synced += 1
             except Exception as exc:
