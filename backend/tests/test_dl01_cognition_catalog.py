@@ -1,8 +1,14 @@
 from pathlib import Path
+from types import SimpleNamespace
 
+import pytest
+from fastapi import HTTPException
+
+from app.api.search import SearchOptions, SearchRequest, cognition_search
 from app.cognition.catalog_pipeline import CognitionCatalogPipeline
 from app.cognition.scanner import scan as cognition_scan
 from app.lexical.fts_search import LexicalSearcher
+from app.retrieval.search_engine import SearchEngine
 from app.storage.migrations import init_schema
 from app.storage.sqlite import connect
 
@@ -77,6 +83,49 @@ def test_cognition_catalog_is_lexical_searchable_without_semantic_stack(tmp_conf
         for p, (text, mtime) in source_before.items():
             assert p.read_text(encoding="utf-8") == text
             assert p.stat().st_mtime_ns == mtime
+    finally:
+        conn.close()
+
+
+def test_cognition_search_api_keeps_lexical_when_semantic_is_unavailable(tmp_config, tmp_path):
+    _root, _q, _j, _candidate, conn, pipeline = _env(tmp_config, tmp_path)
+    try:
+        pipeline.apply_scan(cognition_scan(tmp_config, conn))
+        engine = SearchEngine(
+            tmp_config,
+            conn,
+            dense=object(),
+            reranker=None,
+            chunks_collection=tmp_config.cognition.chunks_collection,
+            section_boost_enabled=False,
+        )
+        request = SimpleNamespace(
+            app=SimpleNamespace(
+                state=SimpleNamespace(
+                    cognition={
+                        "enabled": True,
+                        "semantic_available": False,
+                        "engine": engine,
+                    }
+                )
+            )
+        )
+
+        response = cognition_search(SearchRequest(query="COGLEX917"), request)
+        assert response["scope"] == "cognition"
+        assert response["mode"] == "lexical"
+        assert response["results"]
+
+        with pytest.raises(HTTPException) as exc_info:
+            cognition_search(
+                SearchRequest(
+                    query="COGLEX917",
+                    options=SearchOptions(mode="dense", rerank=False),
+                ),
+                request,
+            )
+        assert exc_info.value.status_code == 503
+        assert "lexical" in str(exc_info.value.detail)
     finally:
         conn.close()
 
