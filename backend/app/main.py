@@ -105,15 +105,18 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             app.state.qdrant_available,
         )
 
-        # Cognition read-only derived retrieval: independent catalog + collection.
-        app.state.cognition = {"enabled": False}
+        # DL-01C: Cognition's KE-derived catalog/search is lexical-first and
+        # independent from the optional semantic collection. Source Markdown is
+        # opened read-only by the scanner/catalog pipeline; formal writes remain
+        # exclusively owned by the external Cognition application.
+        app.state.cognition = {"enabled": False, "semantic_available": False}
         if cfg.cognition.enabled:
             try:
-                from app.cognition.pipeline import CognitionPipeline
-                from app.indexing.pipeline import EmbedderAdapter
+                from app.cognition.catalog_pipeline import CognitionCatalogPipeline
 
                 cog_conn = connect(cfg.cognition.catalog_path, check_same_thread=False)
                 init_schema(cog_conn)
+                cog_catalog = CognitionCatalogPipeline(cfg, cog_conn)
                 cog_engine = SearchEngine(
                     cfg,
                     cog_conn,
@@ -122,21 +125,33 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                     chunks_collection=cfg.cognition.chunks_collection,
                     section_boost_enabled=False,
                 )
-                cog_pipeline = CognitionPipeline(
-                    cfg, cog_conn, EmbedderAdapter(cfg, app.state.manager)
-                )
                 app.state.cognition = {
                     "enabled": True,
+                    "semantic_available": False,
                     "engine": cog_engine,
-                    "pipeline": cog_pipeline,
+                    "catalog_pipeline": cog_catalog,
+                    "semantic_pipeline": None,
                     "conn": cog_conn,
                 }
+                try:
+                    from app.cognition.pipeline import CognitionPipeline
+                    from app.indexing.pipeline import EmbedderAdapter
+
+                    app.state.cognition["semantic_pipeline"] = CognitionPipeline(
+                        cfg, cog_conn, EmbedderAdapter(cfg, app.state.manager)
+                    )
+                    app.state.cognition["semantic_available"] = True
+                except Exception:
+                    logger.exception(
+                        "cognition semantic index unavailable; lexical cognition search remains available"
+                    )
                 logger.info(
-                    "cognition retrieval ready: collection=%s",
+                    "cognition derived retrieval ready: lexical=true semantic=%s collection=%s",
+                    app.state.cognition["semantic_available"],
                     cfg.cognition.chunks_collection,
                 )
             except Exception:
-                logger.exception("cognition 初始化失败，cognition 检索禁用（报告检索不受影响）")
+                logger.exception("cognition 本地全文目录初始化失败，cognition 检索禁用")
 
         def _sync_cognition():
             cog = getattr(app.state, "cognition", None)
@@ -147,12 +162,12 @@ def create_app(cfg: Config | None = None) -> FastAPI:
 
                 result = cog_scan(cfg, cog["conn"])
                 if result.has_changes:
-                    stats = cog["pipeline"].apply_scan(result)
-                    logger.info("cognition reconcile: %s", stats)
+                    stats = cog["catalog_pipeline"].apply_scan(result)
+                    logger.info("cognition catalog reconcile: %s", stats)
                 else:
-                    logger.info("cognition reconcile: no changes")
+                    logger.info("cognition catalog reconcile: no changes")
             except Exception:
-                logger.exception("cognition reconcile 失败")
+                logger.exception("cognition catalog reconcile 失败")
 
         # Report startup reconcile and Cognition startup reconcile are independent.
         if cfg.indexing.startup_scan:
@@ -207,7 +222,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             )
             state["watcher_thread"].start()
 
-        # Cognition watcher owns Cognition only.
+        # Cognition watcher owns Cognition only and updates the model-free catalog.
         if cfg.cognition.enabled and cfg.cognition.periodic_reconcile_seconds > 0:
             def _cog_watcher():
                 interval = cfg.cognition.periodic_reconcile_seconds
@@ -258,6 +273,16 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 else "unavailable"
             ),
             "vector_pending": vector_pending,
+        }
+        cog = getattr(app.state, "cognition", None) or {}
+        cog_catalog = cog.get("catalog_pipeline")
+        body["cognition_retrieval"] = {
+            "enabled": bool(cog.get("enabled")),
+            "lexical_search": "available" if cog.get("enabled") else "unavailable",
+            "semantic_search": "available" if cog.get("semantic_available") else "unavailable",
+            "vector_pending": (
+                len(cog_catalog.pending_vector_sync()) if cog_catalog is not None else 0
+            ),
         }
         mgr = getattr(app.state, "manager", None)
         if mgr is not None:
