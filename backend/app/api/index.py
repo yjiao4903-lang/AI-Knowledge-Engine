@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.core.errors import AppError
+from app.indexing.semantic_runtime import ensure_cognition_semantic, ensure_report_semantic
 
 router = APIRouter(prefix="/api/index", tags=["index"])
 
@@ -40,6 +41,8 @@ def index_status(request: Request) -> dict:
         "last_full_scan": last_scan["value"] if last_scan else None,
         "vector_pending": len(vector_pending),
         "vector_pending_documents": [item["document_id"] for item in vector_pending[:20]],
+        "semantic_available": bool(getattr(request.app.state, "qdrant_available", False)),
+        "semantic_last_error": getattr(request.app.state, "semantic_last_error", None),
         "inference_worker": worker,
     }
 
@@ -95,19 +98,23 @@ def vector_sync(body: VectorSyncBody, request: Request) -> dict:
     """Explicitly synchronize pending report-derived vectors.
 
     This endpoint may start the inference worker or require Qdrant. Failures leave
-    their durable pending marker intact.
+    their durable pending marker intact. If semantic startup previously failed,
+    this explicit action retries capability initialization without restarting KE.
     """
 
     app = request.app
     catalog = getattr(app.state, "catalog_pipeline", None)
-    semantic = getattr(app.state, "pipeline", None)
     if catalog is None:
         raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
-    if semantic is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Qdrant/向量索引不可用；全文检索仍可用，待服务恢复后再执行 vector-sync",
-        )
+    semantic = getattr(app.state, "pipeline", None)
+    if semantic is None or not getattr(app.state, "qdrant_available", False):
+        if ensure_report_semantic(app):
+            semantic = getattr(app.state, "pipeline", None)
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail="Qdrant/向量索引不可用；全文检索仍可用，待服务恢复后再执行 vector-sync",
+            )
 
     pending = catalog.pending_vector_sync()[: body.limit]
     synced = 0
@@ -155,6 +162,7 @@ def cognition_index_status(request: Request) -> dict:
             "semantic_available": False,
             "vector_pending": 0,
             "vector_pending_documents": [],
+            "semantic_last_error": None,
         }
     catalog = cog.get("catalog_pipeline")
     pending = catalog.pending_vector_sync() if catalog is not None else []
@@ -164,6 +172,7 @@ def cognition_index_status(request: Request) -> dict:
         "semantic_available": bool(cog.get("semantic_available")),
         "vector_pending": len(pending),
         "vector_pending_documents": [item["document_id"] for item in pending[:20]],
+        "semantic_last_error": cog.get("semantic_last_error"),
     }
 
 
@@ -174,7 +183,8 @@ def cognition_vector_sync(body: VectorSyncBody, request: Request) -> dict:
     The local catalog owns the stable derived ``document_id``. That id is passed
     explicitly to the semantic pipeline so a rename followed by modification
     cannot create a second path-derived vector identity. Source Cognition Markdown
-    remains read-only.
+    remains read-only. If semantic startup previously failed, this explicit action
+    retries initialization without restarting KE.
     """
 
     app = request.app
@@ -182,14 +192,17 @@ def cognition_vector_sync(body: VectorSyncBody, request: Request) -> dict:
     if not cog.get("enabled"):
         raise HTTPException(status_code=404, detail="cognition 只读索引未启用")
     catalog = cog.get("catalog_pipeline")
-    semantic = cog.get("semantic_pipeline")
     if catalog is None:
         raise HTTPException(status_code=503, detail="cognition 本地全文目录未初始化")
+    semantic = cog.get("semantic_pipeline")
     if semantic is None or not cog.get("semantic_available", False):
-        raise HTTPException(
-            status_code=503,
-            detail="cognition 语义索引不可用；lexical 检索仍可用，pending 状态已保留",
-        )
+        if ensure_cognition_semantic(app):
+            semantic = cog.get("semantic_pipeline")
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail="cognition 语义索引不可用；lexical 检索仍可用，pending 状态已保留",
+            )
 
     pending = catalog.pending_vector_sync()[: body.limit]
     synced = 0
