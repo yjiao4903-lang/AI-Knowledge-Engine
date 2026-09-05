@@ -45,7 +45,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         from app.indexing.catalog_pipeline import CatalogIndexPipeline
-        from app.indexing.pipeline import EmbedderAdapter, IndexPipeline
         from app.indexing.scanner import scan
         from app.storage.migrations import init_schema
         from app.storage.sqlite import connect
@@ -87,6 +86,11 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.pipeline = None
         app.state.qdrant_available = False
         try:
+            # Keep qdrant_client and the semantic indexing module outside the
+            # base startup dependency surface. Missing optional packages/services
+            # degrade semantic capability only; lexical catalog/search stays live.
+            from app.indexing.pipeline import EmbedderAdapter, IndexPipeline
+
             app.state.pipeline = IndexPipeline(
                 cfg, app.state.conn, EmbedderAdapter(cfg, app.state.manager)
             )
@@ -106,6 +110,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         if cfg.cognition.enabled:
             try:
                 from app.cognition.pipeline import CognitionPipeline
+                from app.indexing.pipeline import EmbedderAdapter
 
                 cog_conn = connect(cfg.cognition.catalog_path, check_same_thread=False)
                 init_schema(cog_conn)
