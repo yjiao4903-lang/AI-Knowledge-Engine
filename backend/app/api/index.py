@@ -41,8 +41,6 @@ def index_status(request: Request) -> dict:
         "last_full_scan": last_scan["value"] if last_scan else None,
         "vector_pending": len(vector_pending),
         "vector_pending_documents": [item["document_id"] for item in vector_pending[:20]],
-        "semantic_available": bool(getattr(request.app.state, "qdrant_available", False)),
-        "semantic_last_error": getattr(request.app.state, "semantic_last_error", None),
         "inference_worker": worker,
     }
 
@@ -162,7 +160,6 @@ def cognition_index_status(request: Request) -> dict:
             "semantic_available": False,
             "vector_pending": 0,
             "vector_pending_documents": [],
-            "semantic_last_error": None,
         }
     catalog = cog.get("catalog_pipeline")
     pending = catalog.pending_vector_sync() if catalog is not None else []
@@ -172,7 +169,6 @@ def cognition_index_status(request: Request) -> dict:
         "semantic_available": bool(cog.get("semantic_available")),
         "vector_pending": len(pending),
         "vector_pending_documents": [item["document_id"] for item in pending[:20]],
-        "semantic_last_error": cog.get("semantic_last_error"),
     }
 
 
