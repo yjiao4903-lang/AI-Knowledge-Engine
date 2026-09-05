@@ -17,6 +17,7 @@ from app.api import (
     documents,
     dossiers,
     evaluation,
+    increment_analysis,
     index,
     research_os,
     search,
@@ -255,8 +256,8 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         if app.state.taskpack_cognition_conn is not None:
             app.state.taskpack_cognition_conn.close()
             app.state.taskpack_cognition_conn = None
-        cog = getattr(app.state, "cognition", None)
-        if cog and cog.get("conn") is not None:
+        cog = getattr(app.state, "cognition", None) or {}
+        if cog.get("conn") is not None:
             cog["conn"].close()
         logger.info("shutdown complete")
 
@@ -270,6 +271,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(taskpack_runs.router)
     app.include_router(research_os.router)
     app.include_router(dossiers.router)
+    app.include_router(increment_analysis.router)
 
     @app.get("/api/health")
     def health() -> dict:
