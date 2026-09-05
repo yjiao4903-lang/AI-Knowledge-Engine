@@ -28,7 +28,7 @@ from app.core.errors import AppError
 from app.core.health import collect_health
 from app.core.logging import setup_logging
 from app.inference.manager import InferenceManager
-from app.retrieval.dense import DenseRetriever
+from app.retrieval.lazy_dense import LazyDenseRetriever
 from app.retrieval.rerank import RerankerService
 from app.retrieval.search_engine import SearchEngine
 
@@ -73,9 +73,11 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 cfg, app.state.conn, cog_conn_tp
             )
 
-        logger.info("starting inference worker...")
-        app.state.manager = InferenceManager(cfg)
-        dense = DenseRetriever(cfg)
+        # DL-01: base lexical runtime must not start model processes or load the
+        # embedding model. Both inference and dense retrieval remain explicit-use.
+        logger.info("inference worker configured for lazy start")
+        app.state.manager = InferenceManager(cfg, auto_start=False)
+        dense = LazyDenseRetriever(cfg)
         reranker = RerankerService(cfg, app.state.manager)
         app.state.engine = SearchEngine(cfg, app.state.conn, dense, reranker)
         app.state.pipeline = None
@@ -88,9 +90,8 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         except Exception:
             logger.exception("Qdrant unavailable; indexing and dense search disabled")
         logger.info(
-            "inference worker ready: %s (%s)",
-            app.state.manager.device,
-            app.state.manager.device_kind,
+            "retrieval runtime ready: qdrant_available=%s, inference_worker=lazy",
+            app.state.qdrant_available,
         )
 
         # Cognition read-only derived retrieval: independent catalog + collection.
