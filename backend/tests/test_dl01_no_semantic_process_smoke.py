@@ -42,7 +42,7 @@ REPORT_MARKER = "BASESMOKE_REPORT_917"
 COGNITION_MARKER = "BASESMOKE_COG_918"
 REPORT_ID = "M99"
 
-with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
+with tempfile.TemporaryDirectory(prefix="aike-dl01f-", ignore_cleanup_errors=True) as temp:
     root = Path(temp)
     reports = root / "reports"
     cognition = root / "cognition"
@@ -104,7 +104,8 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         assert "torch" not in sys.modules
         assert "transformers" not in sys.modules
 
-        # Report catalog: real API scan -> lexical search.
+        # Report catalog: real API scan -> lexical search. Use an ordinary text
+        # query here; identifier-token behavior is covered by dedicated lexical tests.
         scan_response = client.post("/api/index/scan")
         assert scan_response.status_code == 200, scan_response.text
         assert scan_response.json()["applied"]["indexed"] == 1, scan_response.text
@@ -112,14 +113,14 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         report_search = client.post(
             "/api/search",
             json={
-                "query": REPORT_MARKER,
+                "query": "lexical base runtime marker",
                 "options": {"mode": "lexical", "rerank": False, "top_k": 10},
             },
         )
         assert report_search.status_code == 200, report_search.text
         report_hits = report_search.json()["results"]
-        assert report_hits
-        assert any(REPORT_MARKER in (hit.get("snippet") or "") for hit in report_hits)
+        assert report_hits, report_search.text
+        assert any(REPORT_MARKER in (hit.get("snippet") or "") for hit in report_hits), report_search.text
 
         # Evidence read uses the actual catalog chunk created above.
         chunks_response = client.get(f"/api/documents/{REPORT_ID}/chunks")
@@ -143,14 +144,14 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-") as temp:
         cognition_search = client.post(
             "/api/search/cognition",
             json={
-                "query": COGNITION_MARKER,
+                "query": "read only cognition catalog",
                 "options": {"mode": "lexical", "rerank": False, "top_k": 10},
             },
         )
         assert cognition_search.status_code == 200, cognition_search.text
         cognition_hits = cognition_search.json()["results"]
-        assert cognition_hits
-        assert any(COGNITION_MARKER in (hit.get("snippet") or "") for hit in cognition_hits)
+        assert cognition_hits, cognition_search.text
+        assert any(COGNITION_MARKER in (hit.get("snippet") or "") for hit in cognition_hits), cognition_search.text
         assert cognition_search.json()["scope"] == "cognition"
 
         # Planning/TaskPack path consumes explicit Evidence without any model call.
