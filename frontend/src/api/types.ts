@@ -312,6 +312,8 @@ export interface CreateTaskRequest {
   query: string;
   evidence_refs: EvidenceRefInput[];
   evidence_context_mode?: EvidenceContextMode;
+  dossier_id?: string | null;
+  cognition_object_ids?: string[];
   cognition_context?: CognitionContextInput[];
 }
 
@@ -319,6 +321,9 @@ export interface CreateTaskResponse {
   task_id: string;
   status: TaskStatus;
   task_path: string;
+  dossier_id?: string | null;
+  research_context_included?: boolean;
+  cognition_context_count?: number;
 }
 
 export interface GateDetail {
@@ -370,6 +375,8 @@ export interface TaskResultEnvelope {
 
 export interface TaskDetail extends TaskInfo {
   result?: TaskResultEnvelope | null;
+  research_context?: Record<string, unknown> | null;
+  research_brief_available?: boolean;
 }
 
 export interface PromptResponse {
