@@ -9,6 +9,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field, model_validator
 
+from app.indexing.semantic_runtime import ensure_cognition_semantic, ensure_report_semantic
 from app.retrieval.feedback import (
     FEEDBACK_SCHEMA_VERSION,
     append_feedback_events,
@@ -111,10 +112,16 @@ def _record_impressions(request: Request, body: SearchRequest, response: dict) -
 
 @router.post("/search")
 def search(body: SearchRequest, request: Request) -> dict:
-    if body.options.mode in ("hybrid", "dense") and not getattr(request.app.state, "qdrant_available", True):
+    if body.options.mode in ("hybrid", "dense") and not getattr(
+        request.app.state, "qdrant_available", True
+    ):
         from fastapi import HTTPException
 
-        raise HTTPException(status_code=503, detail="Qdrant 不可用，dense/hybrid 检索暂不可用；可改用 lexical 模式")
+        if not ensure_report_semantic(request.app):
+            raise HTTPException(
+                status_code=503,
+                detail="Qdrant 不可用，dense/hybrid 检索暂不可用；可改用 lexical 模式",
+            )
     engine = request.app.state.engine
     filters = body.filters.model_dump() if body.filters else None
     if filters:
@@ -167,10 +174,11 @@ def cognition_search(body: SearchRequest, request: Request) -> dict:
     if body.options.mode in ("hybrid", "dense") and not cog.get("semantic_available", False):
         from fastapi import HTTPException
 
-        raise HTTPException(
-            status_code=503,
-            detail="cognition 语义索引不可用；本地全文 lexical 检索仍可用",
-        )
+        if not ensure_cognition_semantic(request.app):
+            raise HTTPException(
+                status_code=503,
+                detail="cognition 语义索引不可用；本地全文 lexical 检索仍可用",
+            )
     engine = cog["engine"]
     filters = body.filters.model_dump() if body.filters else None
     if filters:

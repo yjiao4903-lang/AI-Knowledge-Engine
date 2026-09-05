@@ -34,7 +34,7 @@ jobs:
         run: python -m compileall -q app/contracts app/cognition app/integration app/indexing app/lexical app/retrieval app/synthesis app/taskpack app/api/index.py app/api/synthesis.py app/api/research_os.py app/main.py
       - name: Run contract and retrieval tests
         working-directory: backend
-        run: python -m pytest tests/test_i8_research_os_integration.py tests/test_i8_phase2_workflow.py tests/test_fts_search.py tests/test_fts_prefilter.py tests/test_retrieval_feedback.py tests/test_dl01_foundation.py tests/test_dl01_catalog_pipeline.py tests/test_dl01_cognition_catalog.py tests/test_dl01_cognition_vector_sync.py tests/synthesis/test_schemas.py tests/synthesis/test_validator.py tests/synthesis/test_epistemic_linter.py tests/taskpack/test_context_expansion.py tests/taskpack/test_validation_cache.py tests/taskpack/test_external_worker_launcher.py -q
+        run: python -m pytest tests/test_i8_research_os_integration.py tests/test_i8_phase2_workflow.py tests/test_fts_search.py tests/test_fts_prefilter.py tests/test_retrieval_feedback.py tests/test_dl01_foundation.py tests/test_dl01_catalog_pipeline.py tests/test_dl01_cognition_catalog.py tests/test_dl01_cognition_vector_sync.py tests/test_dl01_semantic_recovery.py tests/synthesis/test_schemas.py tests/synthesis/test_validator.py tests/synthesis/test_epistemic_linter.py tests/taskpack/test_context_expansion.py tests/taskpack/test_validation_cache.py tests/taskpack/test_external_worker_launcher.py -q
 
   frontend-build:
     name: Frontend typecheck and build

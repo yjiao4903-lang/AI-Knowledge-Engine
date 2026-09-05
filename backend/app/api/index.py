@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.core.errors import AppError
+from app.indexing.semantic_runtime import ensure_cognition_semantic, ensure_report_semantic
 
 router = APIRouter(prefix="/api/index", tags=["index"])
 
@@ -95,19 +96,23 @@ def vector_sync(body: VectorSyncBody, request: Request) -> dict:
     """Explicitly synchronize pending report-derived vectors.
 
     This endpoint may start the inference worker or require Qdrant. Failures leave
-    their durable pending marker intact.
+    their durable pending marker intact. If semantic startup previously failed,
+    this explicit action retries capability initialization without restarting KE.
     """
 
     app = request.app
     catalog = getattr(app.state, "catalog_pipeline", None)
-    semantic = getattr(app.state, "pipeline", None)
     if catalog is None:
         raise HTTPException(status_code=503, detail="本地全文索引服务未初始化")
-    if semantic is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Qdrant/向量索引不可用；全文检索仍可用，待服务恢复后再执行 vector-sync",
-        )
+    semantic = getattr(app.state, "pipeline", None)
+    if semantic is None or not getattr(app.state, "qdrant_available", False):
+        if ensure_report_semantic(app):
+            semantic = getattr(app.state, "pipeline", None)
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail="Qdrant/向量索引不可用；全文检索仍可用，待服务恢复后再执行 vector-sync",
+            )
 
     pending = catalog.pending_vector_sync()[: body.limit]
     synced = 0
@@ -174,7 +179,8 @@ def cognition_vector_sync(body: VectorSyncBody, request: Request) -> dict:
     The local catalog owns the stable derived ``document_id``. That id is passed
     explicitly to the semantic pipeline so a rename followed by modification
     cannot create a second path-derived vector identity. Source Cognition Markdown
-    remains read-only.
+    remains read-only. If semantic startup previously failed, this explicit action
+    retries initialization without restarting KE.
     """
 
     app = request.app
@@ -182,14 +188,17 @@ def cognition_vector_sync(body: VectorSyncBody, request: Request) -> dict:
     if not cog.get("enabled"):
         raise HTTPException(status_code=404, detail="cognition 只读索引未启用")
     catalog = cog.get("catalog_pipeline")
-    semantic = cog.get("semantic_pipeline")
     if catalog is None:
         raise HTTPException(status_code=503, detail="cognition 本地全文目录未初始化")
+    semantic = cog.get("semantic_pipeline")
     if semantic is None or not cog.get("semantic_available", False):
-        raise HTTPException(
-            status_code=503,
-            detail="cognition 语义索引不可用；lexical 检索仍可用，pending 状态已保留",
-        )
+        if ensure_cognition_semantic(app):
+            semantic = cog.get("semantic_pipeline")
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail="cognition 语义索引不可用；lexical 检索仍可用，pending 状态已保留",
+            )
 
     pending = catalog.pending_vector_sync()[: body.limit]
     synced = 0
