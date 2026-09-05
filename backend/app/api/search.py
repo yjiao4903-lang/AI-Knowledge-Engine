@@ -154,15 +154,23 @@ def retrieval_feedback(body: RetrievalFeedbackBatch, request: Request) -> dict:
 
 @router.post("/search/cognition")
 def cognition_search(body: SearchRequest, request: Request) -> dict:
-    """I6：Cognition 只读语义检索（独立 collection，结果带 scope 来源标识）。
+    """Search KE's read-only Cognition-derived catalog.
 
-    READ ONLY：KE 对 cognition 只读消费，本端点无任何写路径。
+    Lexical mode only needs the local SQLite/FTS derived catalog. Dense/hybrid is
+    an optional semantic capability. This endpoint never writes Cognition state.
     """
     cog = getattr(request.app.state, "cognition", None)
     if cog is None or not cog.get("enabled"):
         from fastapi import HTTPException
 
-        raise HTTPException(status_code=404, detail="cognition 语义检索未启用")
+        raise HTTPException(status_code=404, detail="cognition 只读检索未启用")
+    if body.options.mode in ("hybrid", "dense") and not cog.get("semantic_available", False):
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=503,
+            detail="cognition 语义索引不可用；本地全文 lexical 检索仍可用",
+        )
     engine = cog["engine"]
     filters = body.filters.model_dump() if body.filters else None
     if filters:
