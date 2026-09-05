@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -54,3 +56,32 @@ def test_lazy_dense_reports_model_initialization_failure_as_embedding_unavailabl
         lazy.search("query", k=1)
 
     assert lazy.initialized is False
+
+
+def test_base_app_import_does_not_require_qdrant_client():
+    """The lexical base process must import even when Qdrant SDK is unavailable."""
+
+    code = r'''
+import importlib.abc
+import sys
+
+class BlockQdrant(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "qdrant_client" or fullname.startswith("qdrant_client."):
+            raise ImportError("qdrant_client intentionally blocked for DL-01 base-runtime test")
+        return None
+
+sys.meta_path.insert(0, BlockQdrant())
+import app.main
+print("BASE_IMPORT_OK")
+'''
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=".",
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "BASE_IMPORT_OK" in result.stdout
