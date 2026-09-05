@@ -20,6 +20,7 @@ from app.api import (
     increment_analysis,
     index,
     research_os,
+    return_candidates,
     search,
     settings,
     synthesis,
@@ -274,6 +275,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(dossiers.router)
     app.include_router(increment_analysis.router)
     app.include_router(topic_candidates.router)
+    app.include_router(return_candidates.router)
 
     @app.get("/api/health")
     def health() -> dict:
