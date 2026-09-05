@@ -104,8 +104,6 @@ class GapCandidateService:
             path = self._candidate_path(dossier_id, candidate_id)
             if path.exists():
                 existing = self._read(path)
-                # Source-derived explanatory text may become more specific while
-                # review state is durable. Keep review metadata and creation time.
                 updated = TopicCardCandidate(
                     **item,
                     candidate_id=candidate_id,
@@ -257,7 +255,7 @@ class GapCandidateService:
                 result.append(
                     self._item(
                         source_type=source_type,
-                        title=f"{candidate.title}",
+                        title=candidate.title,
                         research_question=question,
                         why_now=candidate.difference_reason,
                         expected_research_value=value,
@@ -316,11 +314,7 @@ class GapCandidateService:
 
     @staticmethod
     def _item(*, source_payload: dict, **values) -> dict:
-        return {
-            **values,
-            "source_fingerprint": _fingerprint(source_payload),
-            "formal_write_performed": False,
-        }
+        return {**values, "source_fingerprint": _fingerprint(source_payload)}
 
     @staticmethod
     def _task_dossier_id(pack: Path) -> str | None:
