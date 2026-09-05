@@ -8,15 +8,15 @@ def _write_report(path: Path, *, fact: str) -> None:
     path.write_text(
         """---
 report_code: DL01_TEST
- title: DL-01 Catalog Test
- domain: semiconductors
+title: DL-01 Catalog Test
+domain: semiconductors
 ---
 # DL-01 Catalog Test
 
 ## Memory bandwidth
 
 {fact}
-""".replace(" title:", "title:").format(fact=fact),
+""".format(fact=fact),
         encoding="utf-8",
     )
 
