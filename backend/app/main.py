@@ -60,20 +60,27 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         # TaskPack is a local file protocol; no internal text-generation LLM is started.
         app.state.taskpack_builder = None
         app.state.taskpack_importer = None
+        app.state.taskpack_cognition_conn = None
         if cfg.taskpack.enabled:
             from app.taskpack.builder import TaskPackBuilder
             from app.taskpack.validation_cache import CachingTaskPackImporter
 
-            cog_conn_tp = None
             if cfg.cognition.enabled:
                 try:
-                    cog_conn_tp = connect(cfg.cognition.catalog_path, check_same_thread=False)
-                    init_schema(cog_conn_tp)
+                    app.state.taskpack_cognition_conn = connect(
+                        cfg.cognition.catalog_path, check_same_thread=False
+                    )
+                    init_schema(app.state.taskpack_cognition_conn)
                 except Exception:
+                    if app.state.taskpack_cognition_conn is not None:
+                        app.state.taskpack_cognition_conn.close()
+                        app.state.taskpack_cognition_conn = None
                     logger.exception("taskpack cognition catalog 初始化失败，退化为仅 report 证据")
-            app.state.taskpack_builder = TaskPackBuilder(cfg, app.state.conn, cog_conn_tp)
+            app.state.taskpack_builder = TaskPackBuilder(
+                cfg, app.state.conn, app.state.taskpack_cognition_conn
+            )
             app.state.taskpack_importer = CachingTaskPackImporter(
-                cfg, app.state.conn, cog_conn_tp
+                cfg, app.state.conn, app.state.taskpack_cognition_conn
             )
 
         # DL-01: base lexical runtime must not start model processes or load the
@@ -244,6 +251,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         state["watcher_stop"].set()
         app.state.manager.shutdown()
         app.state.conn.close()
+        if app.state.taskpack_cognition_conn is not None:
+            app.state.taskpack_cognition_conn.close()
+            app.state.taskpack_cognition_conn = None
         cog = getattr(app.state, "cognition", None)
         if cog and cog.get("conn") is not None:
             cog["conn"].close()
