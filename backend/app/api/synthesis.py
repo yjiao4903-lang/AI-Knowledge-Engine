@@ -1,20 +1,9 @@
-"""Synthesis TaskPack API（V3.0 + I8 Research OS Integration）。
+"""Synthesis TaskPack API（V3.0 + Personal Research OS）。
 
-废弃旧的同步 POST /api/synthesis（.py 不再注册；内部文本 LLM 已移除）。
-当前端点：
-    POST /api/synthesis/tasks
-    GET  /api/synthesis/tasks
-    GET  /api/synthesis/tasks/{task_id}
-    GET  /api/synthesis/tasks/{task_id}/proposal-candidates
-    POST /api/synthesis/tasks/{task_id}/rescan
-    POST /api/synthesis/tasks/{task_id}/archive
-    GET  /api/synthesis/worker-launchers
-    POST /api/synthesis/tasks/{task_id}/launch-worker
-
-I8 原则：proposal-candidates 仅生成 Cognition Proposal 的候选 payload，绝不由
-Knowledge Engine 自动写入 Cognition；正式变化继续走 Cognition Preview + Apply。
-External Worker Launcher 也只是本地进程编排，不是模型 Provider：浏览器不能提交
-任意 executable / shell command / API key，KE 不嵌入 OpenAI / Claude SDK。
+Task creation accepts explicit Evidence, optional Topic Dossier identity and
+explicit Cognition stable IDs. Evidence/Cognition text is always re-resolved on
+the server. Proposal publication remains staging-only; Cognition is still the
+only formal cognition writer.
 """
 
 from __future__ import annotations
@@ -28,6 +17,8 @@ from pydantic import BaseModel
 
 from app.core.errors import AppError, EvidenceNotFoundError, EvidenceStaleError
 from app.integration.proposals import build_cognition_proposal_payload
+from app.research.context_pack import build_research_context, resolve_cognition_context
+from app.research.dossier import TopicDossierService
 from app.synthesis.schemas import SynthesisRequest
 from app.taskpack.builder import TaskPackBuilder
 from app.taskpack.importer import (
@@ -54,7 +45,6 @@ class LaunchWorkerRequest(BaseModel):
 
 
 def _taskpack(request: Request) -> tuple[TaskPackBuilder, TaskPackImporter] | None:
-    """按状态引用已构造的 Builder/Importer；未启用或未初始化时返回 None。"""
     cfg = getattr(request.app.state, "cfg", None)
     if cfg is None or not cfg.taskpack.enabled:
         return None
@@ -80,6 +70,13 @@ def _require_task(request: Request, task_id: str):
     if pack is None:
         raise HTTPException(status_code=404, detail=f"任务不存在: {task_id}")
     return pack, importer
+
+
+def _cognition_conn(request: Request):
+    cog = getattr(request.app.state, "cognition", None) or {}
+    if not cog.get("enabled"):
+        return None
+    return cog.get("conn")
 
 
 def _read_json(path: Path) -> dict:
@@ -123,8 +120,14 @@ def _task_detail(pack: Path, importer: TaskPackImporter) -> dict:
         "stale": info.stale,
         "error": info.error,
     }
-    # COMPLETED / IMPORTED / INVALID_RESULT 都允许查看 result snapshot；
-    # INVALID 只代表 Gate 未通过，不应迫使用户回文件系统排障。
+    context_path = pack / "research_context.json"
+    if context_path.exists():
+        try:
+            detail["research_context"] = json.loads(context_path.read_text(encoding="utf-8"))
+            detail["research_brief_available"] = (pack / "research_brief.md").exists()
+        except Exception:
+            detail["research_context"] = None
+            detail["research_brief_available"] = False
     if info.status in (COMPLETED, IMPORTED, INVALID_RESULT):
         result_path = pack / "result" / "result.json"
         if result_path.exists():
@@ -137,16 +140,45 @@ def _task_detail(pack: Path, importer: TaskPackImporter) -> dict:
 
 @router.post("/tasks")
 def create_task(body: SynthesisRequest, request: Request) -> dict:
-    """创建 TaskPack，立即返回 READY。"""
+    """Create a READY TaskPack from authoritative Evidence/Cognition snapshots."""
+
     builder, _ = _require_taskpack(request)
+    cfg = request.app.state.cfg
+    cog_conn = _cognition_conn(request)
     try:
+        selected_cognition = resolve_cognition_context(
+            cfg,
+            cog_conn,
+            body.cognition_object_ids,
+            legacy_items=body.cognition_context,
+        )
+
+        research_context = None
+        dossier_id = (body.dossier_id or "").strip() or None
+        if dossier_id is not None:
+            dossier_service = TopicDossierService(cfg, request.app.state.conn, cog_conn)
+            try:
+                dossier_detail = dossier_service.get(dossier_id)
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=f"研究主题不存在: {dossier_id}") from exc
+            research_context = build_research_context(
+                dossier_detail,
+                task_type=body.task_type,
+                query=body.query,
+                evidence_context_mode=body.evidence_context_mode,
+                selected_cognition=selected_cognition,
+            )
+
         created = builder.create_task(
             task_type=body.task_type,
             query=body.query,
             evidence_refs=body.evidence_refs,
             evidence_context_mode=body.evidence_context_mode,
-            cognition_context=body.cognition_context or None,
+            cognition_context=selected_cognition or None,
+            research_context=research_context,
         )
+    except HTTPException:
+        raise
     except (EvidenceNotFoundError, EvidenceStaleError, AppError) as exc:
         raise HTTPException(status_code=exc.http_status, detail=str(exc)) from exc
     except ValueError as exc:
@@ -155,12 +187,14 @@ def create_task(body: SynthesisRequest, request: Request) -> dict:
         "task_id": created.task_id,
         "status": READY,
         "task_path": str(created.task_path),
+        "dossier_id": dossier_id,
+        "research_context_included": created.research_context_included,
+        "cognition_context_count": created.cognition_context_count,
     }
 
 
 @router.get("/worker-launchers")
 def get_worker_launchers(request: Request) -> dict:
-    """列出固定 launcher 的本机可用性；不返回/接受任意命令配置。"""
     _, importer = _require_taskpack(request)
     launchers = ExternalWorkerLauncher(importer.root).describe()
     return {
@@ -173,7 +207,6 @@ def get_worker_launchers(request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/launch-worker")
 def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> dict:
-    """启动一个固定外部 CLI，并把 READY TaskPack 原子推进到 PROCESSING。"""
     pack, importer = _require_task(request, task_id)
     status = importer.status_of(pack)
     if status != READY:
@@ -201,7 +234,6 @@ def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> 
 
 @router.get("/tasks")
 def list_tasks(request: Request) -> dict:
-    """Task Center 列表：先触发一次 Watcher 扫描，再返回全部状态。"""
     _, importer = _require_taskpack(request)
     importer.scan()
     tasks = [{
@@ -229,11 +261,8 @@ def get_task(task_id: str, request: Request) -> dict:
 
 @router.get("/tasks/{task_id}/proposal-candidates")
 def get_proposal_candidates(task_id: str, request: Request) -> dict:
-    """把已验证 TaskPack 结果转换成 Cognition Proposal 候选 payload。
+    """Convert a validated TaskPack result to a Cognition Proposal candidate payload."""
 
-    只读端点：返回的 ``proposal_payload`` 可由 Cognition App 显式提交到其
-    ``POST /api/proposals``，但 KE 本身不调用该写接口，也不获得认知写权限。
-    """
     pack, importer = _require_task(request, task_id)
     info = importer._make_task_info(pack)
     if info.status not in (COMPLETED, IMPORTED):
@@ -264,7 +293,6 @@ def get_proposal_candidates(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/rescan")
 def rescan_task(task_id: str, request: Request) -> dict:
-    """触发对单个任务的 Watcher 导入。"""
     _pack, importer = _require_task(request, task_id)
     report = importer.rescan_task(task_id)
     if report is None:
@@ -292,7 +320,6 @@ def archive_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/open-folder")
 def open_task_folder(task_id: str, request: Request) -> dict:
-    """白名单校验根目录内路径后调用系统文件管理器。"""
     pack, importer = _require_task(request, task_id)
     root = importer.root.resolve()
     resolved = pack.resolve()
@@ -302,13 +329,12 @@ def open_task_folder(task_id: str, request: Request) -> dict:
         raise HTTPException(status_code=403, detail="path outside taskpack root") from None
     if ".." in relative.parts or not resolved.is_dir():
         raise HTTPException(status_code=403, detail="path outside taskpack root")
-    os.startfile(str(resolved))  # noqa: S606 - 本地单用户系统，路径已过白名单校验
+    os.startfile(str(resolved))  # noqa: S606 - local single-user app; root already checked
     return {"opened": True, "path": str(resolved)}
 
 
 @router.get("/tasks/{task_id}/prompt")
 def get_task_prompt(task_id: str, request: Request) -> dict:
-    """返回任务目录中的 AGENT_INSTRUCTION.md 明文。"""
     pack, _ = _require_task(request, task_id)
     instr = pack / "AGENT_INSTRUCTION.md"
     if not instr.exists():

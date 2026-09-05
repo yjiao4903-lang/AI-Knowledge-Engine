@@ -125,9 +125,10 @@ class SynthesisDraft(BaseModel):
 class SynthesisRequest(BaseModel):
     """POST /api/synthesis/tasks 请求体。
 
-    Evidence 与 Cognition Context 都必须由调用方显式选择。Evidence Context Expansion
-    仅允许在用户选中 chunk 的相邻 chunk / 同 section 内做 deterministic 扩展；KE 不做
-    新检索，不把扩展正文拼成匿名文本，也不获得 Cognition 写权限。
+    Evidence、Dossier 与 Cognition stable IDs 都由调用方显式选择。Evidence 正文、
+    Cognition 正文和 Dossier 当前状态由服务端从权威派生 catalog / planning store
+    重新解析，不信任浏览器 excerpt。旧 `cognition_context` 字段保留协议兼容，但
+    只把其中的 object_id/object_type 当选择提示，其正文/hash 会被服务端覆盖。
     """
 
     task_type: Literal["summary", "comparison", "causal_synthesis", "tension_extraction"]
@@ -137,9 +138,19 @@ class SynthesisRequest(BaseModel):
         description="用户显式选定的 anchor evidence；Builder 可按 evidence_context_mode 扩展",
     )
     evidence_context_mode: EvidenceContextMode = "none"
+    dossier_id: str | None = Field(
+        default=None,
+        max_length=80,
+        description="可选 Topic Research Dossier stable ID；服务端生成研究上下文快照",
+    )
+    cognition_object_ids: list[str] = Field(
+        default_factory=list,
+        max_length=100,
+        description="推荐的新路径：用户显式选择的 Cognition stable object IDs",
+    )
     cognition_context: list[CognitionContextItem] = Field(
         default_factory=list,
-        description="可选的正式 Cognition 对象只读快照；与 TaskPack contract 完全一致",
+        description="兼容旧调用方；只复用 object_id/object_type 提示，正文由服务端重读",
     )
 
 

@@ -1,17 +1,16 @@
-"""TaskPack Builder（V3.0 方案 §31/§67）。
+"""TaskPack Builder（V3.0 + DL-03 Research Context）。
 
 输入 query / task_type / EvidenceReference[] / 可选 cognition context，在
 `<root>/outbox/<task_id>/` 生成完整只读任务包：
 
     task.yaml / AGENT_INSTRUCTION.md / evidence.jsonl /
-    [cognition_context.jsonl] / output_schema.json / README.md /
-    result/.gitkeep / manifest.json（最后写入）
+    [cognition_context.jsonl] /
+    [research_context.json + research_brief.md] /
+    output_schema.json / README.md / result/.gitkeep / manifest.json（最后写入）
 
-正文与身份字段一律按 chunk_id 从 KE catalog 权威解析（EvidenceResolver，
-F2 纪律），不信任调用方传入的 excerpt；document_id / section_id /
-content_hash 以 catalog 为准，作为 Importer stale Gate（§48）的比对基准。
-Evidence Context Expansion 只增加更多显式 chunk identity，不拼接匿名上下文。
-chunk 不存在 / hash 不一致时分别抛 404 / 409，由 API 层映射。
+正文与身份字段一律按 chunk_id 从 KE catalog 权威解析（EvidenceResolver），
+不信任调用方 excerpt。Research Context 是可选的研究方向/主题状态快照，不是
+Evidence；旧 TaskPack 不带该层时保持 V1 兼容。
 """
 
 from __future__ import annotations
@@ -26,6 +25,7 @@ from pathlib import Path
 import yaml
 
 from app.core.config import Config
+from app.research.context_pack import render_research_brief
 from app.synthesis.grounding import EvidenceResolver
 from app.synthesis.schemas import EvidenceContextMode, EvidenceRef
 from app.taskpack.manifest import build_manifest, sha256_file
@@ -38,58 +38,51 @@ from app.taskpack.schemas import (
 )
 
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
-# 根目录 templates/ 下的正典模板（§5）；Builder 每次构建时同步到根目录
 TEMPLATE_FILES: tuple[str, ...] = (
     "AGENT_INSTRUCTION_V1.md",
     "OUTPUT_SCHEMA_V1.json",
     "TASKPACK_README.md",
 )
-# TaskPack 根目录的固定子目录（§5）
 ROOT_SUBDIRS: tuple[str, ...] = (
     "templates", "outbox", "processing", "completed", "failed", "archive",
 )
-# 每个包内的固定输入文件（§6）；cognition_context.jsonl 仅在提供时生成
+# Required legacy inputs. Optional cognition/research-context files are added to
+# the manifest only when present, preserving old TaskPack readability.
 PACK_INPUT_FILES: tuple[str, ...] = (
     "task.yaml", "AGENT_INSTRUCTION.md", "evidence.jsonl",
     "output_schema.json", "README.md",
 )
 MANIFEST_FILE = "manifest.json"
+RESEARCH_CONTEXT_FILE = "research_context.json"
+RESEARCH_BRIEF_FILE = "research_brief.md"
 
 
 @dataclass(frozen=True)
 class CreatedTask:
-    """create_task 返回值：API 立即响应 {task_id, status, task_path}（§34）。"""
-
     task_id: str
     task_path: Path
     evidence_count: int
     cognition_context_count: int
     status: str = "READY"
+    research_context_included: bool = False
 
 
 def _slugify(text: str) -> str:
-    """query 提取 ASCII 字母数字小写词作为 task_id 后缀（§7 示例形态）。"""
     words = re.findall(r"[a-zA-Z0-9]+", text)
     slug = "-".join(w.lower() for w in words)[:40].strip("-")
     return slug or "task"
 
 
 class TaskPackBuilder:
-    """TaskPack 构建器：只做本地文件编排，不感知任何模型与 Worker（§29）。"""
+    """TaskPack 构建器：只做本地文件编排，不感知任何模型与 Worker。"""
 
-    def __init__(
-        self,
-        cfg: Config,
-        report_conn,
-        cognition_conn=None,
-    ) -> None:
+    def __init__(self, cfg: Config, report_conn, cognition_conn=None) -> None:
         self.cfg = cfg
         self.resolver = EvidenceResolver(cfg, report_conn, cognition_conn)
         self.root = Path(cfg.taskpack.root_dir)
         self.template_dir = TEMPLATE_DIR
 
     def _ensure_root(self) -> None:
-        """确保根目录树存在，并把正典模板同步到 <root>/templates/（覆盖）。"""
         for sub in ROOT_SUBDIRS:
             (self.root / sub).mkdir(parents=True, exist_ok=True)
         for name in TEMPLATE_FILES:
@@ -98,7 +91,6 @@ class TaskPackBuilder:
                 shutil.copyfile(src, self.root / "templates" / name)
 
     def _resolve_evidence(self, evidence_refs) -> list[TaskPackEvidence]:
-        """把 EvidenceReference[] 解析为 evidence.jsonl 行（EV001.. 编号）。"""
         resolved: list[TaskPackEvidence] = []
         for i, raw in enumerate(evidence_refs, start=1):
             ref = raw if isinstance(raw, EvidenceRef) else EvidenceRef.model_validate(raw)
@@ -122,7 +114,6 @@ class TaskPackBuilder:
         return resolved
 
     def _new_task_id(self, outbox: Path, now: datetime, query: str) -> str:
-        """task_id = {YYYYMMDD_HHMMSS}_{slug}，同秒冲突时追加 -2/-3（§7）。"""
         base = f"{now.strftime('%Y%m%d_%H%M%S')}_{_slugify(query)}"
         task_id, n = base, 1
         while (outbox / task_id).exists():
@@ -138,6 +129,7 @@ class TaskPackBuilder:
         evidence_refs: list,
         evidence_context_mode: EvidenceContextMode = "none",
         cognition_context: list | None = None,
+        research_context: dict | None = None,
         task_specific_instruction: str | None = None,
         max_claims: int | None = None,
         now: datetime | None = None,
@@ -157,29 +149,41 @@ class TaskPackBuilder:
         outbox = self.root / "outbox"
         task_id = self._new_task_id(outbox, now, query)
         pack = outbox / task_id
-        pack.mkdir(parents=True)  # 不用 exist_ok：目录被并发占用时显式失败
+        pack.mkdir(parents=True)
 
-        # 目录先占位以解决同秒并发冲突；在所有输入解析、模板复制和 manifest
-        # 写完之前，任何异常都必须清理占位目录，避免外部 Worker 看见半成品 READY。
         try:
             return self._write_task_pack(
-                pack=pack, task_id=task_id, task_type=task_type, query=query,
-                evidence_refs=evidence_refs, evidence_context_mode=evidence_context_mode,
+                pack=pack,
+                task_id=task_id,
+                task_type=task_type,
+                query=query,
+                evidence_refs=evidence_refs,
+                evidence_context_mode=evidence_context_mode,
                 cognition_context=cognition_context,
+                research_context=research_context,
                 task_specific_instruction=task_specific_instruction,
-                max_claims=max_claims, now=now,
+                max_claims=max_claims,
+                now=now,
             )
         except BaseException:
             shutil.rmtree(pack, ignore_errors=True)
             raise
 
     def _write_task_pack(
-        self, *, pack: Path, task_id: str, task_type: str, query: str, evidence_refs: list,
-        evidence_context_mode: EvidenceContextMode, cognition_context: list | None,
-        task_specific_instruction: str | None, max_claims: int | None, now: datetime,
+        self,
+        *,
+        pack: Path,
+        task_id: str,
+        task_type: str,
+        query: str,
+        evidence_refs: list,
+        evidence_context_mode: EvidenceContextMode,
+        cognition_context: list | None,
+        research_context: dict | None,
+        task_specific_instruction: str | None,
+        max_claims: int | None,
+        now: datetime,
     ) -> CreatedTask:
-        """Write a reserved pack; caller removes it on any failure/interruption."""
-
         created_at = now.isoformat(timespec="seconds")
         expanded_refs = self.resolver.expand_refs(evidence_refs, evidence_context_mode)
         if len(expanded_refs) > self.cfg.taskpack.max_evidence:
@@ -200,9 +204,7 @@ class TaskPackBuilder:
             created_at=created_at,
             evidence_context_mode=evidence_context_mode,
             task_specific_instruction=task_specific_instruction,
-            constraints=Constraints(
-                max_claims=max_claims or self.cfg.taskpack.max_claims
-            ),
+            constraints=Constraints(max_claims=max_claims or self.cfg.taskpack.max_claims),
         )
         (pack / "task.yaml").write_text(
             yaml.safe_dump(
@@ -224,6 +226,22 @@ class TaskPackBuilder:
                 "".join(json.dumps(c.model_dump(), ensure_ascii=False) + "\n" for c in cog_items),
                 encoding="utf-8",
             )
+
+        packed_context: dict | None = None
+        if research_context is not None:
+            # JSON round-trip makes an isolated plain-data copy without accepting
+            # references back into mutable app/request state.
+            packed_context = json.loads(json.dumps(research_context, ensure_ascii=False))
+            packed_context["generated_at"] = created_at
+            packed_context.setdefault("task", {})["task_id"] = task_id
+            (pack / RESEARCH_CONTEXT_FILE).write_text(
+                json.dumps(packed_context, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            (pack / RESEARCH_BRIEF_FILE).write_text(
+                render_research_brief(packed_context), encoding="utf-8"
+            )
+
         shutil.copyfile(
             self.template_dir / "OUTPUT_SCHEMA_V1.json", pack / "output_schema.json"
         )
@@ -234,6 +252,9 @@ class TaskPackBuilder:
         files = {name: sha256_file(pack / name) for name in PACK_INPUT_FILES}
         if cog_items:
             files["cognition_context.jsonl"] = sha256_file(pack / "cognition_context.jsonl")
+        if packed_context is not None:
+            files[RESEARCH_CONTEXT_FILE] = sha256_file(pack / RESEARCH_CONTEXT_FILE)
+            files[RESEARCH_BRIEF_FILE] = sha256_file(pack / RESEARCH_BRIEF_FILE)
         manifest: Manifest = build_manifest(
             task_id=task_id,
             created_at=created_at,
@@ -250,4 +271,5 @@ class TaskPackBuilder:
             task_path=pack,
             evidence_count=len(evidence),
             cognition_context_count=len(cog_items),
+            research_context_included=packed_context is not None,
         )
