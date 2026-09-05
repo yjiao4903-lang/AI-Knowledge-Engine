@@ -4,6 +4,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.api.index import VectorSyncBody, cognition_vector_sync, vector_sync
+from app.api.search import SearchOptions, SearchRequest, cognition_search, search
 from app.indexing import semantic_runtime
 
 
@@ -33,6 +34,15 @@ class FakeSemantic:
         self.deleted.append((doc_id, source_path))
 
 
+class FakeSearchEngine:
+    def __init__(self):
+        self.calls = []
+
+    def search(self, query, **kwargs):
+        self.calls.append((query, kwargs))
+        return {"mode": kwargs["mode"], "results": []}
+
+
 def _app_state(**kwargs):
     defaults = {
         "cfg": SimpleNamespace(),
@@ -43,6 +53,7 @@ def _app_state(**kwargs):
         "semantic_last_error": None,
         "catalog_pipeline": FakeCatalog(),
         "index_lock": __import__("threading").Lock(),
+        "engine": FakeSearchEngine(),
         "cognition": {"enabled": False},
     }
     defaults.update(kwargs)
@@ -112,6 +123,58 @@ def test_cognition_semantic_recovery_can_succeed_after_initial_failure(monkeypat
 
     assert semantic_runtime.ensure_cognition_semantic(app) is True
     assert len(attempts) == 2
+
+
+def test_report_dense_search_recovers_semantic_runtime(monkeypatch):
+    engine = FakeSearchEngine()
+    app = _app_state(engine=engine)
+
+    def recover(received_app):
+        assert received_app is app
+        app.state.qdrant_available = True
+        app.state.pipeline = object()
+        return True
+
+    monkeypatch.setattr("app.api.search.ensure_report_semantic", recover)
+    monkeypatch.setattr("app.api.search._record_impressions", lambda *_args, **_kwargs: None)
+
+    response = search(
+        SearchRequest(query="recover-report", options=SearchOptions(mode="dense")),
+        _request(app),
+    )
+
+    assert response["mode"] == "dense"
+    assert engine.calls[0][0] == "recover-report"
+    assert app.state.qdrant_available is True
+
+
+def test_cognition_dense_search_recovers_semantic_runtime(monkeypatch):
+    engine = FakeSearchEngine()
+    cog = {
+        "enabled": True,
+        "engine": engine,
+        "semantic_pipeline": None,
+        "semantic_available": False,
+    }
+    app = _app_state(cognition=cog)
+
+    def recover(received_app):
+        assert received_app is app
+        cog["semantic_pipeline"] = object()
+        cog["semantic_available"] = True
+        return True
+
+    monkeypatch.setattr("app.api.search.ensure_cognition_semantic", recover)
+
+    response = cognition_search(
+        SearchRequest(query="recover-cognition", options=SearchOptions(mode="hybrid")),
+        _request(app),
+    )
+
+    assert response["mode"] == "hybrid"
+    assert response["scope"] == "cognition"
+    assert engine.calls[0][0] == "recover-cognition"
+    assert cog["semantic_available"] is True
 
 
 def test_report_vector_sync_recovers_semantic_runtime_and_clears_pending(monkeypatch):
