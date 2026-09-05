@@ -21,6 +21,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDossier, useDossiers } from '../api/dossierHooks';
 import { useCreateTask, useDocuments, useHealth, useSearch } from '../api/hooks';
+import {
+  useCreateTopicCandidateTask,
+  useTopicCandidates,
+} from '../api/topicCandidateHooks';
 import type {
   DebugInfo,
   EvidenceContextMode,
@@ -149,6 +153,10 @@ const SearchPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dossierFromUrl = searchParams.get('dossier') ?? undefined;
+  const topicCandidateFromUrl = searchParams.get('topic_candidate') ?? undefined;
+  const queryFromUrl = (searchParams.get('q') ?? '').trim();
+  const candidateMode = Boolean(topicCandidateFromUrl);
+
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
   const [mode, setMode] = useState<SearchMode>('lexical');
@@ -165,14 +173,25 @@ const SearchPage: React.FC = () => {
   const health = useHealth();
   const search = useSearch(health.data?.retrieval?.qdrant_available);
   const createTask = useCreateTask();
+  const candidateTask = useCreateTopicCandidateTask(dossierFromUrl, topicCandidateFromUrl);
+  const candidateList = useTopicCandidates(dossierFromUrl);
   const documentsQuery = useDocuments();
   const dossiers = useDossiers();
   const selectedDossier = useDossier(selectedDossierId);
   const documents = documentsQuery.data?.documents ?? [];
 
+  const linkedCandidate = useMemo(
+    () => candidateList.data?.candidates.find((item) => item.candidate_id === topicCandidateFromUrl),
+    [candidateList.data, topicCandidateFromUrl],
+  );
+
   useEffect(() => {
     localStorage.setItem(BASKET_KEY, JSON.stringify(basket));
   }, [basket]);
+
+  useEffect(() => {
+    if (queryFromUrl) setQuery(queryFromUrl);
+  }, [queryFromUrl]);
 
   const selectedChunkIds = useMemo(() => new Set(basket.map((item) => item.chunk_id)), [basket]);
 
@@ -222,9 +241,19 @@ const SearchPage: React.FC = () => {
 
   const openCreateTask = () => {
     if (basket.length === 0) return;
+    if (candidateMode && !dossierFromUrl) {
+      void message.error('Topic Candidate 任务必须包含 dossier 参数。');
+      return;
+    }
+    if (linkedCandidate && linkedCandidate.status !== 'accepted') {
+      void message.error('该 Topic Candidate 当前不是 accepted 状态，不能创建研究任务。');
+      return;
+    }
     form.setFieldsValue({
       task_type: 'summary',
-      query: submittedQuery || query.trim() || '',
+      query: candidateMode
+        ? (linkedCandidate?.research_question || queryFromUrl || query.trim())
+        : (submittedQuery || query.trim() || ''),
       evidence_context_mode: 'none',
       dossier_id: dossierFromUrl,
       cognition_object_ids: [],
@@ -232,7 +261,36 @@ const SearchPage: React.FC = () => {
     setCreateOpen(true);
   };
 
+  const finishTaskCreation = (taskId: string, reused: boolean, researchContextIncluded?: boolean) => {
+    const contextText = researchContextIncluded ? '（已附研究上下文）' : '';
+    const reusedText = reused ? '（复用既有候选任务）' : '';
+    void message.success(`TaskPack 已创建：${taskId}${contextText}${reusedText}`);
+    setBasket([]);
+    setCreateOpen(false);
+    setBasketOpen(false);
+    navigate('/tasks');
+  };
+
   const submitTask = (values: CreateTaskForm) => {
+    if (candidateMode && dossierFromUrl && topicCandidateFromUrl) {
+      candidateTask.mutate(
+        {
+          task_type: values.task_type,
+          evidence_refs: basket,
+          evidence_context_mode: values.evidence_context_mode,
+          cognition_object_ids: values.cognition_object_ids ?? [],
+          cognition_context: [],
+        },
+        {
+          onSuccess: (created) =>
+            finishTaskCreation(created.task_id, created.reused, created.research_context_included),
+          onError: (error) =>
+            void message.error(`创建候选 TaskPack 失败：${(error as Error).message}`),
+        },
+      );
+      return;
+    }
+
     createTask.mutate(
       {
         task_type: values.task_type,
@@ -244,31 +302,65 @@ const SearchPage: React.FC = () => {
         cognition_context: [],
       },
       {
-        onSuccess: (created) => {
-          const contextText = created.research_context_included ? '（已附研究上下文）' : '';
-          void message.success(`TaskPack 已创建：${created.task_id}${contextText}`);
-          setBasket([]);
-          setCreateOpen(false);
-          setBasketOpen(false);
-          navigate('/tasks');
-        },
+        onSuccess: (created) =>
+          finishTaskCreation(created.task_id, false, created.research_context_included),
         onError: (error) => void message.error(`创建 TaskPack 失败：${(error as Error).message}`),
       },
     );
   };
 
   const results = search.data?.results ?? [];
+  const candidateLoading = candidateMode && candidateList.isLoading;
+  const candidateMissing = candidateMode && !candidateLoading && candidateList.data && !linkedCandidate;
 
   return (
     <div className="page-container">
-      {dossierFromUrl ? (
+      {topicCandidateFromUrl && !dossierFromUrl ? (
         <Alert
-          type="info"
+          type="error"
           showIcon
           style={{ marginBottom: 16 }}
-          message={`当前研究主题：${dossierFromUrl}`}
-          description="搜索仍用于选择 Evidence；创建 TaskPack 时会默认带入这个 Dossier，你可再选择哪些正式 Cognition 对象作为已有认识上下文。"
-          action={<Button size="small" onClick={() => navigate('/topics')}>返回主题</Button>}
+          message="Topic Candidate 链接缺少 Dossier"
+          description="候选任务必须同时携带 dossier 与 topic_candidate；请从“下一轮研究”页面重新进入。"
+        />
+      ) : null}
+
+      {dossierFromUrl ? (
+        <Alert
+          type={candidateMode ? 'success' : 'info'}
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={
+            candidateMode
+              ? `正在为研究候选选择 Evidence：${linkedCandidate?.title || topicCandidateFromUrl}`
+              : `当前研究主题：${dossierFromUrl}`
+          }
+          description={
+            candidateMode
+              ? '候选研究问题由服务端按 candidate_id 重新读取；你只负责选择 Evidence、已有 Cognition 上下文与任务类型。创建 TaskPack 后不会自动启动 Worker。'
+              : '搜索仍用于选择 Evidence；创建 TaskPack 时会默认带入这个 Dossier，你可再选择哪些正式 Cognition 对象作为已有认识上下文。'
+          }
+          action={<Button size="small" onClick={() => navigate(candidateMode ? '/next-research' : '/topics')}>返回</Button>}
+        />
+      ) : null}
+
+      {candidateMissing ? (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message="当前 5 条候选视图中未找到该 candidate"
+          description="服务端专用创建接口仍会按稳定 candidate_id 做最终校验；若候选已被拒绝、删除或不再存在，创建时会明确失败，不会退化为普通 TaskPack。"
+        />
+      ) : null}
+
+      {linkedCandidate && linkedCandidate.status !== 'accepted' ? (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={`候选当前状态为 ${linkedCandidate.status}`}
+          description="只有 accepted 候选可以通过专用路径创建/复用 TaskPack。"
         />
       ) : null}
 
@@ -315,7 +407,13 @@ const SearchPage: React.FC = () => {
             </Tooltip>
             <Space size={8}>
               <Text type="secondary">Top-K：</Text>
-              <Radio.Group optionType="button" size="small" value={topK} onChange={(e) => setTopK(e.target.value)} options={[5, 10, 20].map((n) => ({ value: n, label: String(n) }))} />
+              <Radio.Group
+                optionType="button"
+                size="small"
+                value={topK}
+                onChange={(e) => setTopK(e.target.value)}
+                options={[5, 10, 20].map((n) => ({ value: n, label: String(n) }))}
+              />
             </Space>
           </Space>
         </Space>
@@ -327,17 +425,31 @@ const SearchPage: React.FC = () => {
           showIcon
           style={{ marginBottom: 16 }}
           message={`Evidence Basket 已选择 ${basket.length} 条 anchor evidence`}
-          description="Evidence 负责支撑事实；Dossier/Cognition Context 负责研究方向与已有认识，二者不会混成匿名上下文。"
+          description={
+            candidateMode
+              ? 'Evidence 负责支撑后续事实；Topic Candidate 只定义研究规划问题，不会被当作 Evidence。'
+              : 'Evidence 负责支撑事实；Dossier/Cognition Context 负责研究方向与已有认识，二者不会混成匿名上下文。'
+          }
           action={
             <Space>
               <Button size="small" onClick={() => setBasketOpen(true)}>查看 Basket</Button>
-              <Button size="small" type="primary" icon={<ExperimentOutlined />} onClick={openCreateTask}>创建 TaskPack</Button>
+              <Button
+                size="small"
+                type="primary"
+                icon={<ExperimentOutlined />}
+                onClick={openCreateTask}
+                disabled={Boolean(linkedCandidate && linkedCandidate.status !== 'accepted')}
+              >
+                {candidateMode ? '创建候选 TaskPack' : '创建 TaskPack'}
+              </Button>
             </Space>
           }
         />
       ) : null}
 
-      {search.isError ? <Alert type="error" showIcon style={{ marginBottom: 16 }} message="检索失败" description={(search.error as Error)?.message} /> : null}
+      {search.isError ? (
+        <Alert type="error" showIcon style={{ marginBottom: 16 }} message="检索失败" description={(search.error as Error)?.message} />
+      ) : null}
       {search.data?.fallback_from ? (
         <Alert
           type="warning"
@@ -370,7 +482,13 @@ const SearchPage: React.FC = () => {
           {results.length === 0 ? (
             <EmptyResults hint="没有匹配结果，试试放宽过滤条件或更换查询词" />
           ) : results.map((result) => (
-            <ResultCard key={result.chunk_id} result={result} query={submittedQuery} selected={selectedChunkIds.has(result.chunk_id)} onToggleEvidence={toggleEvidence} />
+            <ResultCard
+              key={result.chunk_id}
+              result={result}
+              query={submittedQuery}
+              selected={selectedChunkIds.has(result.chunk_id)}
+              onToggleEvidence={toggleEvidence}
+            />
           ))}
         </>
       ) : null}
@@ -389,12 +507,12 @@ const SearchPage: React.FC = () => {
       />
 
       <Modal
-        title="从 Evidence Basket 创建研究 TaskPack"
+        title={candidateMode ? '从已选 Evidence 创建候选研究 TaskPack' : '从 Evidence Basket 创建研究 TaskPack'}
         open={createOpen}
         onCancel={() => setCreateOpen(false)}
         onOk={() => form.submit()}
-        okText="创建 TaskPack"
-        confirmLoading={createTask.isPending}
+        okText={candidateMode ? '创建 / 复用 TaskPack' : '创建 TaskPack'}
+        confirmLoading={createTask.isPending || candidateTask.isPending}
         destroyOnClose
       >
         <Alert
@@ -402,7 +520,11 @@ const SearchPage: React.FC = () => {
           showIcon
           style={{ marginBottom: 16 }}
           message={`Anchor evidence：${basket.length} 条`}
-          description="研究主题与 Cognition 是上下文，不是 Evidence；服务端会按 stable ID 重新读取权威 Cognition 正文，浏览器不会提交正文作为事实。"
+          description={
+            candidateMode
+              ? 'candidate_id 与研究问题由服务端重新读取；Candidate 是规划上下文而不是事实证据。重复提交同一候选会复用关联 TaskPack。'
+              : '研究主题与 Cognition 是上下文，不是 Evidence；服务端会按 stable ID 重新读取权威 Cognition 正文，浏览器不会提交正文作为事实。'
+          }
         />
         <Form
           form={form}
@@ -410,9 +532,14 @@ const SearchPage: React.FC = () => {
           onFinish={submitTask}
           initialValues={{ task_type: 'summary', evidence_context_mode: 'none', cognition_object_ids: [] }}
         >
-          <Form.Item label="研究主题（可选）" name="dossier_id" extra="选择后 TaskPack 会包含 research_brief.md / research_context.json；不选择仍是合法的旧式 Evidence-only TaskPack。">
+          <Form.Item
+            label="研究主题（可选）"
+            name="dossier_id"
+            extra={candidateMode ? '候选任务必须固定使用候选所属 Dossier。' : '选择后 TaskPack 会包含 research_brief.md / research_context.json；不选择仍是合法的 Evidence-only TaskPack。'}
+          >
             <Select
-              allowClear
+              allowClear={!candidateMode}
+              disabled={candidateMode}
               loading={dossiers.isLoading}
               placeholder="选择 Topic Research Dossier"
               options={(dossiers.data?.dossiers ?? []).map((item) => ({ value: item.dossier_id, label: item.title }))}
@@ -435,7 +562,12 @@ const SearchPage: React.FC = () => {
             />
           </Form.Item>
           {selectedDossier.data?.needs_refresh ? (
-            <Alert type="warning" showIcon style={{ marginBottom: 16 }} message="所选主题存在来源更新/缺失；TaskPack 会保留该警告，外部 Worker 不得假装上下文完整。" />
+            <Alert
+              type="warning"
+              showIcon
+              style={{ marginBottom: 16 }}
+              message="所选主题存在来源更新/缺失；TaskPack 会保留该警告，外部 Worker 不得假装上下文完整。"
+            />
           ) : null}
           <Form.Item label="任务类型" name="task_type" rules={[{ required: true }]}>
             <Select options={TASK_TYPE_OPTIONS} />
@@ -448,8 +580,13 @@ const SearchPage: React.FC = () => {
           >
             <Radio.Group optionType="button" buttonStyle="solid" options={CONTEXT_MODE_OPTIONS} />
           </Form.Item>
-          <Form.Item label="研究问题" name="query" rules={[{ required: true, whitespace: true, message: '请输入研究问题' }]}>
-            <Input.TextArea rows={4} maxLength={1000} />
+          <Form.Item
+            label="研究问题"
+            name="query"
+            rules={[{ required: true, whitespace: true, message: '请输入研究问题' }]}
+            extra={candidateMode ? '候选模式下仅展示；真正提交时服务端按 candidate_id 重新读取权威研究问题。' : undefined}
+          >
+            <Input.TextArea rows={4} maxLength={1000} disabled={candidateMode} />
           </Form.Item>
         </Form>
       </Modal>
