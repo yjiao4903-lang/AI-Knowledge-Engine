@@ -129,6 +129,10 @@ class SynthesisRequest(BaseModel):
     Cognition 正文和 Dossier 当前状态由服务端从权威派生 catalog / planning store
     重新解析，不信任浏览器 excerpt。旧 `cognition_context` 字段保留协议兼容，但
     只把其中的 object_id/object_type 当选择提示，其正文/hash 会被服务端覆盖。
+
+    `topic_candidate_id` 是 DL-05 研究规划层到 DL-03 TaskPack 的可选链接。服务端
+    会重新读取候选并要求其已被用户 accepted；浏览器提供的 query 不是该候选的
+    权威正文。链接只用于研究任务规划/去重，不会自动启动 Worker 或写 Cognition。
     """
 
     task_type: Literal["summary", "comparison", "causal_synthesis", "tension_extraction"]
@@ -142,6 +146,11 @@ class SynthesisRequest(BaseModel):
         default=None,
         max_length=80,
         description="可选 Topic Research Dossier stable ID；服务端生成研究上下文快照",
+    )
+    topic_candidate_id: str | None = Field(
+        default=None,
+        max_length=80,
+        description="可选 accepted TopicCard candidate；仅用于研究规划链接与 TaskPack 去重",
     )
     cognition_object_ids: list[str] = Field(
         default_factory=list,
