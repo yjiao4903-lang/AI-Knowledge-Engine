@@ -179,7 +179,7 @@ with tempfile.TemporaryDirectory(prefix="aike-dl01f-", ignore_cleanup_errors=Tru
         assert task["status"] == "READY"
         task_path = Path(task["task_path"])
         assert task_path.is_dir()
-        assert (task_path / "task.json").exists()
+        assert (task_path / "task.yaml").exists()
         assert (task_path / "evidence.jsonl").exists()
 
         task_detail = client.get(f"/api/synthesis/tasks/{task['task_id']}")
