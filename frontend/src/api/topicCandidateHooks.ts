@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import type { TopicCandidateStatus } from './topicCandidateTypes';
+import type { CandidateTaskRequest, TopicCandidateStatus } from './topicCandidateTypes';
 
 export function useTopicCandidates(dossierId: string | undefined) {
   return useQuery({
@@ -36,6 +36,21 @@ export function useReviewTopicCandidate(dossierId: string | undefined) {
     }) => api.reviewTopicCandidate(dossierId!, candidateId, { status, reason, reviewer: 'user' }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['topicCandidates', dossierId] });
+    },
+  });
+}
+
+export function useCreateTopicCandidateTask(
+  dossierId: string | undefined,
+  candidateId: string | undefined,
+) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: CandidateTaskRequest) =>
+      api.createTopicCandidateTask(dossierId!, candidateId!, body),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['topicCandidates', dossierId] });
+      void qc.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 }
