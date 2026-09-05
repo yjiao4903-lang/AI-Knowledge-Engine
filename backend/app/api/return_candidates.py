@@ -1,4 +1,4 @@
-"""Research-return / cognition-change staging API (DL-06A).
+"""Research-return / cognition-change staging API (DL-06A/B).
 
 All endpoints operate on KE-owned candidate state only. They intentionally expose
 no formal Cognition Preview/Apply/Revision operation until the real Cognition
@@ -6,6 +6,8 @@ contract has been inspected and verified.
 """
 
 from __future__ import annotations
+
+import json
 
 from fastapi import APIRouter, HTTPException, Request
 
@@ -77,7 +79,66 @@ def ingest_return_candidates(
         record, created, reused = _service(request).ingest(task_id, body)
     except (KeyError, ReturnCandidateStateError, ValueError) as exc:
         _raise(exc)
-    return _response(record, created=created, reused=reused)
+    return _response(record, created=created, reused=reused, source="explicit_api")
+
+
+@router.post("/ingest-result")
+def ingest_taskpack_return_suggestions(task_id: str, request: Request) -> dict:
+    """Promote optional Worker suggestions from a Gate-passed result into KE staging.
+
+    `research_return_candidates` is an optional backward-compatible result field.
+    Its contents are never trusted directly: the same service validation checks
+    target Cognition membership, TaskPack Evidence membership, source result IDs,
+    and target-version state before persisting a candidate.
+    """
+
+    service = _service(request)
+    try:
+        pack, _result, _evidence, _context = service._validated_task(task_id)
+        raw = json.loads((pack / "result" / "result.json").read_text(encoding="utf-8-sig"))
+    except (KeyError, ReturnCandidateStateError, ValueError) as exc:
+        _raise(exc)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=422, detail=f"cannot read TaskPack result: {exc}") from exc
+
+    suggestions = raw.get("research_return_candidates", [])
+    if suggestions is None:
+        suggestions = []
+    if not isinstance(suggestions, list):
+        raise HTTPException(
+            status_code=422,
+            detail="research_return_candidates must be an array when present",
+        )
+    if not suggestions:
+        try:
+            record = service.list_candidates(task_id)
+        except (KeyError, ReturnCandidateStateError, ValueError) as exc:
+            _raise(exc)
+        return _response(
+            record,
+            created=0,
+            reused=0,
+            source_candidates=0,
+            source="taskpack_result",
+        )
+
+    try:
+        body = ResearchReturnBatchInput(candidates=suggestions)
+        record, created, reused = service.ingest(task_id, body)
+    except (KeyError, ReturnCandidateStateError, ValueError) as exc:
+        _raise(exc)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=f"invalid research_return_candidates: {exc}",
+        ) from exc
+    return _response(
+        record,
+        created=created,
+        reused=reused,
+        source_candidates=len(suggestions),
+        source="taskpack_result",
+    )
 
 
 @router.get("")
