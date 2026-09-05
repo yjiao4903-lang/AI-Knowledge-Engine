@@ -5,6 +5,12 @@ import type {
   DossierUpsertRequest,
 } from './dossierTypes';
 import type {
+  TopicCandidateListResponse,
+  TopicCandidateRefreshResponse,
+  TopicCandidateReviewResponse,
+  TopicCandidateStatus,
+} from './topicCandidateTypes';
+import type {
   ChunkDetail,
   CognitionHealthResponse,
   CreateTaskRequest,
@@ -142,6 +148,23 @@ export const api = {
     request<DossierDetail>(`/api/research-os/dossiers/${encodeURIComponent(id)}`),
   upsertDossier: (id: string, body: DossierUpsertRequest) =>
     put<DossierDetail>(`/api/research-os/dossiers/${encodeURIComponent(id)}`, body),
+  topicCandidates: (dossierId: string) =>
+    request<TopicCandidateListResponse>(
+      `/api/research-os/dossiers/${encodeURIComponent(dossierId)}/topic-candidates`,
+    ),
+  refreshTopicCandidates: (dossierId: string) =>
+    post<TopicCandidateRefreshResponse>(
+      `/api/research-os/dossiers/${encodeURIComponent(dossierId)}/topic-candidates/refresh`,
+    ),
+  reviewTopicCandidate: (
+    dossierId: string,
+    candidateId: string,
+    body: { status: TopicCandidateStatus; reason?: string; reviewer: string },
+  ) =>
+    post<TopicCandidateReviewResponse>(
+      `/api/research-os/dossiers/${encodeURIComponent(dossierId)}/topic-candidates/${encodeURIComponent(candidateId)}/review`,
+      body,
+    ),
   taskProposalPublication: (id: string) =>
     request<ProposalPublicationResponse>(
       `/api/research-os/tasks/${encodeURIComponent(id)}/proposal-publication`,
