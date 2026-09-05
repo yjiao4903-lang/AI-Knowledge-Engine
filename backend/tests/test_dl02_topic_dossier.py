@@ -69,8 +69,10 @@ def _fixture(tmp_path: Path):
     cfg.paths.data_dir = str(data)
     cfg.cognition.root = str(cognition_root)
 
-    report_conn = connect(data / "catalog.db")
-    cognition_conn = connect(data / "catalog_cognition.db")
+    # Production app state uses check_same_thread=False because synchronous
+    # FastAPI endpoints execute in a worker thread. Mirror that runtime contract.
+    report_conn = connect(data / "catalog.db", check_same_thread=False)
+    cognition_conn = connect(data / "catalog_cognition.db", check_same_thread=False)
     init_schema(report_conn)
     init_schema(cognition_conn)
 
