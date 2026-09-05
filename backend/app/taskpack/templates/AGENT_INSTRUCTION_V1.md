@@ -127,7 +127,37 @@ epistemic_state 必须使用 inference。
 `uncertainties`、`open_questions` 或 `additional_evidence_needed`，不得假装上下文完整。
 
 ==================================================
-五、输出要求
+五、可选成果回流建议（research_return_candidates）
+==================================================
+
+如果 `cognition_context.jsonl` 存在，而且本次 Evidence / 研究结果明确显示已有 Cognition 对象可能需要
+补证、修订、建议撤回、问题推进或关系变化，你可以在 result.json 中增加可选字段
+`research_return_candidates`。它只是 KE staging 建议，不是正式修改，也不会自动 Preview / Apply。
+
+允许 intent：
+
+- `new_judgment`：新增判断候选；可以没有 target；
+- `add_evidence`：为已有对象补证；
+- `revise_judgment`：建议修订已有判断；
+- `suggest_retract`：建议撤回/取代已有判断；
+- `advance_question`：建议推进已有 Question；
+- `relation_change`：建议新增/修改已有对象间关系。
+
+硬规则：
+
+1. 除 `new_judgment` 外，`target_cognition_object_ids` 必须逐字复制当前
+   `cognition_context.jsonl` 中真实存在的 `object_id`，禁止猜测或构造 ID。
+2. 事实性变化所用 `evidence_chunk_ids` 必须逐字复制 `evidence.jsonl` 中真实 chunk_id。
+3. 如果建议基于某个 claim / tension，必须填写对应 `source_claim_ids` / `source_tension_ids`；
+   其 Evidence 也必须保留在该建议的 `evidence_chunk_ids` 中。
+4. 如果建议基于 `open_questions` 或 `additional_evidence_needed`，使用从 0 开始的数组 index。
+5. `proposed_text` 写拟议的新表述/推进内容；`reason` 写简短可审阅的差异理由，不输出 Chain-of-Thought。
+6. 证据不足、目标对象不明确或无法确定应如何改变 Cognition 时，不要硬生成 return candidate；
+   保留在 `uncertainties` / `open_questions` / `additional_evidence_needed` 即可。
+7. 不得声称候选已经被用户接受、已经 Preview、已经 Apply 或已经成为正式 Cognition。
+
+==================================================
+六、输出要求
 ==================================================
 
 最终机器结果必须写入：
@@ -148,7 +178,7 @@ output_schema.json
 - 可以输出简短、可验证的 rationale 字段（仅当 Schema 允许）。
 
 ==================================================
-六、运行信息
+七、运行信息
 ==================================================
 
 另外写：
@@ -175,7 +205,7 @@ output_tokens
 无法获得则填 null。
 
 ==================================================
-七、完成标志
+八、完成标志
 ==================================================
 
 在确认：
@@ -183,7 +213,8 @@ output_tokens
 1. result.json 是合法 JSON；
 2. 必填字段完整；
 3. 所有 evidence_refs 均来自 evidence.jsonl；
-4. 没有修改任何输入文件；
+4. `research_return_candidates`（如存在）的 target/evidence/source refs 均来自当前 TaskPack；
+5. 没有修改任何输入文件；
 
 之后，最后创建：
 
@@ -204,7 +235,7 @@ result/FAILED
 不要创建 DONE。
 
 ==================================================
-八、最终原则
+九、最终原则
 ==================================================
 
 宁可明确说“当前证据不足”，
@@ -215,5 +246,5 @@ result/FAILED
 
 Research Context 负责解释方向和边界，Evidence 负责支撑事实。
 
-你的输出只是 SynthesisDraft，
+你的输出只是 SynthesisDraft 与可选 staging 建议，
 不是正式认知结论。
