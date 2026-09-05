@@ -30,8 +30,9 @@ class SearchFilters(BaseModel):
 
 
 class SearchOptions(BaseModel):
-    mode: str = "hybrid"  # hybrid | dense | lexical
-    rerank: bool = True
+    # Base Research OS path is deterministic/local. Semantic retrieval is explicit.
+    mode: str = "lexical"  # hybrid | dense | lexical
+    rerank: bool = False
     top_k: int = Field(default=10, ge=1, le=50)
     debug: bool = False
 
