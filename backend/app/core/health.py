@@ -13,7 +13,6 @@ from app.chunking.chunk_models import CHUNKER_VERSION
 from app.core.config import LEXICAL_VERSION, SCHEMA_VERSION, Config
 from app.inference.device import torch_info
 from app.storage.migrations import check_fts_capability
-from app.storage.qdrant import QdrantStore
 from app.storage.sqlite import connect
 
 
@@ -53,6 +52,20 @@ def _index_generation(cfg: Config) -> dict:
         return {"documents": 0, "status": "error"}
 
 
+def _qdrant_health(cfg: Config) -> dict:
+    """Optional dense-index health without making qdrant_client a base import."""
+    try:
+        from app.storage.qdrant import QdrantStore
+
+        return QdrantStore(cfg.qdrant).health()
+    except Exception as exc:
+        return {
+            "status": "unavailable",
+            "url": cfg.qdrant.url,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
 def collect_health(cfg: Config) -> dict:
     # sqlite + FTS
     sqlite_status = {"status": "error", "fts5": False, "trigram": False}
@@ -66,13 +79,15 @@ def collect_health(cfg: Config) -> dict:
     except Exception:
         pass
 
-    # qdrant
-    qdrant_status = QdrantStore(cfg.qdrant).health()
+    # qdrant is an optional derived index for the base lexical runtime.
+    qdrant_status = _qdrant_health(cfg)
 
     # I6：cognition 只读语义检索状态（独立 collection + 独立 catalog）
     cognition_status: dict = {"enabled": cfg.cognition.enabled}
     if cfg.cognition.enabled:
         try:
+            from app.storage.qdrant import QdrantStore
+
             cog_conn = connect(cfg.cognition.catalog_path, read_only=True)
             try:
                 cognition_status["catalog_documents"] = cog_conn.execute(
