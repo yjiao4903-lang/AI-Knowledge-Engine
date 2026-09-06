@@ -30,6 +30,12 @@ class FormalHandoffStateError(RuntimeError):
     """Raised when a reviewed candidate cannot safely advance to the next stage."""
 
 
+class FormalizeInput(BaseModel):
+    """Human-supplied formalization choices that must not be guessed by the Worker."""
+
+    evidence_role: EvidenceRole | None = None
+
+
 class FormalApplyInput(BaseModel):
     confirm: Literal[True]
     action: str | None = Field(default=None, max_length=100)
@@ -42,6 +48,8 @@ def build_formal_proposal_payload(
     candidate: ResearchReturnCandidateRecord,
     result: ResultEnvelope,
     evidence: list[TaskPackEvidence],
+    *,
+    evidence_role: EvidenceRole | None = None,
 ) -> dict[str, Any]:
     """Map one reviewed KE candidate to one verified Cognition Proposal item."""
     if candidate.status != "accepted":
@@ -61,13 +69,14 @@ def build_formal_proposal_payload(
         "suggest_retract",
         "advance_question",
     }
-    if candidate.intent in existing_target_intents:
-        if len(candidate.target_cognition_object_ids) != 1:
-            raise FormalHandoffStateError(
-                f"{candidate.intent} requires exactly one formal target per Proposal item"
-            )
+    if candidate.intent in existing_target_intents and len(candidate.target_cognition_object_ids) != 1:
+        raise FormalHandoffStateError(
+            f"{candidate.intent} requires exactly one formal target per Proposal item"
+        )
     if candidate.intent == "new_judgment" and candidate.target_cognition_object_ids:
         raise FormalHandoffStateError("new_judgment must not carry an existing target")
+    if candidate.intent != "add_evidence" and evidence_role is not None:
+        raise FormalHandoffStateError("evidence_role is only valid for add_evidence")
 
     evidence_md = _evidence_markdown(candidate.evidence_chunk_ids, evidence)
     source_md = _source_markdown(candidate, result)
@@ -98,24 +107,25 @@ def build_formal_proposal_payload(
             "epistemic_state": _candidate_epistemic_state(candidate, result),
             "suggested_action": "update",
             "confidence": _candidate_confidence(candidate, result),
-            # Verified Cognition apply overwrites 当前判断; 内容 must never be omitted.
+            # Verified Cognition Apply overwrites 当前判断; 内容 must never be omitted.
             "sections": common_sections,
         }
     elif candidate.intent == "add_evidence":
         _require_target_type(candidate, "judgment")
-        role = getattr(candidate, "evidence_role", None)
-        if role not in {"supporting", "counter"}:
+        if evidence_role not in {"supporting", "counter"}:
             raise FormalHandoffStateError(
                 "add_evidence requires explicit evidence_role=supporting|counter before formalization"
             )
         sections = dict(common_sections)
-        if role == "counter":
+        if evidence_role == "counter":
             sections["支持证据"] = ""
             sections["反方证据"] = evidence_md
         item = {
             "title": _truncate(candidate.proposed_text),
             "candidate_type": (
-                "add_supporting_evidence" if role == "supporting" else "add_counter_evidence"
+                "add_supporting_evidence"
+                if evidence_role == "supporting"
+                else "add_counter_evidence"
             ),
             "target_ref": candidate.target_cognition_object_ids[0],
             "epistemic_state": _candidate_epistemic_state(candidate, result),
@@ -209,13 +219,23 @@ class FormalCognitionHandoffService:
         candidate: ResearchReturnCandidateRecord,
         result: ResultEnvelope,
         evidence: list[TaskPackEvidence],
+        evidence_role: EvidenceRole | None = None,
     ) -> tuple[dict[str, Any], bool]:
         store = FormalHandoffStore(pack)
         existing = store.read(candidate.candidate_id)
         if existing is not None:
+            if existing.get("evidence_role") != evidence_role:
+                raise FormalHandoffStateError(
+                    "candidate was already formalized with a different evidence_role"
+                )
             return existing, True
 
-        payload = build_formal_proposal_payload(candidate, result, evidence)
+        payload = build_formal_proposal_payload(
+            candidate,
+            result,
+            evidence,
+            evidence_role=evidence_role,
+        )
         official_hashes = self._official_target_hashes(candidate)
         published = self.gateway.create_proposal(payload)
         proposal_item_id = self._proposal_item_id(published.proposal_id, published.raw)
@@ -224,6 +244,7 @@ class FormalCognitionHandoffService:
             "task_id": candidate.task_id,
             "candidate_id": candidate.candidate_id,
             "intent": candidate.intent,
+            "evidence_role": evidence_role,
             "proposal_id": published.proposal_id,
             "proposal_item_id": proposal_item_id,
             "published_at": _now(),
@@ -280,6 +301,7 @@ class FormalCognitionHandoffService:
         if marker.get("apply") is not None:
             raise FormalHandoffStateError("candidate has already been formally applied")
 
+        self._validate_apply_overrides(candidate, body)
         current_hashes = self._official_target_hashes(candidate)
         preview_hashes = marker["preview"].get("target_hashes") or {}
         if current_hashes != preview_hashes:
@@ -304,6 +326,32 @@ class FormalCognitionHandoffService:
         marker["writer"] = "cognition_app"
         store.write(candidate.candidate_id, marker)
         return marker
+
+    @staticmethod
+    def _validate_apply_overrides(
+        candidate: ResearchReturnCandidateRecord,
+        body: FormalApplyInput,
+    ) -> None:
+        targets = candidate.target_cognition_object_ids
+        if body.target_id is not None:
+            if len(targets) != 1 or body.target_id != targets[0]:
+                raise FormalHandoffStateError(
+                    "Apply target_id must match the reviewed candidate target exactly"
+                )
+
+        expected_actions = {
+            "new_judgment": "create",
+            "add_evidence": "update",
+            "revise_judgment": "update",
+            "advance_question": "update",
+        }
+        expected = expected_actions.get(candidate.intent)
+        if body.action is not None and expected is not None and body.action != expected:
+            raise FormalHandoffStateError(
+                f"Apply action must remain {expected!r} for {candidate.intent}"
+            )
+        # suggest_retract intentionally leaves action selection to Cognition's
+        # verified archive_or_reject Proposal semantics; target identity is still fixed.
 
     def _official_target_hashes(self, candidate: ResearchReturnCandidateRecord) -> dict[str, str | None]:
         hashes: dict[str, str | None] = {}
@@ -334,13 +382,14 @@ class FormalCognitionHandoffService:
         applied: dict[str, Any],
         candidate: ResearchReturnCandidateRecord,
     ) -> dict[str, Any] | None:
-        item = applied.get("item")
-        if not isinstance(item, dict):
-            return None
-        created = item.get("created")
+        # Verified Cognition builds have returned both top-level apply fields and
+        # an `item` wrapper. Accept both without weakening semantic validation.
+        wrapped = applied.get("item")
+        payload = wrapped if isinstance(wrapped, dict) else applied
+        created = payload.get("created")
         if isinstance(created, dict) and created.get("id") and created.get("type"):
             return self.gateway.get_object(str(created["type"]), str(created["id"]))
-        updated_id = item.get("updatedId")
+        updated_id = payload.get("updatedId")
         if updated_id and candidate.target_snapshots:
             return self.gateway.get_object(candidate.target_snapshots[0].object_type, str(updated_id))
         return None
