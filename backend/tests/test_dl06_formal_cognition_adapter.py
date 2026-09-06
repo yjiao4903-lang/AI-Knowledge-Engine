@@ -116,7 +116,33 @@ def test_revision_mapping_keeps_content_and_traceable_evidence():
     assert "task-formal" in item["sections"]["来源定位"]
 
 
-def test_formalization_rejects_unreviewed_relation_multi_target_and_ambiguous_evidence():
+def test_add_evidence_requires_explicit_polarity_and_maps_both_roles():
+    candidate = _candidate(intent="add_evidence")
+    with pytest.raises(FormalHandoffStateError, match="evidence_role"):
+        build_formal_proposal_payload(candidate, _result(), _evidence())
+
+    supporting = build_formal_proposal_payload(
+        candidate,
+        _result(),
+        _evidence(),
+        evidence_role="supporting",
+    )["items"][0]
+    assert supporting["candidate_type"] == "add_supporting_evidence"
+    assert "M06:s1:c1" in supporting["sections"]["支持证据"]
+    assert supporting["sections"]["反方证据"] == ""
+
+    counter = build_formal_proposal_payload(
+        candidate,
+        _result(),
+        _evidence(),
+        evidence_role="counter",
+    )["items"][0]
+    assert counter["candidate_type"] == "add_counter_evidence"
+    assert counter["sections"]["支持证据"] == ""
+    assert "M06:s1:c1" in counter["sections"]["反方证据"]
+
+
+def test_formalization_rejects_unreviewed_relation_and_multi_target():
     with pytest.raises(FormalHandoffStateError, match="accepted"):
         build_formal_proposal_payload(
             _candidate(status="proposed"), _result(), _evidence()
@@ -130,11 +156,6 @@ def test_formalization_rejects_unreviewed_relation_multi_target_and_ambiguous_ev
     with pytest.raises(FormalHandoffStateError, match="exactly one"):
         build_formal_proposal_payload(
             _candidate(targets=["cog:j-1", "cog:j-2"]), _result(), _evidence()
-        )
-
-    with pytest.raises(FormalHandoffStateError, match="evidence_role"):
-        build_formal_proposal_payload(
-            _candidate(intent="add_evidence"), _result(), _evidence()
         )
 
 
@@ -186,19 +207,19 @@ class FakeGateway:
 
     def apply_proposal_item(self, proposal_id, item_id, **kwargs):
         self.applied += 1
+        # Match the real audited contract: apply fields may be top-level rather
+        # than nested under `item`.
         return {
             "ok": True,
-            "item": {
-                "itemId": item_id,
-                "status": "accepted",
-                "created": None,
-                "updatedId": "cog:j-income",
-                "proposalStatus": "accepted",
-            },
+            "itemId": item_id,
+            "status": "accepted",
+            "created": None,
+            "updatedId": "cog:j-income",
+            "proposalStatus": "accepted",
         }
 
 
-def test_formal_lifecycle_is_idempotent_and_hash_guarded(tmp_path: Path):
+def test_formal_lifecycle_is_idempotent_hash_guarded_and_reads_back_top_level_apply(tmp_path: Path):
     pack = tmp_path / "completed" / "task-formal"
     (pack / "result").mkdir(parents=True)
     gateway = FakeGateway()
@@ -231,6 +252,22 @@ def test_formal_lifecycle_is_idempotent_and_hash_guarded(tmp_path: Path):
     assert previewed["preview"]["target_hashes"] == {"cog:j-income": "official-h1"}
     assert previewed["formal_write_performed"] is False
     assert gateway.previewed == 1
+
+    with pytest.raises(FormalHandoffStateError, match="target_id"):
+        service.apply(
+            pack=pack,
+            candidate=candidate,
+            body=FormalApplyInput(confirm=True, target_id="cog:other"),
+        )
+    assert gateway.applied == 0
+
+    with pytest.raises(FormalHandoffStateError, match="action"):
+        service.apply(
+            pack=pack,
+            candidate=candidate,
+            body=FormalApplyInput(confirm=True, action="create"),
+        )
+    assert gateway.applied == 0
 
     gateway.hash = "official-h2"
     with pytest.raises(FormalHandoffStateError, match="changed after Preview"):
