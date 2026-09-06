@@ -25,7 +25,7 @@ qdrant:
   chunks_collection: "kb_chunks_v1"
   sections_collection: "kb_sections_v1"
 
-# Cognition：只读派生检索 + Proposal staging API。
+# Cognition：只读派生检索 + Proposal staging；正式 Apply 默认关闭。
 cognition:
   enabled: true
   root: "E:/CODEX/AI深度研究/cognition"
@@ -44,6 +44,7 @@ cognition:
   api_url: "http://127.0.0.1:3220/api"
   api_timeout_seconds: 8
   proposal_publish_enabled: true
+  formal_apply_enabled: false
 
 embedding:
   model: "Qwen/Qwen3-Embedding-0.6B"
