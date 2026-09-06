@@ -17,6 +17,7 @@ from app.integration.return_formal import (
     FormalCognitionHandoffService,
     FormalHandoffStateError,
     FormalHandoffStore,
+    FormalizeInput,
 )
 from app.research.return_candidates import (
     ResearchReturnBatchInput,
@@ -54,14 +55,12 @@ def _gateway(request: Request) -> CognitionGateway:
 
 
 def _response(record, **extra) -> dict:
-    """Staging response: acceptance is never equivalent to a formal write."""
+    """Staging response: acceptance is never equivalent to a formal operation."""
     return {
         **extra,
         "return_candidates": record.model_dump(mode="json"),
-        "formal_preview_supported": True,
-        "formal_apply_supported": bool(
-            getattr(getattr(extra.get("request"), "app", None), "state", None)
-        ) if False else False,
+        "formal_preview_supported": False,
+        "formal_apply_supported": False,
         "auto_apply": False,
         "formal_write_performed": False,
     }
@@ -90,11 +89,7 @@ def _find_candidate(record, candidate_id: str):
 
 
 def _refresh_derived_cognition(request: Request) -> None:
-    """Synchronize the read-only derived catalog before version-sensitive handoff.
-
-    This reads formal Cognition Markdown and updates only KE's derived SQLite
-    projection. It performs no formal Cognition write.
-    """
+    """Refresh only KE's read-only derived Cognition catalog before version checks."""
     cog = getattr(request.app.state, "cognition", None) or {}
     conn = cog.get("conn")
     pipeline = cog.get("catalog_pipeline")
@@ -214,7 +209,7 @@ def refresh_return_candidate_targets(task_id: str, request: Request) -> dict:
 
 @router.get("/{candidate_id}/preflight")
 def preflight_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
-    """Refresh targets and expose explainable KE preflight, distinct from Cognition Preview."""
+    """Explain KE target state; this is distinct from Cognition Formal Preview."""
     _refresh_derived_cognition(request)
     try:
         record = _service(request).refresh_target_versions(task_id)
@@ -296,7 +291,12 @@ def get_formal_handoff(task_id: str, candidate_id: str, request: Request) -> dic
 
 
 @router.post("/{candidate_id}/formalize")
-def formalize_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
+def formalize_return_candidate(
+    task_id: str,
+    candidate_id: str,
+    request: Request,
+    body: FormalizeInput | None = None,
+) -> dict:
     """Create one Cognition Proposal item. This endpoint does not Apply it."""
     cfg = request.app.state.cfg
     if not cfg.cognition.proposal_publish_enabled:
@@ -310,6 +310,7 @@ def formalize_return_candidate(task_id: str, candidate_id: str, request: Request
             candidate=candidate,
             result=result,
             evidence=evidence,
+            evidence_role=body.evidence_role if body is not None else None,
         )
     except (FormalHandoffStateError, CognitionGatewayError, ValueError) as exc:
         _raise(exc)
