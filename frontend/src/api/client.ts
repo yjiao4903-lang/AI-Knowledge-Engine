@@ -5,6 +5,8 @@ import type {
   DossierUpsertRequest,
 } from './dossierTypes';
 import type {
+  CandidateTaskRequest,
+  CandidateTaskResponse,
   TopicCandidateListResponse,
   TopicCandidateRefreshResponse,
   TopicCandidateReviewResponse,
@@ -163,6 +165,15 @@ export const api = {
   ) =>
     post<TopicCandidateReviewResponse>(
       `/api/research-os/dossiers/${encodeURIComponent(dossierId)}/topic-candidates/${encodeURIComponent(candidateId)}/review`,
+      body,
+    ),
+  createTopicCandidateTask: (
+    dossierId: string,
+    candidateId: string,
+    body: CandidateTaskRequest,
+  ) =>
+    post<CandidateTaskResponse>(
+      `/api/research-os/dossiers/${encodeURIComponent(dossierId)}/topic-candidates/${encodeURIComponent(candidateId)}/task`,
       body,
     ),
   taskProposalPublication: (id: string) =>
