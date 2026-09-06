@@ -1,8 +1,9 @@
 """Detached lifecycle supervisor for one externally launched TaskPack.
 
 This module is intentionally stdlib-only so the API can spawn it with the current
-Python interpreter and then return immediately.  It runs one fixed external CLI,
-waits for it to exit, and converts ``processing/`` into ``completed/`` or
+Python interpreter and then return immediately. It runs one fixed external CLI,
+waits for it to exit, seals the two deterministic TaskPack-input hashes in an
+existing run_meta.json, and converts ``processing/`` into ``completed/`` or
 ``failed/`` according to the TaskPack's DONE / FAILED markers.
 
 It is orchestration, not a model provider: no API clients, credentials, model
@@ -12,6 +13,7 @@ selection, retrieval, or Cognition writes live here.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -61,7 +63,7 @@ def build_external_command(kind: str, executable: str) -> list[str]:
             "Write-Host 'TaskPack ready. Read AGENT_INSTRUCTION.md and run the external worker here.'",
         ]
 
-    # npm-installed CLIs are commonly .cmd wrappers on Windows.  Invoke those
+    # npm-installed CLIs are commonly .cmd wrappers on Windows. Invoke those
     # explicitly through COMSPEC while still keeping shell=False and a fixed argv.
     if os.name == "nt" and Path(executable).suffix.lower() in {".cmd", ".bat"}:
         comspec = os.environ.get("COMSPEC") or "cmd.exe"
@@ -84,6 +86,43 @@ def _write_launcher_error(pack: Path, *, launcher: str, exit_code: int | None, m
     )
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(65536), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def seal_run_meta_hashes(pack: Path) -> bool:
+    """Seal deterministic input hashes in an existing Worker run_meta.json.
+
+    The supervisor is trusted orchestration and can deterministically derive these
+    two values from immutable TaskPack inputs. It does *not* fabricate worker,
+    provider, model, timestamps, token counts, prompt_version, or a missing
+    run_meta.json. Any other run_meta defect remains visible to Importer Gate.
+    """
+
+    path = pack / "result" / "run_meta.json"
+    instruction = pack / "AGENT_INSTRUCTION.md"
+    manifest = pack / "manifest.json"
+    if not path.is_file() or not instruction.is_file() or not manifest.is_file():
+        return False
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(raw, dict):
+        return False
+
+    raw["prompt_sha256"] = _sha256_file(instruction)
+    raw["task_manifest_sha256"] = _sha256_file(manifest)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
+    return True
+
+
 def _move_final(pack: Path, root: Path, destination: str) -> Path:
     target_dir = root / destination
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -101,6 +140,10 @@ def finalize_after_exit(pack: Path, root: Path, *, launcher: str, exit_code: int
     failed = pack / "result" / "FAILED"
 
     if done.exists() and not failed.exists():
+        # Real CLI workers may be unable/unwilling to calculate file hashes. Seal
+        # only the two deterministic fields from immutable TaskPack inputs before
+        # moving to completed; Importer still validates every field and hash.
+        seal_run_meta_hashes(pack)
         return _move_final(pack, root, "completed")
 
     if not failed.exists():
