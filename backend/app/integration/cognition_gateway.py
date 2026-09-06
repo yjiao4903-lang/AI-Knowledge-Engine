@@ -81,11 +81,20 @@ class CognitionGateway:
         return self._request("GET", f"/proposals/{proposal_id}")
 
     def get_object(self, object_type: str, object_id: str) -> dict:
-        """Read one formal Cognition object and preserve its `_hash` when exposed."""
+        """Read one formal object and require the audited concurrency `_hash`."""
         bucket = _OBJECT_PATHS.get(object_type)
         if bucket is None:
             raise CognitionGatewayError(f"不支持的 Cognition object_type: {object_type}")
-        return self._request("GET", f"/{bucket}/{object_id}")
+        body = self._request("GET", f"/{bucket}/{object_id}")
+        item = body.get("item")
+        if not isinstance(item, dict):
+            raise CognitionGatewayError(f"Cognition object response missing item: {object_id}")
+        content_hash = item.get("_hash")
+        if not isinstance(content_hash, str) or not content_hash.strip():
+            raise CognitionGatewayError(
+                f"Cognition object response missing concurrency _hash: {object_id}"
+            )
+        return body
 
     def preview_proposal_item(self, proposal_id: str, item_id: str) -> dict:
         """Run Cognition's zero-write formal Preview for one Proposal item."""
