@@ -129,6 +129,9 @@ class SynthesisRequest(BaseModel):
     Cognition 正文和 Dossier 当前状态由服务端从权威派生 catalog / planning store
     重新解析，不信任浏览器 excerpt。旧 `cognition_context` 字段保留协议兼容，但
     只把其中的 object_id/object_type 当选择提示，其正文/hash 会被服务端覆盖。
+
+    DL-05 Topic Candidate 到 TaskPack 的链接必须走专用 candidate `/task` 端点；
+    generic synthesis request 不接受 candidate identity，避免收到后静默忽略。
     """
 
     task_type: Literal["summary", "comparison", "causal_synthesis", "tension_extraction"]

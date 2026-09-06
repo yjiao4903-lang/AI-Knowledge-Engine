@@ -1,8 +1,9 @@
-"""Research context snapshot support for dossier-backed TaskPacks (DL-03A).
+"""Research context snapshot support for dossier-backed TaskPacks (DL-03A/DL-05C).
 
-The browser selects stable identities. KE re-resolves Cognition objects from the
-read-only derived catalog and builds an immutable task snapshot. The snapshot is
-research context only: factual claims still require `evidence.jsonl` grounding.
+The browser selects stable identities. KE re-resolves Cognition objects and any
+selected next-research candidate from KE-owned stores before building an immutable
+task snapshot. Research context is not Evidence: factual claims still require
+`evidence.jsonl` grounding.
 """
 
 from __future__ import annotations
@@ -24,12 +25,7 @@ def resolve_cognition_context(
     *,
     legacy_items: Iterable[CognitionContextItem] = (),
 ) -> list[CognitionContextItem]:
-    """Resolve selected stable IDs from the authoritative derived Cognition catalog.
-
-    `legacy_items` exists only for request compatibility. Their object IDs/type
-    hints may be reused, but client-supplied title/excerpt/hash are deliberately
-    ignored and re-read from the catalog.
-    """
+    """Resolve selected stable IDs from the authoritative derived Cognition catalog."""
 
     legacy_by_id = {item.object_id: item for item in legacy_items}
     ids: list[str] = []
@@ -77,6 +73,7 @@ def build_research_context(
     query: str,
     evidence_context_mode: str,
     selected_cognition: list[CognitionContextItem],
+    topic_candidate: dict | None = None,
     max_sources: int = 24,
     excerpt_chars: int = 1200,
 ) -> dict:
@@ -121,6 +118,26 @@ def build_research_context(
     if omitted:
         warnings.append("DOSSIER_CONTEXT_BUDGET_OMITTED_SOURCES")
 
+    task = {
+        "task_id": None,
+        "task_type": task_type,
+        "query": query,
+        "evidence_context_mode": evidence_context_mode,
+        "selected_cognition_object_ids": [item.object_id for item in selected_cognition],
+        "allow_network": False,
+        "allow_external_sources": False,
+    }
+    if topic_candidate is not None:
+        task["topic_candidate_id"] = topic_candidate.get("candidate_id")
+        task["topic_candidate_source_type"] = topic_candidate.get("source_type")
+        task["topic_candidate_title"] = topic_candidate.get("title")
+        task["topic_candidate_expected_value"] = topic_candidate.get("expected_research_value")
+        task["topic_candidate_method"] = topic_candidate.get("suggested_method")
+        task["topic_candidate_deliverable"] = topic_candidate.get("deliverable")
+        task["topic_candidate_required_evidence"] = topic_candidate.get("required_evidence") or []
+        task["topic_candidate_priority"] = topic_candidate.get("priority")
+        task["topic_candidate_workload"] = topic_candidate.get("workload_band")
+
     return {
         "schema_version": RESEARCH_CONTEXT_SCHEMA_VERSION,
         "generated_at": _now(),
@@ -141,15 +158,7 @@ def build_research_context(
             "sources": kept,
             "omitted_sources": omitted,
         },
-        "task": {
-            "task_id": None,
-            "task_type": task_type,
-            "query": query,
-            "evidence_context_mode": evidence_context_mode,
-            "selected_cognition_object_ids": [item.object_id for item in selected_cognition],
-            "allow_network": False,
-            "allow_external_sources": False,
-        },
+        "task": task,
         "warnings": warnings,
     }
 
@@ -206,12 +215,30 @@ def render_research_brief(context: dict) -> str:
             f"- 目标: {task['query']}",
             f"- Evidence 扩展模式: `{task['evidence_context_mode']}`",
             f"- 已选择 Cognition 对象: {_list_text(task.get('selected_cognition_object_ids'))}",
+        ]
+    )
+    if task.get("topic_candidate_id"):
+        lines.extend(
+            [
+                f"- 来源选题候选: `{task['topic_candidate_id']}` ({task.get('topic_candidate_source_type') or 'unknown'})",
+                f"- 候选标题: {task.get('topic_candidate_title') or '未命名'}",
+                f"- 预期增量: {task.get('topic_candidate_expected_value') or '未指定'}",
+                f"- 建议方法: {task.get('topic_candidate_method') or '未指定'}",
+                f"- 交付物: {task.get('topic_candidate_deliverable') or '未指定'}",
+                f"- 规划优先级/工作量: {task.get('topic_candidate_priority') or 'unknown'} / {task.get('topic_candidate_workload') or 'unknown'}",
+                f"- 候选指出的补证方向: {_list_text(task.get('topic_candidate_required_evidence'))}",
+            ]
+        )
+    lines.extend(
+        [
             "- 外部联网: 禁止",
             "- TaskPack 外部来源: 禁止",
+            "- 本文件不会自动启动 Worker；Worker 必须由用户在 Task Center 显式启动。",
             "",
             "## 4. 证据纪律",
             "",
             "- `research_brief.md` / `research_context.json` 仅用于研究背景、范围与已有认识定位。",
+            "- Topic candidate 是研究规划来源，不是 Evidence，不得作为事实性 claim 的引用。",
             "- `cognition_context.jsonl`（如存在）是所选正式认知的只读快照，不自动成为事实证据。",
             "- 事实性结论只能由 `evidence.jsonl` 中的 chunk 支撑，并逐字引用其 `chunk_id`。",
             "- 如果上下文与 Evidence 冲突，必须报告冲突，不得用上下文覆盖 Evidence。",
