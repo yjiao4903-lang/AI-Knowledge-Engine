@@ -8,6 +8,7 @@ import { Button, Card, Empty, Space, Tag, Tooltip, Typography, message } from 'a
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import NoteButton from './NoteButton';
 import type { RetrievalFeedbackEventType, SearchResult } from '../api/types';
 import ContentTypeTag from './ContentTypeTag';
 import EvidenceTag from './EvidenceTag';
@@ -172,6 +173,7 @@ const ResultCard: React.FC<Props> = ({ result, query, selected = false, onToggle
                   {selected ? '移出 Evidence' : '加入 Evidence'}
                 </Button>
               )}
+              <NoteButton result={result} />
             </Space>
           </div>
         </div>
