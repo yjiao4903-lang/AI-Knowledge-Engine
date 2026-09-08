@@ -6,6 +6,7 @@ import EvaluationPage from './pages/EvaluationPage';
 import ExternalTaskpackRunsPage from './pages/ExternalTaskpackRunsPage';
 import IndexPage from './pages/IndexPage';
 import NextResearchPage from './pages/NextResearchPage';
+import NotesPage from './pages/NotesPage';
 import SearchPage from './pages/SearchPage';
 import SettingsPage from './pages/SettingsPage';
 import TaskCenterPage from './pages/TaskCenterPage';
@@ -15,6 +16,7 @@ const items = [
   { key: '/topics', label: '主题研究' },
   { key: '/next-research', label: '下一轮研究' },
   { key: '/search', label: '搜索' },
+  { key: '/notes', label: '理解记录' },
   { key: '/tasks', label: 'Task Center' },
   { key: '/index', label: '索引状态' },
   { key: '/external-taskpack-runs', label: '外部 TaskPack 归档' },
@@ -45,6 +47,7 @@ const App: React.FC = () => {
         <Route path="/topics" element={<TopicDossierPage />} />
         <Route path="/next-research" element={<NextResearchPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/notes" element={<NotesPage />} />
         <Route path="/document/:id" element={<DocumentPage />} />
         <Route path="/index" element={<IndexPage />} />
         <Route path="/tasks" element={<TaskCenterPage />} />
