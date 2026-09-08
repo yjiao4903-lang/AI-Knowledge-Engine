@@ -1,6 +1,5 @@
 import { Button, Input, Modal, Select, Space, message } from 'antd';
 import React, { useState } from 'react';
-import { api } from '../api/client';
 import type { SearchResult } from '../api/types';
 
 const STANCES = [
@@ -25,13 +24,21 @@ const NoteButton: React.FC<{ result: SearchResult }> = ({ result }) => {
     }
     setSaving(true);
     try {
-      await api.createNote({
-        chunk_id: result.chunk_id,
-        document_id: result.document_id,
-        heading_path: result.heading_path,
-        stance,
-        body: text,
+      const res = await fetch('/api/notes/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chunk_id: result.chunk_id,
+          document_id: result.document_id,
+          heading_path: result.heading_path,
+          stance,
+          body: text,
+        }),
       });
+      if (!res.ok) {
+        const raw = await res.text();
+        throw new Error(raw || `HTTP ${res.status}`);
+      }
       void message.success('已保存到理解记录（非正式认知）');
       setOpen(false);
       setBody('');
