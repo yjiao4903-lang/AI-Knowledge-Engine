@@ -19,6 +19,7 @@ from app.api import (
     evaluation,
     increment_analysis,
     index,
+    notes,
     research_os,
     return_candidates,
     search,
@@ -57,6 +58,9 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.index_lock = threading.Lock()
         app.state.conn = connect(cfg.sqlite.path, check_same_thread=False)
         init_schema(app.state.conn)
+        from app.notes.store import NoteStore
+
+        app.state.note_store = NoteStore(app.state.conn)
         # DL-01B: authoritative report ingestion is SQLite/FTS-only and never
         # depends on Qdrant or local model availability.
         app.state.catalog_pipeline = CatalogIndexPipeline(cfg, app.state.conn)
@@ -97,9 +101,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         app.state.pipeline = None
         app.state.qdrant_available = False
         try:
-            # Keep qdrant_client and the semantic indexing module outside the
-            # base startup dependency surface. Missing optional packages/services
-            # degrade semantic capability only; lexical catalog/search stays live.
             from app.indexing.pipeline import EmbedderAdapter, IndexPipeline
 
             app.state.pipeline = IndexPipeline(
@@ -116,10 +117,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             app.state.qdrant_available,
         )
 
-        # DL-01C: Cognition's KE-derived catalog/search is lexical-first and
-        # independent from the optional semantic collection. Source Markdown is
-        # opened read-only by the scanner/catalog pipeline; formal writes remain
-        # exclusively owned by the external Cognition application.
         app.state.cognition = {"enabled": False, "semantic_available": False}
         if cfg.cognition.enabled:
             try:
@@ -180,7 +177,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             except Exception:
                 logger.exception("cognition catalog reconcile 失败")
 
-        # Report startup reconcile and Cognition startup reconcile are independent.
         if cfg.indexing.startup_scan:
             def _startup_report_reconcile():
                 with app.state.index_lock:
@@ -211,7 +207,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 name="startup-cognition-reconcile",
             ).start()
 
-        # Report watcher owns reports only and updates the model-free catalog.
         if cfg.indexing.periodic_reconcile_seconds > 0:
             def _watcher():
                 interval = cfg.indexing.periodic_reconcile_seconds
@@ -233,7 +228,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             )
             state["watcher_thread"].start()
 
-        # Cognition watcher owns Cognition only and updates the model-free catalog.
         if cfg.cognition.enabled and cfg.cognition.periodic_reconcile_seconds > 0:
             def _cog_watcher():
                 interval = cfg.cognition.periodic_reconcile_seconds
@@ -276,6 +270,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     app.include_router(increment_analysis.router)
     app.include_router(topic_candidates.router)
     app.include_router(return_candidates.router)
+    app.include_router(notes.router)
 
     @app.get("/api/health")
     def health() -> dict:
