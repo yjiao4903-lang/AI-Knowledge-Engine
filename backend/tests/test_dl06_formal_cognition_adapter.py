@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+from app.api import return_candidates as return_api
 from app.integration.cognition_gateway import PublishedProposal
 from app.integration.return_formal import (
     FormalApplyInput,
@@ -309,3 +311,32 @@ def test_hash_change_between_publish_and_preview_blocks_preview(tmp_path: Path):
     with pytest.raises(FormalHandoffStateError, match="changed after Proposal publication"):
         service.preview(pack=pack, candidate=candidate)
     assert gateway.previewed == 0
+
+
+def test_ke_preflight_stays_staging_only_when_formal_apply_is_enabled(monkeypatch):
+    candidate = _candidate()
+    record = SimpleNamespace(candidates=[candidate])
+    service = SimpleNamespace(refresh_target_versions=lambda task_id: record)
+    request = SimpleNamespace(
+        app=SimpleNamespace(
+            state=SimpleNamespace(
+                cfg=SimpleNamespace(
+                    cognition=SimpleNamespace(formal_apply_enabled=True),
+                )
+            )
+        )
+    )
+
+    monkeypatch.setattr(return_api, "_refresh_derived_cognition", lambda _request: None)
+    monkeypatch.setattr(return_api, "_service", lambda _request: service)
+
+    body = return_api.preflight_return_candidate(
+        "task-formal",
+        candidate.candidate_id,
+        request,
+    )
+
+    assert body["ke_preflight_only"] is True
+    assert body["formal_preview_supported"] is False
+    assert body["formal_apply_supported"] is False
+    assert body["formal_write_performed"] is False
