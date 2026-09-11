@@ -1,0 +1,138 @@
+{
+  "adjudication_version": "1.0",
+  "split": "development",
+  "n_records": 20,
+  "n_accepted": 20,
+  "n_rejected": 0,
+  "status_dist": {
+    "accept": 20
+  },
+  "reviewer_kinds": [
+    "human"
+  ],
+  "reviewers": [
+    "project-owner"
+  ],
+  "candidate_completeness": {
+    "accepted_or_rewritten": 20,
+    "fully_graded": 20,
+    "coverage": 1.0,
+    "incomplete_queries": [],
+    "per_query": {
+      "DEV2-01": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-02": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-03": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-04": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-05": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-06": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-07": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-08": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-09": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-10": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-11": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-12": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-13": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-14": {
+        "graded": 15,
+        "packet": 15,
+        "complete": true
+      },
+      "DEV2-15": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-16": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-17": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-18": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-19": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-20": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      }
+    }
+  },
+  "human_review_complete": true,
+  "human_review_blocker": null,
+  "warnings": [],
+  "hashes": {
+    "judgments_sha256": "f682023a45c64dbfe1aba5fa0517b94f884d3030fba2cd3da2d19516d5d9c0bf",
+    "key_sha256": "58e7e1c87a9b3b24ed938da6b876a6f1de96837c7d4731759cf862b94063e70f",
+    "questions_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+    "gold_sha256": "16bacc023ada54d27588aeb406bc3d60975b5e6ed7a0aad0b1a2688c0b060243"
+  },
+  "coverage": {
+    "sampled": 20,
+    "adjudicated": 20,
+    "missing": []
+  }
+}

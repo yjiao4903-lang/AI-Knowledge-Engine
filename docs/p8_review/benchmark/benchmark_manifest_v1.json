@@ -1,0 +1,120 @@
+{
+  "benchmark": "p8-mixed-benchmark",
+  "version": "1.0",
+  "seed": "p8-bench-01-20260911",
+  "generator": "docs/p8_review/scripts/p8_bench_build.py",
+  "schema": "docs/p8_review/benchmark/schema.json",
+  "catalog": "D:\\AI-Knowledge-Engine\\data\\catalog_full.db",
+  "legacy_targets_excluded": [
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M09",
+    "M10",
+    "M16",
+    "M18",
+    "M22"
+  ],
+  "tier_quota": {
+    "flagship": 30,
+    "broker_report": 30,
+    "daily_report": 25,
+    "trading_desk": 15,
+    "research_media": 25,
+    "discussion": 25
+  },
+  "query_type_quota": {
+    "exact_entity": 25,
+    "exact_number": 25,
+    "semantic_thesis": 30,
+    "causal": 20,
+    "temporal": 15,
+    "long_tail": 15,
+    "cross_doc": 20
+  },
+  "splits": {
+    "development": {
+      "n": 150,
+      "sha256_jsonl": "7ca9a57c8f580e99dd80fec4eaa852ac6689688b76269096a9b2ae4c1c32b8fb",
+      "sha256_canonical": "8b608e9a3d4a5af7055be31636935b32c1276d970d8c2735f5839ebb027c8aa2",
+      "composition": {
+        "n": 150,
+        "by_tier": {
+          "broker_report": 30,
+          "daily_report": 25,
+          "discussion": 25,
+          "flagship": 30,
+          "research_media": 25,
+          "trading_desk": 15
+        },
+        "by_query_type": {
+          "causal": 20,
+          "cross_doc": 20,
+          "exact_entity": 25,
+          "exact_number": 25,
+          "long_tail": 15,
+          "semantic_thesis": 30,
+          "temporal": 15
+        },
+        "by_source_type": {
+          "daily": 40,
+          "discussion": 25,
+          "flagship": 30,
+          "formal_report": 30,
+          "other": 25
+        },
+        "distinct_gold_docs": 158,
+        "ocr_derived": 29,
+        "ocr_derived_share": 0.1933,
+        "max_tier_share": 0.2,
+        "min_tier_share": 0.1
+      },
+      "drops": []
+    },
+    "holdout": {
+      "n": 150,
+      "sha256_jsonl": "92b49fc66e1b04b024d81c4ed18ebd4895df273a1ae2bf96530eb23fd4350032",
+      "sha256_canonical": "6d50eaf64c580e315ef6880e3de8dbca1fc345736f92be7b7d4a8b5f7de678ab",
+      "composition": {
+        "n": 150,
+        "by_tier": {
+          "broker_report": 30,
+          "daily_report": 25,
+          "discussion": 25,
+          "flagship": 30,
+          "research_media": 25,
+          "trading_desk": 15
+        },
+        "by_query_type": {
+          "causal": 20,
+          "cross_doc": 20,
+          "exact_entity": 25,
+          "exact_number": 25,
+          "long_tail": 15,
+          "semantic_thesis": 30,
+          "temporal": 15
+        },
+        "by_source_type": {
+          "daily": 40,
+          "discussion": 25,
+          "flagship": 30,
+          "formal_report": 30,
+          "other": 25
+        },
+        "distinct_gold_docs": 161,
+        "ocr_derived": 26,
+        "ocr_derived_share": 0.1733,
+        "max_tier_share": 0.2,
+        "min_tier_share": 0.1
+      },
+      "drops": []
+    }
+  },
+  "status": "candidate_only__NOT_gate_quality",
+  "formal_benchmark_published": false,
+  "holdout_sealed_published": false,
+  "limiting_factor": "automated gold is under-specified: anchor terms occur in a median of ~290 documents (~1018 chunks) corpus-wide, so single-chunk gold for broad entity queries is not a fair relevance target; dev candidate hybrid_rerank Hit@5=0.10 vs Legacy canary 0.82 (engine healthy).",
+  "note": "Development candidate set is schema-valid (150, unresolved=0) but NOT validated for gate use. No formal sealed Holdout was established. See docs/p8_review/reports/P8_BENCH01_STATUS_20260911.md.",
+  "development_candidate_file": "docs/p8_review/benchmark/development_v1/candidates_v0_machine_review_only.jsonl"
+}

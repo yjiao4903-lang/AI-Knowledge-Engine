@@ -1,0 +1,225 @@
+{
+  "generated_at": "2026-09-11T11:12:26",
+  "corpus": {
+    "documents": 3565,
+    "chunks": 296341,
+    "catalog": "D:/AI-Knowledge-Engine/data/catalog_full.db",
+    "collections": [
+      "kb_chunks_full_v1",
+      "kb_sections_full_v1"
+    ]
+  },
+  "unresolved_golden": [],
+  "summary_by_arm": {
+    "terms": {
+      "n": 50,
+      "hit1": 0.14,
+      "hit3": 0.42,
+      "hit5": 0.5,
+      "recall5": 0.214,
+      "recall10": 0.287,
+      "mrr": 0.294,
+      "ndcg": 0.354,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "trigram": {
+      "n": 50,
+      "hit1": 0.08,
+      "hit3": 0.24,
+      "hit5": 0.3,
+      "recall5": 0.17,
+      "recall10": 0.226,
+      "mrr": 0.177,
+      "ndcg": 0.227,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "lexical": {
+      "n": 50,
+      "hit1": 0.2,
+      "hit3": 0.32,
+      "hit5": 0.48,
+      "recall5": 0.209,
+      "recall10": 0.304,
+      "mrr": 0.31,
+      "ndcg": 0.37,
+      "p50_ms": 42.7,
+      "p95_ms": 319.8
+    },
+    "dense": {
+      "n": 50,
+      "hit1": 0.44,
+      "hit3": 0.54,
+      "hit5": 0.64,
+      "recall5": 0.317,
+      "recall10": 0.443,
+      "mrr": 0.521,
+      "ndcg": 0.553,
+      "p50_ms": 39.1,
+      "p95_ms": 62.9
+    },
+    "hybrid": {
+      "n": 50,
+      "hit1": 0.38,
+      "hit3": 0.66,
+      "hit5": 0.76,
+      "recall5": 0.379,
+      "recall10": 0.459,
+      "mrr": 0.53,
+      "ndcg": 0.579,
+      "p50_ms": 84.5,
+      "p95_ms": 391.7
+    },
+    "hybrid_boost": {
+      "n": 50,
+      "hit1": 0.42,
+      "hit3": 0.68,
+      "hit5": 0.74,
+      "recall5": 0.377,
+      "recall10": 0.46,
+      "mrr": 0.559,
+      "ndcg": 0.599,
+      "p50_ms": 128.2,
+      "p95_ms": 382.7
+    },
+    "hybrid_rerank": {
+      "n": 50,
+      "hit1": 0.52,
+      "hit3": 0.72,
+      "hit5": 0.82,
+      "recall5": 0.48,
+      "recall10": 0.528,
+      "mrr": 0.64,
+      "ndcg": 0.678,
+      "p50_ms": 1014.9,
+      "p95_ms": 1410.7
+    }
+  },
+  "per_type_hybrid_rerank": {
+    "causal": {
+      "n": 8,
+      "hit5": 0.75,
+      "mrr": 0.594
+    },
+    "comparison": {
+      "n": 6,
+      "hit5": 1.0,
+      "mrr": 0.65
+    },
+    "cross_document": {
+      "n": 5,
+      "hit5": 0.6,
+      "mrr": 0.4
+    },
+    "exact": {
+      "n": 6,
+      "hit5": 0.833,
+      "mrr": 0.75
+    },
+    "metric": {
+      "n": 5,
+      "hit5": 1.0,
+      "mrr": 0.767
+    },
+    "monitoring": {
+      "n": 5,
+      "hit5": 0.8,
+      "mrr": 0.8
+    },
+    "overview": {
+      "n": 4,
+      "hit5": 0.75,
+      "mrr": 0.625
+    },
+    "reference": {
+      "n": 3,
+      "hit5": 0.667,
+      "mrr": 0.667
+    },
+    "semantic": {
+      "n": 8,
+      "hit5": 0.875,
+      "mrr": 0.562
+    }
+  },
+  "gate": {
+    "hit5": {
+      "value": 0.82,
+      "threshold": 0.9
+    },
+    "mrr": {
+      "value": 0.64,
+      "threshold": 0.75
+    },
+    "ndcg": {
+      "value": 0.678,
+      "threshold": 0.8
+    },
+    "exact_hit5": {
+      "value": 0.833,
+      "threshold": 0.95
+    },
+    "semantic_hit5": {
+      "value": 0.875,
+      "threshold": 0.85
+    }
+  },
+  "failures": [
+    {
+      "id": "E02",
+      "bucket": "BAD_FUSION",
+      "query": "EXE:5000 的成本和吞吐问题是什么？"
+    },
+    {
+      "id": "S01",
+      "bucket": "BEST_ARM_FAIL",
+      "query": "AI 数据中心为什么受电网并网排队制约？",
+      "detail": {
+        "terms": 1,
+        "trigram": 0,
+        "lexical": 0,
+        "dense": 0,
+        "hybrid": 0,
+        "hybrid_boost": 0,
+        "hybrid_rerank": 0
+      }
+    },
+    {
+      "id": "C01",
+      "bucket": "LOW_DENSE_RANK",
+      "query": "先进制程的供电电压为什么很难继续下降？"
+    },
+    {
+      "id": "C03",
+      "bucket": "LOW_DENSE_RANK",
+      "query": "为什么光刻越先进大芯片的成本反而可能越高？"
+    },
+    {
+      "id": "W01",
+      "bucket": "NO_RECALL",
+      "query": "哪些指标可以监控 CoWoS 产能紧张？"
+    },
+    {
+      "id": "O02",
+      "bucket": "LOW_DENSE_RANK",
+      "query": "液冷报告的战略全景是什么？"
+    },
+    {
+      "id": "R01",
+      "bucket": "LOW_DENSE_RANK",
+      "query": "半导体报告引用了哪些参考文献？"
+    },
+    {
+      "id": "X01",
+      "bucket": "LOW_DENSE_RANK",
+      "query": "AI 算力扩张面临哪些物理硬约束？"
+    },
+    {
+      "id": "X03",
+      "bucket": "NO_RECALL",
+      "query": "AI 的内存与存储瓶颈体现在哪里？"
+    }
+  ],
+  "gate_pass": false
+}

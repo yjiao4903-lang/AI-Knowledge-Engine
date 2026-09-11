@@ -20,6 +20,11 @@ V3.1 定义了成品层/工作层/历史层），同一主题的 00-12 阶段文
   - 同 doc_id 不同内容 -> canonical 保留原 id，其余追加 "__" + sha256[:8]
     （DISAMBIGUATED 计数）。canonical 排序：最终报告 > 其他种类 > 目录优先级
     （02 成品层优先）> 路径长度 > 字典序
+  - 该消歧同时覆盖 catalog 既有文档（跨批次）：若新候选的 default_doc_id
+    与库内文档相同但内容不同，库内文档保留裸 id，新候选一律追加 sha8，
+    禁止 index_file 以 DELETE+替换方式静默覆盖既有文档。
+  - 若某 sha 组为 catalog 既有内容的重复拷贝，则该组全部路径记为重复，
+    不得留下未分配候选（避免 apply_scan 回退到默认 doc_id 再次写入）。
 
 canonical 优先级：02_主题研究报告 > 01_综合主报告 > 旗舰战略专题报告_完整备份_M01-M24
 > 其余；同优先级取较短路径，再取字典序（确定性）。
@@ -134,37 +139,47 @@ def build_index_plan(scan_result, conn: sqlite3.Connection) -> IndexPlan:
         groups.setdefault(did, []).append((path, sha))
 
     for did, members in groups.items():
+        ex = existing.get(did)
         # 同 (id, sha) 拷贝去重：保留 canonical
         by_sha: dict[str, list[str]] = {}
         for path, sha in members:
             by_sha.setdefault(sha, []).append(path)
-        kept: list[tuple[str, str]] = []  # (path, final_id)
+        kept: list[tuple[str, str]] = []  # (path, sha)
         for sha, paths in by_sha.items():
             paths.sort(key=_canonical_key)
             keep = paths[0]
-            # 与 catalog 已有内容对撞：同 sha 视为已索引拷贝
-            ex = existing.get(did)
             if ex and ex[0] == sha and ex[1] != keep:
-                plan.exclusions.append({"path": keep, "reason": "EXCLUDED_DUPLICATE",
-                                        "detail": f"已由 {ex[1]} 以相同内容索引"})
-                plan.excluded_paths.add(keep)
+                # catalog 已有同内容文档：本 sha 组全部是重复拷贝，需整组排除，
+                # 否则未被标记的副本会在 apply_scan 中回退写入（manifest 路径抖动）。
+                for dup in paths:
+                    plan.exclusions.append({"path": dup, "reason": "EXCLUDED_DUPLICATE",
+                                            "detail": f"已由 {ex[1]} 以相同内容索引 (sha256:{sha[:8]})"})
+                    plan.excluded_paths.add(dup)
                 continue
-            kept.append((keep, did))
+            kept.append((keep, sha))
             for dup in paths[1:]:
                 plan.exclusions.append({"path": dup, "reason": "EXCLUDED_DUPLICATE",
                                         "detail": f"与 {keep} 内容相同 (sha256:{sha[:8]})"})
                 plan.excluded_paths.add(dup)
-        # 同 id 不同内容：canonical 保留原 id，其余 sha8 消歧
-        if len(kept) > 1:
-            kept.sort(key=lambda item: _canonical_key(item[0]))
-            for i, (path, _) in enumerate(kept):
+        if not kept:
+            continue
+        kept.sort(key=lambda item: _canonical_key(item[0]))
+        owner = ex[1] if ex else None
+        if ex is None:
+            # 同批内冲突：canonical（路径排序首个）保留裸 id
+            for i, (path, sha) in enumerate(kept):
                 if i == 0:
                     plan.assignments[path] = did
                 else:
-                    sha = next(s for p, s in members if p == path)
                     plan.assignments[path] = f"{did}__{sha[:8]}"
-            plan.disambiguated += len(kept) - 1
+                    plan.disambiguated += 1
         else:
-            for path, fid in kept:
-                plan.assignments[path] = fid
+            # 跨批次冲突：裸 id 只归库内文档当前的 source_path（同文档更新），
+            # 其余不同内容候选一律 sha8 消歧，保证既有文档不被覆盖。
+            for path, sha in kept:
+                if path == owner:
+                    plan.assignments[path] = did
+                else:
+                    plan.assignments[path] = f"{did}__{sha[:8]}"
+                    plan.disambiguated += 1
     return plan

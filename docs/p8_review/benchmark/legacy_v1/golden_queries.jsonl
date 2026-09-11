@@ -1,0 +1,50 @@
+{"id": "E01", "query": "CoWoS-L 与 CoWoS-S 有什么区别？", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) 台积电 CoWoS 三大技术路线解构", "grade": 3}, {"document_id": "M04", "heading_contains": "3.1 跨越光罩极限", "grade": 2}]}
+{"id": "E02", "query": "EXE:5000 的成本和吞吐问题是什么？", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(2) 光罩拼接缺陷（Mask Stitching）与 WPH 经济学死结", "grade": 3}]}
+{"id": "E03", "query": "MR-MUF 与 TC-NCF 的差异是什么？", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(2) 散热良率之死斗", "grade": 3}]}
+{"id": "E04", "query": "台积电 N3E 的晶体管密度是多少？", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(2) 现代先进制程的五大微观物理标尺", "grade": 3}, {"document_id": "M04", "heading_contains": "(1) 每晶体管成本的倒挂推导模型", "grade": 2}]}
+{"id": "E05", "query": "High-NA EUV 的 429mm² 视场限制是怎么回事？", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) 变形光学系统（Anamorphic Optics, 4x/8x）与光罩视场减半", "grade": 3}]}
+{"id": "E06", "query": "HBM4E 的商用时间与规格演进", "type": "exact", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) HBM 代际演进物理规格表", "grade": 3}]}
+{"id": "S01", "query": "AI 数据中心为什么受电网并网排队制约？", "type": "semantic", "relevant_sections": [{"document_id": "M06", "heading_contains": "第 3 章 输电物理学、节点电价与并网排队危机", "grade": 3}, {"document_id": "M06", "heading_contains": "第 2 章 设备、劳力与走廊", "grade": 2}]}
+{"id": "S02", "query": "液冷为什么成为高密算力基础设施的必然选择？", "type": "semantic", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 2 章：风冷极限与代际转折", "grade": 3}, {"document_id": "M07", "heading_contains": "执行摘要与战略全景图", "grade": 2}]}
+{"id": "S03", "query": "Transformer 自注意力的计算复杂度瓶颈是什么？", "type": "semantic", "relevant_sections": [{"document_id": "M09", "heading_contains": "第 1 章：自注意力的统治与代价", "grade": 3}]}
+{"id": "S04", "query": "状态空间模型 Mamba 为什么被认为能替代注意力机制？", "type": "semantic", "relevant_sections": [{"document_id": "M09", "heading_contains": "第 2 章：状态空间模型（SSM）革命", "grade": 3}, {"document_id": "M09", "heading_contains": "第 3 章：表达能力与理论极限决斗", "grade": 2}]}
+{"id": "S05", "query": "大模型的标度律遇到数据墙之后怎么办？", "type": "semantic", "relevant_sections": [{"document_id": "M10", "heading_contains": "标度律的第一性原理：幂律衰减、计算最优前沿与数据墙危机", "grade": 3}]}
+{"id": "S06", "query": "铜为什么成为算力与电气化扩张的瓶颈金属？", "type": "semantic", "relevant_sections": [{"document_id": "M16", "heading_contains": "的物理与经济学解剖", "grade": 3}, {"document_id": "M16", "heading_contains": "第 1 章 能量密度 vs 金属密度", "grade": 2}]}
+{"id": "S07", "query": "古典帝国衰亡的财政与军事机制是什么？", "type": "semantic", "relevant_sections": [{"document_id": "M22", "heading_contains": "古典帝国的财政-军事衰亡机制", "grade": 3}]}
+{"id": "S08", "query": "蛋白质结构预测如何突破莱文塔尔悖论？", "type": "semantic", "relevant_sections": [{"document_id": "M18", "heading_contains": "从莱文塔尔悖论到 AlphaFold 架构突破", "grade": 3}, {"document_id": "M18", "heading_contains": "执行摘要与核心发现", "grade": 1}]}
+{"id": "C01", "query": "先进制程的供电电压为什么很难继续下降？", "type": "causal", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) 亚阈值摆幅与玻尔兹曼极限的数学物理推导", "grade": 3}, {"document_id": "M04", "heading_contains": "1.2 玻尔兹曼暴政", "grade": 2}]}
+{"id": "C02", "query": "Dennard 缩放失效带来了哪些后果？", "type": "causal", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) Dennard 缩放定律的崩溃", "grade": 3}]}
+{"id": "C03", "query": "为什么光刻越先进大芯片的成本反而可能越高？", "type": "causal", "relevant_sections": [{"document_id": "M04", "heading_contains": "2.2 High-NA EUV（0.55 NA）的变形光学陷阱", "grade": 3}, {"document_id": "M04", "heading_contains": "(2) 光罩拼接缺陷", "grade": 3}]}
+{"id": "C04", "query": "混合键合（Hybrid Bonding）为什么如此关键？", "type": "causal", "relevant_sections": [{"document_id": "M04", "heading_contains": "3.3 终极互连：1µm 混合键合", "grade": 3}]}
+{"id": "C05", "query": "风冷为什么在单柜 40kW 就撞上物理极限？", "type": "causal", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 2 章：风冷极限与代际转折", "grade": 3}, {"document_id": "M07", "heading_contains": "第 1 章：热力学铁律", "grade": 2}]}
+{"id": "C06", "query": "矿业 17 年开发时滞如何制造铜的供给周期？", "type": "causal", "relevant_sections": [{"document_id": "M16", "heading_contains": "矿业朱格拉周期：17 年开发时滞", "grade": 3}]}
+{"id": "C07", "query": "推理时计算为什么开启 System 2 慢思考范式？", "type": "causal", "relevant_sections": [{"document_id": "M10", "heading_contains": "推理时计算（Test-Time Compute）：开启 System 2 慢思考范式", "grade": 3}]}
+{"id": "C08", "query": "修昔底德陷阱下大国权力转移如何发生？", "type": "causal", "relevant_sections": [{"document_id": "M22", "heading_contains": "第 4 章 修昔底德陷阱与大国权力转移", "grade": 3}]}
+{"id": "P01", "query": "冷板式液冷与浸没式液冷有什么区别？", "type": "comparison", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 3 章：冷板式液冷全链条工程", "grade": 3}, {"document_id": "M07", "heading_contains": "第 4 章：浸没式与相变液冷", "grade": 3}]}
+{"id": "P02", "query": "Scale-Up 与 Scale-Out 两种集群扩展路线的差异？", "type": "comparison", "relevant_sections": [{"document_id": "M05", "heading_contains": "第 4 章 集群互连网络：Scale-Up 纵向扩展与 Scale-Out 横向扩展", "grade": 3}]}
+{"id": "P03", "query": "从 SFT 到 RLHF 偏好优化的对齐方法演进有什么区别？", "type": "comparison", "relevant_sections": [{"document_id": "M10", "heading_contains": "后训练对齐演进：从监督微调（SFT）到偏好优化与对齐税解构", "grade": 3}]}
+{"id": "P04", "query": "轻稀土与重稀土的战略卡位有什么不同？", "type": "comparison", "relevant_sections": [{"document_id": "M16", "heading_contains": "稀土元素（REE）的战略卡位", "grade": 3}]}
+{"id": "P05", "query": "荷兰、英国、美国的霸权更替有什么共同机制？", "type": "comparison", "relevant_sections": [{"document_id": "M22", "heading_contains": "第 3 章 现代资本主义霸权的演进与转移", "grade": 3}]}
+{"id": "P06", "query": "镓、锗、锑出口管制与半导体供应链的关系？", "type": "comparison", "relevant_sections": [{"document_id": "M16", "heading_contains": "先进制程伴生矿物：镓、锗、锑与半导体地缘管制的物理闭环", "grade": 3}]}
+{"id": "M01", "query": "HBM4 的接口位宽是多少？", "type": "metric", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) HBM 代际演进物理规格表", "grade": 3}]}
+{"id": "M02", "query": "玻尔兹曼极限的数值是多少？", "type": "metric", "relevant_sections": [{"document_id": "M04", "heading_contains": "(1) 亚阈值摆幅与玻尔兹曼极限的数学物理推导", "grade": 3}]}
+{"id": "M03", "query": "单柜功率从 40kW 到 600kW 意味着什么？", "type": "metric", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 2 章：风冷极限与代际转折", "grade": 3}]}
+{"id": "M04Q", "query": "PUE 与 WUE 这两个能效指标怎么理解？", "type": "metric", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 5 章：数据中心能效 PUE、WUE 革命", "grade": 3}]}
+{"id": "M05Q", "query": "3D NAND 的堆叠极限到哪里了？", "type": "metric", "relevant_sections": [{"document_id": "M05", "heading_contains": "第 3 章 海量存储底座：3D NAND 堆叠极限", "grade": 3}]}
+{"id": "W01", "query": "哪些指标可以监控 CoWoS 产能紧张？", "type": "monitoring", "relevant_sections": [{"document_id": "M04", "heading_contains": "(2) 全球半导体先进制程与先进封装量化监测信号看板", "grade": 3}]}
+{"id": "W02", "query": "AI 计算产业链有哪些投资监测信号？", "type": "monitoring", "relevant_sections": [{"document_id": "M05", "heading_contains": "第 6 章 产业链微笑曲线重构与投资监测看板", "grade": 3}]}
+{"id": "W03", "query": "大模型产业有哪些战略监测看板指标？", "type": "monitoring", "relevant_sections": [{"document_id": "M10", "heading_contains": "产业重塑、开源/闭源分化与战略监测看板", "grade": 3}]}
+{"id": "W04", "query": "液冷产业链的投资机会怎么监测？", "type": "monitoring", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 6 章：全生命周期 TCO 敏感性模型、产业链租值分布与投资看板", "grade": 3}]}
+{"id": "W05", "query": "世界秩序多极化有哪些可观察的监测指标？", "type": "monitoring", "relevant_sections": [{"document_id": "M22", "heading_contains": "第 6 章 多极化世界秩序推演与战略监测看板", "grade": 3}]}
+{"id": "O01", "query": "AI 计算架构演进报告的核心结论是什么？", "type": "overview", "relevant_sections": [{"document_id": "M05", "heading_contains": "执行摘要", "grade": 3}]}
+{"id": "O02", "query": "液冷报告的战略全景是什么？", "type": "overview", "relevant_sections": [{"document_id": "M07", "heading_contains": "执行摘要与战略全景图", "grade": 3}]}
+{"id": "O03", "query": "硬资产地理学报告的核心判断是什么？", "type": "overview", "relevant_sections": [{"document_id": "M16", "heading_contains": "执行摘要（Executive Summary）", "grade": 3}]}
+{"id": "O04", "query": "帝国兴衰报告的核心战略判词是什么？", "type": "overview", "relevant_sections": [{"document_id": "M22", "heading_contains": "执行摘要与核心战略判词", "grade": 3}]}
+{"id": "R01", "query": "半导体报告引用了哪些参考文献？", "type": "reference", "relevant_sections": [{"document_id": "M04", "heading_contains": "参考文献与权威资料来源清单", "grade": 3}]}
+{"id": "R02", "query": "AI 计算架构报告的一手资料来源有哪些？", "type": "reference", "relevant_sections": [{"document_id": "M05", "heading_contains": "参考文献与一手资料来源", "grade": 3}]}
+{"id": "R03", "query": "帝国兴衰报告的证据索引在哪里？", "type": "reference", "relevant_sections": [{"document_id": "M22", "heading_contains": "参考文献与证据索引", "grade": 3}]}
+{"id": "X01", "query": "AI 算力扩张面临哪些物理硬约束？", "type": "cross_document", "relevant_sections": [{"document_id": "M06", "heading_contains": "第 1 章 算力中心的热力学方程与负荷极限", "grade": 3}, {"document_id": "M04", "heading_contains": "2.3 晶圆单片 $30,000+ 时代的客户收敛与 NRE 门槛", "grade": 2}, {"document_id": "M05", "heading_contains": "第 2 章 冯·诺依曼困境", "grade": 2}, {"document_id": "M07", "heading_contains": "第 1 章：热力学铁律", "grade": 2}]}
+{"id": "X02", "query": "数据中心的散热与能源效率问题有多大？", "type": "cross_document", "relevant_sections": [{"document_id": "M07", "heading_contains": "第 5 章：数据中心能效 PUE、WUE 革命", "grade": 3}, {"document_id": "M06", "heading_contains": "执行摘要", "grade": 2}]}
+{"id": "X03", "query": "AI 的内存与存储瓶颈体现在哪里？", "type": "cross_document", "relevant_sections": [{"document_id": "M05", "heading_contains": "第 2 章 冯·诺依曼困境：内存墙", "grade": 3}, {"document_id": "M04", "heading_contains": "3.2 HBM 代际演进", "grade": 2}]}
+{"id": "X04", "query": "战略矿产管制如何影响半导体供应链？", "type": "cross_document", "relevant_sections": [{"document_id": "M16", "heading_contains": "先进制程伴生矿物：镓、锗、锑", "grade": 3}, {"document_id": "M04", "heading_contains": "执行摘要", "grade": 1}]}
+{"id": "X05", "query": "大国科技竞争与霸权更替有什么联系？", "type": "cross_document", "relevant_sections": [{"document_id": "M22", "heading_contains": "第 4 章 修昔底德陷阱", "grade": 3}, {"document_id": "M16", "heading_contains": "第 6 章 先进制程伴生矿物", "grade": 2}]}

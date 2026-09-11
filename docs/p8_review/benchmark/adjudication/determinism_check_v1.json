@@ -1,0 +1,288 @@
+{
+  "check": "P8-BENCH-02 确定性/可复现校验（2026-09-11）",
+  "note": "p8_bench_pool.py 改为共用 p8_bench_views.py::FrozenViews 后重新执行；除耗时 elapsed_s 外，全部产物与已提交冻结件一致。",
+  "builder_regeneration": {
+    "command": "p8_bench_pilot_build.py --split both",
+    "development_raw_sha256": "80be7fc8cc8d264d34cef1e8a7ef9b01b2aa0111a7f753b4f9bb3158e4c2bd30",
+    "holdout_raw_sha256": "fa5040d07e072632827a373b49eb1eaaec117e601b21a8acf127e5a3e4e4d46b"
+  },
+  "pool_rerun_development": {
+    "command": "p8_bench_pool.py --questions <regen dev> --split development --topn 50",
+    "reproduced_sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+    "committed_sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+    "byte_identical_to_committed": true,
+    "audit_summary_reproduced": {
+      "n": 60,
+      "elapsed_s": 81.3,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 43,
+      "queries_with_gold_grade3_after_split_scope": 60,
+      "fn_corrections": 2
+    },
+    "audit_summary_committed": {
+      "n": 60,
+      "elapsed_s": 100.7,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 43,
+      "queries_with_gold_grade3_after_split_scope": 60,
+      "fn_corrections": 2
+    },
+    "audit_summary_identical_except_elapsed": true
+  },
+  "pool_rerun_holdout": {
+    "command": "p8_bench_pool.py --questions <regen holdout> --split holdout --topn 50",
+    "recovered_frozen_sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+    "manifest_recorded_sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+    "matches_manifest_record": true,
+    "audit_summary_reproduced": {
+      "n": 40,
+      "elapsed_s": 47.3,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 24,
+      "queries_with_gold_grade3_after_split_scope": 40,
+      "fn_corrections": 3
+    },
+    "audit_summary_manifest": {
+      "n": 40,
+      "elapsed_s": 57.4,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 24,
+      "queries_with_gold_grade3_after_split_scope": 40,
+      "fn_corrections": 3
+    },
+    "audit_summary_identical_except_elapsed": true
+  },
+  "adjudication_self_test": {
+    "n_checks": 24,
+    "pass": true,
+    "failed": [],
+    "new_in_this_revision": [
+      "accept 部分候选判定（缺候选）拒绝导入",
+      "重复 cand_id 拒绝导入",
+      "缺题 / 非 human / 候选不完整 → human_review_complete=false",
+      "reject 不要求候选覆盖且不阻塞标志",
+      "report 将 reject/ambiguous 排除出指标"
+    ]
+  },
+  "structural_verification_pass": true,
+  "leakage": {
+    "dev_target_docs": 122,
+    "holdout_target_docs": 77,
+    "overlap": [],
+    "pass": true
+  },
+  "sealing": {
+    "holdout_in_repo": false
+  },
+  "legacy_frozen_sha256": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea",
+  "adjudication_plumbing_dry_run": {
+    "what": "在真实 Dev 人审包上跑通 import → report（判定用 reviewer_kind=selftest 的合成 grade，**不是证据**，未入库）。",
+    "import_exit": 0,
+    "report_exit": 0,
+    "records": 20,
+    "accepted": 7,
+    "rejected": 13,
+    "human_review_complete": false,
+    "candidates_judged": 399,
+    "report_metrics_smoke": {
+      "exact_grade_agreement": 1.0,
+      "binary_relevance_f1": 1.0,
+      "grade3_jaccard_mean": 0.1867
+    },
+    "note": "合成 grade 直接取自预标注，故一致率为 1.0 —— 该数字仅证明指标链路可运行，不构成任何效度证据。本轮在此基础上验证了 candidate-level completeness 门与 reject/ambiguous 的指标排除。",
+    "artifacts_published": false
+  },
+  "candidate_level_completeness_gate": {
+    "rule": "status=accept|rewrite 必须对该题人审包内全部 cand_id 判定且仅判定一次；缺候选 / 未知候选 / 重复候选一律拒绝导入。",
+    "surfaced_in": [
+      "import freeze.candidate_completeness",
+      "report.candidate_completeness",
+      "report.excluded_from_metrics"
+    ],
+    "flags_withheld_rule": "human_review_complete=true 需：全部校准题均有判定 + reviewer_kind 全 human + accept/rewrite 候选覆盖率 100%。",
+    "verified_on_real_development_packet": {
+      "complete_accepts": "7 题 accept，候选覆盖 7/7（coverage 1.0）→ import exit 0",
+      "rejects_excluded": "13 题 reject 计入 excluded_from_metrics，n_queries_measured=7",
+      "partial_accept_removed_one_candidate": "import exit 1（DEV-C05 缺 DEV-C05#c020）"
+    }
+  },
+  "batch_v2_replacement": {
+    "why": "v1 校准包由 WEB-CONTROL 作废（query 不自足）；v2 为替代批次，须先过 Query Validity Gate。",
+    "query_validity_gate": {
+      "gate_version": "1.0",
+      "development": "20/20",
+      "holdout": "10/10",
+      "pass": true,
+      "audit": "docs/p8_review/benchmark/adjudication/query_validity_audit_v2.json"
+    },
+    "pooled_coverage_diagnostic_NOT_tuning_signal": {
+      "development": {
+        "n": 20,
+        "elapsed_s": 42.7,
+        "pool_size_median": 97,
+        "pool_size_max": 101,
+        "pooled_relevant_median": 1,
+        "pooled_grade3_median": 1,
+        "queries_with_no_pooled_grade3": 2,
+        "queries_with_gold_grade3_after_split_scope": 20,
+        "fn_corrections": 0
+      },
+      "holdout": {
+        "n": 10,
+        "elapsed_s": 27.6,
+        "pool_size_median": 98,
+        "pool_size_max": 101,
+        "pooled_relevant_median": 1,
+        "pooled_grade3_median": 1,
+        "queries_with_no_pooled_grade3": 0,
+        "queries_with_gold_grade3_after_split_scope": 10,
+        "fn_corrections": 0
+      },
+      "note": "对比 v1：Dev『池内无 grade-3』由 43/60 降到 2/20；仅供诊断，未据此改题。"
+    },
+    "structural_verification": {
+      "pass": true,
+      "dev": {
+        "n": 20,
+        "max_tier_share": 0.25,
+        "min_tier_share": 0.1,
+        "ocr_share": 0.3
+      },
+      "holdout": {
+        "n": 10,
+        "max_tier_share": 0.2,
+        "min_tier_share": 0.1,
+        "ocr_share": 0.3
+      },
+      "leakage_overlap": [],
+      "sealing": false
+    },
+    "packets": {
+      "development_packet_sha256": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+      "development_key_sha256": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+      "development_source_questions_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+      "holdout_packet_sha256": "ddd819968ea5a23cf50a8d790e39629a549814bd67e2f4c48f5ca1cdf2000b45",
+      "holdout_key_sha256": "54d461c3480e0fdcab6c5cf618c9762823f2aadc74fb80a4dd47f7f5247ccc97",
+      "holdout_source_questions_sha256": "02f2fef24d133fd2fe205173280d29932fa919e22794a9c49663b69f7ddee8a2",
+      "note": "Holdout 包与 key 在仓库外密封；此处仅落 SHA256。"
+    },
+    "withdrawal_guard": "p8_bench_adjudicate.py import 对带 key.withdrawn 的批次直接拒绝（除非 --allow-withdrawn）"
+  },
+  "dev20_anchor_pool_fix_r2": {
+    "date": "2026-09-12",
+    "trigger": "WEB-CONTROL blocking review on 1f19765b（DEV2-19 authored anchor 未入人审包）",
+    "root_cause": "export 以四视图并集建 rows 后用 `if c in rows` 过滤 auto-gold/FN，未被任何视图召回的 authored ground_chunk 被静默丢弃。",
+    "fix": "select_judging_pool()：anchor 无条件纳入 judging pool（追加不重排）；export fail-fast；key.authored_anchors 记录 retrieval-miss；packet 仍盲化。",
+    "audit": "docs/p8_review/benchmark/adjudication/development_calibration_v2/anchor_audit_v2r2.json",
+    "summary": {
+      "total_queries": 20,
+      "missing_anchor_before": 2,
+      "missing_anchor_before_qids": [
+        "DEV2-17",
+        "DEV2-19"
+      ],
+      "missing_anchor_after": 0,
+      "anchors_recalled_by_any_view": 18,
+      "anchors_forced_into_pool_not_recalled": 2,
+      "qids_with_changed_packet": [
+        "DEV2-17",
+        "DEV2-19"
+      ],
+      "qids_safe_to_reuse_human_judgment": [
+        "DEV2-01",
+        "DEV2-02",
+        "DEV2-03",
+        "DEV2-04",
+        "DEV2-05",
+        "DEV2-06",
+        "DEV2-07",
+        "DEV2-08",
+        "DEV2-09",
+        "DEV2-10",
+        "DEV2-11",
+        "DEV2-12",
+        "DEV2-13",
+        "DEV2-14",
+        "DEV2-15",
+        "DEV2-16",
+        "DEV2-18",
+        "DEV2-20"
+      ],
+      "qids_needing_human_re_review": [
+        "DEV2-17",
+        "DEV2-19"
+      ]
+    },
+    "hashes": {
+      "packet_before": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+      "key_before": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+      "manifest_before": "040e2112ddfdcacd2586716da1f416b9de57851bfbfae4be2cfc32c3b835a568",
+      "packet_after": "4cf9a91afbf459c4711212bbef0e9da213dfa860ae409d0a4b51a1b8d971201d",
+      "key_after": "58e7e1c87a9b3b24ed938da6b876a6f1de96837c7d4731759cf862b94063e70f",
+      "manifest_after": "47fed9281f4ed2ff5b879f2203cad44a7196831a25b676b4bbec4b60bcaa209e",
+      "frozen_questions": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+      "migration_report": "88a07a2101b14a495ba29dc28692e88f4e9fdec459cc304191366953993500eb"
+    },
+    "migration": "p8_bench_adjudicate.py migrate：18 题候选集完全不变可复用原人审；DEV2-17 / DEV2-19 需人工重审（不模型补判）。",
+    "import_fail_fast": "v2 judgments + v1 questions 已实测被拒绝（20 条『不在 frozen questions 中』错误）；v2 judgments + v2 questions 通过校验。"
+  },
+  "dev20_human_calibration_final": {
+    "date": "2026-09-12",
+    "authority": "WEB-CONTROL one-shot directive（PR #41 comment，2026-09-11T17:08Z）",
+    "human_review_complete": true,
+    "import": {
+      "command": "p8_bench_adjudicate.py import --require-complete --questions adjudication/authored_v2/development_v2_frozen.jsonl",
+      "pass": true,
+      "n_records": 20,
+      "n_gold": 20,
+      "n_rejected": 0,
+      "status_dist": {
+        "accept": 20
+      },
+      "candidate_completeness": {
+        "accepted_or_rewritten": 20,
+        "fully_graded": 20,
+        "coverage": 1.0,
+        "incomplete_queries": []
+      }
+    },
+    "hashes": {
+      "judgments": "f682023a45c64dbfe1aba5fa0517b94f884d3030fba2cd3da2d19516d5d9c0bf",
+      "adjudication_record": "f682023a45c64dbfe1aba5fa0517b94f884d3030fba2cd3da2d19516d5d9c0bf",
+      "human_gold": "16bacc023ada54d27588aeb406bc3d60975b5e6ed7a0aad0b1a2688c0b060243",
+      "freeze": "8fdafa7b5e3c0d2b42b9ec0d7fb2e11c56626e0b0783e6a8a25f673ae6038dbb",
+      "report": "2c2c55b675a2c5fdd4489ab89a86e5f481fb45fce77ab6a9c47749f4e2a55561"
+    },
+    "human_gold_metrics_hybrid_rerank": {
+      "exp": "p8_bench02_dev_human_v2",
+      "hit1": 0.8,
+      "hit3": 0.95,
+      "hit5": 1.0,
+      "recall5": 0.44,
+      "recall10": 0.552,
+      "mrr": 0.877,
+      "ndcg": 0.857,
+      "buckets": {
+        "OK": 20
+      },
+      "note": "检索代码/权重/routing/reranker 未改；trace 位于密封工作区 E:/研报提取资料库/_golden/p8_experiments/p8_bench02_dev_human_v2/。"
+    },
+    "fn_audit_after_human": {
+      "queries_with_fn_additions": 20,
+      "fn_chunks_added": 112,
+      "human_rel_median_per_query": 7
+    }
+  }
+}

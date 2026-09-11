@@ -16,7 +16,7 @@ from pathlib import Path
 
 from app.chunking.semantic_chunker import SemanticChunker
 from app.core.config import SCHEMA_VERSION, Config
-from app.core.errors import SourceFileError
+from app.core.errors import IndexInconsistencyError, SourceFileError
 from app.indexing.scanner import FileState, sha256_file
 from app.parser.markdown_parser import parse_markdown
 from app.storage.migrations import init_schema, set_meta
@@ -242,6 +242,10 @@ class CatalogIndexPipeline:
                     if state.path in plan.excluded_paths:
                         continue
                     assigned = plan.assignments.get(state.path)
+                    if assigned is None:
+                        # 计划未分配身份的候选禁止回退到默认 doc_id：
+                        # 该 doc_id 可能已被既有文档占用，写入即静默覆盖。
+                        raise IndexInconsistencyError(f"索引计划未分配 doc_id: {state.path}")
                     self.index_file(state.path, state=state, doc_id=assigned)
                     stats["indexed"] += 1
                 elif state.status == "RENAMED":

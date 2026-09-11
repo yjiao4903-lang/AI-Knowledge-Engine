@@ -1,0 +1,358 @@
+{
+  "audit": "Dev20 authored-anchor inclusion audit（v2 packet regeneration r2）",
+  "date": "2026-09-12",
+  "trigger": "WEB-CONTROL blocking review on 1f19765b：DEV2-19 的 authored grade-3 source anchor 未进入人审包；若据旧包把它判为 reject 会删除一次真实 retrieval miss（survivor bias）。",
+  "root_cause": "p8_bench_adjudicate.py export 以四视图并集构建 rows，再以 `if c in rows` 过滤 auto-gold/FN；authoritative authored anchor（judging.meta.ground_chunk）若未被任何 视图召回即被静默丢弃。",
+  "fix": "新增 select_judging_pool()：authored anchor 无条件纳入 judging pool（追加于去重集合末尾，不重排），export 对锚点缺失/跨 split 直接 fail；key.authored_anchors 记录 retrieval-miss 状态；blinded packet 仍不含 view/rank/score/prelabel；强制纳入不计为 retrieval hit。",
+  "hashes": {
+    "packet_before": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+    "key_before": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+    "manifest_before": "040e2112ddfdcacd2586716da1f416b9de57851bfbfae4be2cfc32c3b835a568",
+    "packet_after": "4cf9a91afbf459c4711212bbef0e9da213dfa860ae409d0a4b51a1b8d971201d",
+    "key_after": "58e7e1c87a9b3b24ed938da6b876a6f1de96837c7d4731759cf862b94063e70f",
+    "manifest_after": "47fed9281f4ed2ff5b879f2203cad44a7196831a25b676b4bbec4b60bcaa209e",
+    "frozen_questions": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+    "migration_report": "88a07a2101b14a495ba29dc28692e88f4e9fdec459cc304191366953993500eb"
+  },
+  "summary": {
+    "total_queries": 20,
+    "missing_anchor_before": 2,
+    "missing_anchor_before_qids": [
+      "DEV2-17",
+      "DEV2-19"
+    ],
+    "missing_anchor_after": 0,
+    "anchors_recalled_by_any_view": 18,
+    "anchors_forced_into_pool_not_recalled": 2,
+    "qids_with_changed_packet": [
+      "DEV2-17",
+      "DEV2-19"
+    ],
+    "qids_safe_to_reuse_human_judgment": [
+      "DEV2-01",
+      "DEV2-02",
+      "DEV2-03",
+      "DEV2-04",
+      "DEV2-05",
+      "DEV2-06",
+      "DEV2-07",
+      "DEV2-08",
+      "DEV2-09",
+      "DEV2-10",
+      "DEV2-11",
+      "DEV2-12",
+      "DEV2-13",
+      "DEV2-14",
+      "DEV2-15",
+      "DEV2-16",
+      "DEV2-18",
+      "DEV2-20"
+    ],
+    "qids_needing_human_re_review": [
+      "DEV2-17",
+      "DEV2-19"
+    ]
+  },
+  "method_notes": [
+    "未使用任何检索 rank/score 调整 query、retrieval weights、reranker 或 routing（仅 benchmark integrity audit）。",
+    "query 文本、语料、检索行为、Legacy 50 均未改变。",
+    "诊断（不在本轮修复范围）：另有 10 个非锚点 auto_prelabel gold chunk 分布在 7 个 qid 中、未被任何视图召回且因此不在人审池（DEV2-06 6 个）。其效果是保守的（把检索命中的相关块当不相关），与锚点缺失造成的 survivor bias 方向相反；是否扩展强制纳入范围由 WEB-CONTROL 决定。"
+  ],
+  "per_query": [
+    {
+      "qid": "DEV2-01",
+      "authored_anchor": "T7_气候金融与绿色资本周期_最终报告:ch1-3:0007",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-02",
+      "authored_anchor": "内存产业技术源流与发展_最终报告:top1:o2:o4:0003",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-03",
+      "authored_anchor": "AI_capex信用传导_表外债务利差定价_最终报告:ch1-4:0007",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-04",
+      "authored_anchor": "第一次工业革命_最终报告:ch3:0010",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-05",
+      "authored_anchor": "T2_脑机接口与意识边界_最终报告:ch3-2:0014",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-06",
+      "authored_anchor": "18003215:top1:o2:0005",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-07",
+      "authored_anchor": "1800448:top1:o2:0036",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-08",
+      "authored_anchor": "1800576:top1:o2:0038",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-09",
+      "authored_anchor": "1800513:top1:o2:0036",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-10",
+      "authored_anchor": "18002752:top1:o2:o20:0020",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-11",
+      "authored_anchor": "18002711:top1:o2:o4:0003",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-12",
+      "authored_anchor": "18002212:top1:o2:o6:0005",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "lexical",
+        "hybrid"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-13",
+      "authored_anchor": "18003081:top1:o35:o38:0032",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-14",
+      "authored_anchor": "8852228244181222:top1:o2:0002",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-15",
+      "authored_anchor": "18001162__5e3c0051:top1:o2:o13:0012",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-16",
+      "authored_anchor": "8852185412555582:top1:o2:0002",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-17",
+      "authored_anchor": "5124241545118184:top1:o2:0004",
+      "anchor_in_old_packet": false,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [],
+      "anchor_recalled_by_any_view": false,
+      "forced_into_judging_pool": true,
+      "packet_unchanged": false,
+      "human_judgment_reusable": false
+    },
+    {
+      "qid": "DEV2-18",
+      "authored_anchor": "1800889__b3988d85:top1:o2:o15:0062",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    },
+    {
+      "qid": "DEV2-19",
+      "authored_anchor": "22811844124422841:top1:o2:0017",
+      "anchor_in_old_packet": false,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [],
+      "anchor_recalled_by_any_view": false,
+      "forced_into_judging_pool": true,
+      "packet_unchanged": false,
+      "human_judgment_reusable": false
+    },
+    {
+      "qid": "DEV2-20",
+      "authored_anchor": "8854585555458482:top1:o2:o5:0004",
+      "anchor_in_old_packet": true,
+      "anchor_in_new_packet": true,
+      "anchor_recalled_views": [
+        "dense",
+        "lexical",
+        "hybrid",
+        "hybrid_rerank"
+      ],
+      "anchor_recalled_by_any_view": true,
+      "forced_into_judging_pool": false,
+      "packet_unchanged": true,
+      "human_judgment_reusable": true
+    }
+  ]
+}

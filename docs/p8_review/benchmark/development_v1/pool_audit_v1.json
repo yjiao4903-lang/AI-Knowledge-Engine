@@ -1,0 +1,1230 @@
+{
+  "split": "development",
+  "questions": ".p8_local_dev/pilot3/development_pilot_v1.jsonl",
+  "topn": 50,
+  "per_query": [
+    {
+      "id": "DEV-C01",
+      "family": "comparison",
+      "tier": "broker_report",
+      "query": "报告如何比较 AMAT 与 LRCX 在相关指标上的差异？",
+      "pool_size": 98,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 63
+    },
+    {
+      "id": "DEV-M01",
+      "family": "mechanism",
+      "tier": "broker_report",
+      "query": "报告认为 2020 前后 SPX 的变化主要由什么机制驱动？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 50
+    },
+    {
+      "id": "DEV-M02",
+      "family": "mechanism",
+      "tier": "broker_report",
+      "query": "报告认为 2020 前后 bitcoin 的变化主要由什么机制驱动？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 44
+    },
+    {
+      "id": "DEV-N01",
+      "family": "numeric",
+      "tier": "broker_report",
+      "query": "报告中 2026 前后 NVLink 的margin是多少？",
+      "pool_size": 96,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 5,
+      "gold_g3": 5,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 57
+    },
+    {
+      "id": "DEV-N02",
+      "family": "numeric",
+      "tier": "broker_report",
+      "query": "报告中 COHR 的revenue是多少？",
+      "pool_size": 96,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 42
+    },
+    {
+      "id": "DEV-T01",
+      "family": "temporal",
+      "tier": "broker_report",
+      "query": "2026 前后 CPI 的相关指标出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 46
+    },
+    {
+      "id": "DEV-E01",
+      "family": "entity_context",
+      "tier": "daily_report",
+      "query": "报告如何描述 EUV 在「跑赢大盘评级」中的作用？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 1,
+      "fn": [
+        {
+          "chunk_id": "18002587:top1:o118:o120:0107",
+          "grade": 3
+        }
+      ],
+      "cross_split_ignored": 51
+    },
+    {
+      "id": "DEV-M03",
+      "family": "mechanism",
+      "tier": "daily_report",
+      "query": "报告认为 2025 前后 CRWD 的变化主要由什么机制驱动？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 6,
+      "gold_g3": 6,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 41
+    },
+    {
+      "id": "DEV-M04",
+      "family": "mechanism",
+      "tier": "daily_report",
+      "query": "报告认为是什么机制导致 Grok 的价格变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 34
+    },
+    {
+      "id": "DEV-X01",
+      "family": "multi_evidence",
+      "tier": "daily_report",
+      "query": "报告用哪些证据说明 2026 前后 CoWoS 的相关指标变化？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 45
+    },
+    {
+      "id": "DEV-X02",
+      "family": "multi_evidence",
+      "tier": "daily_report",
+      "query": "报告用哪些证据说明 2028 前后 VRT 的相关指标变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 5,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 42
+    },
+    {
+      "id": "DEV-N03",
+      "family": "numeric",
+      "tier": "daily_report",
+      "query": "报告中 Screen 的growth是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 55
+    },
+    {
+      "id": "DEV-T02",
+      "family": "temporal",
+      "tier": "daily_report",
+      "query": "2025 前后 UMC 的金额出现了什么变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 28
+    },
+    {
+      "id": "DEV-E02",
+      "family": "entity_context",
+      "tier": "discussion",
+      "query": "报告如何描述 FOMC 在「美股交易台」中的作用？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 56
+    },
+    {
+      "id": "DEV-M05",
+      "family": "mechanism",
+      "tier": "discussion",
+      "query": "报告认为 2024 前后 Veo 的变化主要由什么机制驱动？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 41
+    },
+    {
+      "id": "DEV-M06",
+      "family": "mechanism",
+      "tier": "discussion",
+      "query": "报告认为是什么机制导致 Tesla 的revenue变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 42
+    },
+    {
+      "id": "DEV-N04",
+      "family": "numeric",
+      "tier": "discussion",
+      "query": "报告中 2024 前后 N2P 的毛利率是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 55
+    },
+    {
+      "id": "DEV-N05",
+      "family": "numeric",
+      "tier": "discussion",
+      "query": "报告中 ChatGPT 的revenue是多少？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 49
+    },
+    {
+      "id": "DEV-T03",
+      "family": "temporal",
+      "tier": "discussion",
+      "query": "2026 前后 MI450 出现了哪些变化？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 52
+    },
+    {
+      "id": "DEV-C02",
+      "family": "comparison",
+      "tier": "flagship",
+      "query": "报告如何比较 IBM 与 Google 在相关指标上的差异？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 53
+    },
+    {
+      "id": "DEV-C03",
+      "family": "comparison",
+      "tier": "flagship",
+      "query": "报告如何比较 Meta 与 DASH 在相关指标上的差异？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 64
+    },
+    {
+      "id": "DEV-M07",
+      "family": "mechanism",
+      "tier": "flagship",
+      "query": "报告认为是什么机制导致 ADA 的收入变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 64
+    },
+    {
+      "id": "DEV-M08",
+      "family": "mechanism",
+      "tier": "flagship",
+      "query": "报告认为是什么机制导致 Qwen3 的相关指标变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 43
+    },
+    {
+      "id": "DEV-X03",
+      "family": "multi_evidence",
+      "tier": "flagship",
+      "query": "报告用哪些证据说明 2023 前后 GPT 的相关指标变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 38
+    },
+    {
+      "id": "DEV-X04",
+      "family": "multi_evidence",
+      "tier": "flagship",
+      "query": "报告用哪些证据说明 2026-08-17 前后 Kimi 的相关指标变化？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 3,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 53
+    },
+    {
+      "id": "DEV-N06",
+      "family": "numeric",
+      "tier": "flagship",
+      "query": "报告中 2025 前后 DeepSeek 的营收是多少？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 57
+    },
+    {
+      "id": "DEV-N07",
+      "family": "numeric",
+      "tier": "flagship",
+      "query": "报告中 2027 前后 H100 的营业利润是多少？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 52
+    },
+    {
+      "id": "DEV-T04",
+      "family": "temporal",
+      "tier": "flagship",
+      "query": "2025 前后 ECB 的相关指标出现了什么变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 59
+    },
+    {
+      "id": "DEV-T05",
+      "family": "temporal",
+      "tier": "flagship",
+      "query": "2025 前后 Transformer 的数量出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 64
+    },
+    {
+      "id": "DEV-T06",
+      "family": "temporal",
+      "tier": "flagship",
+      "query": "2026 前后 Dell 的金额出现了什么变化？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 51
+    },
+    {
+      "id": "DEV-C04",
+      "family": "comparison",
+      "tier": "research_media",
+      "query": "报告如何比较 Arm 与 Amazon 在相关指标上的差异？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 39
+    },
+    {
+      "id": "DEV-M09",
+      "family": "mechanism",
+      "tier": "research_media",
+      "query": "报告认为 2025年6月9 前后 xAI 的变化主要由什么机制驱动？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 51
+    },
+    {
+      "id": "DEV-M10",
+      "family": "mechanism",
+      "tier": "research_media",
+      "query": "报告认为是什么机制导致 NVL72 的相关指标变化？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 40
+    },
+    {
+      "id": "DEV-X05",
+      "family": "multi_evidence",
+      "tier": "research_media",
+      "query": "报告用哪些证据说明 2023 前后 ABNB 的相关指标变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 54
+    },
+    {
+      "id": "DEV-X06",
+      "family": "multi_evidence",
+      "tier": "research_media",
+      "query": "报告用哪些证据说明 2025 前后 AVGO 的相关指标变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 40
+    },
+    {
+      "id": "DEV-N08",
+      "family": "numeric",
+      "tier": "research_media",
+      "query": "报告中 2025/                                                                                               40/41 前后 MI300X 的价格是多少？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 5,
+      "gold_g3": 5,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 65
+    },
+    {
+      "id": "DEV-N09",
+      "family": "numeric",
+      "tier": "research_media",
+      "query": "报告中 TPUv6 的growth是多少？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 54
+    },
+    {
+      "id": "DEV-T07",
+      "family": "temporal",
+      "tier": "research_media",
+      "query": "2025/7/31 前后 arm 的数量出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 39
+    },
+    {
+      "id": "DEV-T08",
+      "family": "temporal",
+      "tier": "research_media",
+      "query": "2026 前后 Nikkei 的相关指标出现了什么变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 46
+    },
+    {
+      "id": "DEV-C05",
+      "family": "comparison",
+      "tier": "trading_desk",
+      "query": "报告如何比较 AVGO 与 OpenAI 在数量上的差异？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 5,
+      "gold_g3": 5,
+      "fn_corrections": 1,
+      "fn": [
+        {
+          "chunk_id": "18001607:top1:o2:0031",
+          "grade": 3
+        }
+      ],
+      "cross_split_ignored": 66
+    },
+    {
+      "id": "DEV-C06",
+      "family": "comparison",
+      "tier": "trading_desk",
+      "query": "报告如何比较 Screen 与 BoJ 在相关指标上的差异？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 57
+    },
+    {
+      "id": "DEV-C07",
+      "family": "comparison",
+      "tier": "trading_desk",
+      "query": "报告如何比较 Uber 与 AMD 在相关指标上的差异？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 48
+    },
+    {
+      "id": "DEV-M11",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为 2021 前后 RBLX 的变化主要由什么机制驱动？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 51
+    },
+    {
+      "id": "DEV-M12",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为 2025 年\n 3 前后 NDX 的变化主要由什么机制驱动？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 43
+    },
+    {
+      "id": "DEV-M13",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为 2026年11 前后 SPX 的变化主要由什么机制驱动？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 44
+    },
+    {
+      "id": "DEV-M14",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为是什么机制导致 CSCO 的revenue变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 33
+    },
+    {
+      "id": "DEV-M15",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为是什么机制导致 ETF 的相关指标变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 6,
+      "gold_g3": 6,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 54
+    },
+    {
+      "id": "DEV-M16",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为是什么机制导致 Llama 的指引变化？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 55
+    },
+    {
+      "id": "DEV-M17",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "报告认为是什么机制导致 VIX 的价格变化？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 3,
+      "pooled_grade3": 3,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 38
+    },
+    {
+      "id": "DEV-X07",
+      "family": "multi_evidence",
+      "tier": "trading_desk",
+      "query": "报告用哪些证据说明 2023 前后 FOMC 的相关指标变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 5,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 39
+    },
+    {
+      "id": "DEV-N10",
+      "family": "numeric",
+      "tier": "trading_desk",
+      "query": "报告中 2025 前后 CoWoS 的revenue是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 62
+    },
+    {
+      "id": "DEV-T09",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2023 前后 FOMC 的相关指标出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 5,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 43
+    },
+    {
+      "id": "DEV-T10",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2024 前后 FOMC 的相关指标出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 7,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 48
+    },
+    {
+      "id": "DEV-T11",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2024 前后 Gemini 的金额出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 48
+    },
+    {
+      "id": "DEV-T12",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2025 前后 GDP 出现了哪些变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 5,
+      "gold_g3": 5,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 47
+    },
+    {
+      "id": "DEV-T13",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2025 前后 NFP 的相关指标出现了什么变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 9,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 36
+    },
+    {
+      "id": "DEV-T14",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2025-14 前后 Screen 的相关指标出现了什么变化？",
+      "pool_size": 102,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 31
+    },
+    {
+      "id": "DEV-T15",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2025年8月13 前后 SPX 的相关指标出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 2,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 38
+    },
+    {
+      "id": "DEV-T16",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2026 前后 EUV 的尺寸出现了什么变化？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 53
+    },
+    {
+      "id": "DEV-T17",
+      "family": "temporal",
+      "tier": "trading_desk",
+      "query": "2026 前后 Fed 的相关指标出现了什么变化？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 52
+    }
+  ],
+  "fn_corrections": 2,
+  "pooled_relevant_total": 19,
+  "summary": {
+    "n": 60,
+    "elapsed_s": 100.7,
+    "pool_size_median": 101,
+    "pool_size_max": 102,
+    "pooled_relevant_median": 0,
+    "pooled_grade3_median": 0,
+    "queries_with_no_pooled_grade3": 43,
+    "queries_with_gold_grade3_after_split_scope": 60,
+    "fn_corrections": 2
+  }
+}

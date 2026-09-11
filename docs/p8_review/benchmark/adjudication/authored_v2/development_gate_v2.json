@@ -1,0 +1,369 @@
+{
+  "gate_version": "1.0",
+  "authored": "docs/p8_review/benchmark/adjudication/authored_v2/development_authored_v2.jsonl",
+  "split": "development",
+  "n": 20,
+  "n_valid": 20,
+  "pass": true,
+  "per_query": [
+    {
+      "id": "DEV2-01",
+      "query": "NOAA CPC 在 2026 年 8 月预测 2026-27 年出现「历史级」厄尔尼诺的概率是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "CPC",
+          "NOAA",
+          "厄尔尼诺"
+        ],
+        "dimensions": [
+          "概率"
+        ],
+        "length": 51
+      }
+    },
+    {
+      "id": "DEV2-02",
+      "query": "HBM 占 DRAM 营收的比例在 2024 年与 2025E 分别是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "DRAM",
+          "HBM"
+        ],
+        "dimensions": [
+          "比例",
+          "营收"
+        ],
+        "length": 38
+      }
+    },
+    {
+      "id": "DEV2-03",
+      "query": "在 AI capex 信用传导框架里，「Spread fatigue」的含义是什么？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AI",
+          "Spread"
+        ],
+        "dimensions": [
+          "capex"
+        ],
+        "length": 42
+      }
+    },
+    {
+      "id": "DEV2-04",
+      "query": "英国 1700–1870 年的人均 GDP 年均增速是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "GDP"
+        ],
+        "dimensions": [
+          "增速"
+        ],
+        "length": 30
+      }
+    },
+    {
+      "id": "DEV2-05",
+      "query": "PRIMA 视网膜下芯片的 PRIMAvera 试验纳入了多少名干性 AMD 晚期患者，主要视力改善结果是什么？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AMD",
+          "PRIMA",
+          "PRIMAvera"
+        ],
+        "dimensions": [
+          "患者",
+          "视力",
+          "试验"
+        ],
+        "length": 56
+      }
+    },
+    {
+      "id": "DEV2-06",
+      "query": "ASML 报告的季度销售额（欧元）与毛利率分别是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "ASML"
+        ],
+        "dimensions": [
+          "毛利率"
+        ],
+        "length": 27
+      }
+    },
+    {
+      "id": "DEV2-07",
+      "query": "2025 年第一季度 Microsoft Azure 的 AI 收入占比是多少？同期中国主要云服务商的 AI 收入占比大致区间是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AI",
+          "Azure",
+          "Microsoft"
+        ],
+        "dimensions": [
+          "区间",
+          "占比",
+          "收入"
+        ],
+        "length": 67
+      }
+    },
+    {
+      "id": "DEV2-08",
+      "query": "为什么 AVC 被认为将受益于 2026 年 ASIC 液冷需求的增长？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "ASIC",
+          "AVC"
+        ],
+        "dimensions": [
+          "受益",
+          "增长",
+          "需求"
+        ],
+        "length": 36
+      }
+    },
+    {
+      "id": "DEV2-09",
+      "query": "2025 年中国固定资产投资（FAI）同比增速的预测值是多少，与 1-5 月实际值相比如何？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "FAI"
+        ],
+        "dimensions": [
+          "同比",
+          "同比增速",
+          "增速",
+          "投资"
+        ],
+        "length": 46
+      }
+    },
+    {
+      "id": "DEV2-10",
+      "query": "Morgan Stanley 对 Meta FY27 的 EPS 预测是多少美元？10% 的裁员预计带来多少年化节省？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "EPS",
+          "FY27",
+          "Meta",
+          "Morgan",
+          "Stanley",
+          "meta"
+        ],
+        "dimensions": [
+          "eps",
+          "节省",
+          "裁员"
+        ],
+        "length": 59
+      }
+    },
+    {
+      "id": "DEV2-11",
+      "query": "韩国股市当日下跌 2% 的政策原因是什么？三星与 SK 海力士分别下跌多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "SK",
+          "三星",
+          "海力士"
+        ],
+        "dimensions": [
+          "下跌",
+          "原因",
+          "政策"
+        ],
+        "length": 38
+      }
+    },
+    {
+      "id": "DEV2-12",
+      "query": "Anthropic 的年度经常性收入（ARR）被报道为多少美元？与 2025 年底的水平相比增加了多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "ARR",
+          "Anthropic"
+        ],
+        "dimensions": [
+          "arr",
+          "收入"
+        ],
+        "length": 52
+      }
+    },
+    {
+      "id": "DEV2-13",
+      "query": "2026 年以来美国上市杠杆 ETF 的日均成交量约为多少亿美元，占复杂型产品 AUM 的比例是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AUM",
+          "ETF"
+        ],
+        "dimensions": [
+          "成交量",
+          "日均",
+          "比例"
+        ],
+        "length": 51
+      }
+    },
+    {
+      "id": "DEV2-14",
+      "query": "GIR 指出 1948 年以来标普 500 滚动四季度盈利在衰退前后的峰谷中位跌幅是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "GIR",
+          "标普"
+        ],
+        "dimensions": [
+          "中位",
+          "跌幅"
+        ],
+        "length": 45
+      }
+    },
+    {
+      "id": "DEV2-15",
+      "query": "为什么 AI 板块短期（T+1）EPS 波动可能较大，而中期更可能得到支撑？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AI",
+          "EPS"
+        ],
+        "dimensions": [
+          "eps",
+          "波动"
+        ],
+        "length": 38
+      }
+    },
+    {
+      "id": "DEV2-16",
+      "query": "为什么中国会在国产芯片供应短缺时大量采购 NVIDIA H20？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "H20",
+          "NVIDIA"
+        ],
+        "dimensions": [
+          "供应",
+          "短缺",
+          "采购"
+        ],
+        "length": 32
+      }
+    },
+    {
+      "id": "DEV2-17",
+      "query": "在内存资本开支预期上调之后，AMAT、LAM 与 KLA 的评级分别被调整为什么？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "AMAT",
+          "KLA",
+          "LAM"
+        ],
+        "dimensions": [
+          "上调",
+          "评级",
+          "资本开支"
+        ],
+        "length": 41
+      }
+    },
+    {
+      "id": "DEV2-18",
+      "query": "Rubin CPX GPU 的制造成本约为完整版 R200 GPU 的多少，其算力占比是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "CPX",
+          "GPU",
+          "R200",
+          "Rubin"
+        ],
+        "dimensions": [
+          "占比",
+          "成本",
+          "算力"
+        ],
+        "length": 47
+      }
+    },
+    {
+      "id": "DEV2-19",
+      "query": "Groq 的融资规模与估值分别是多少？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "Groq"
+        ],
+        "dimensions": [
+          "估值",
+          "融资",
+          "规模"
+        ],
+        "length": 19
+      }
+    },
+    {
+      "id": "DEV2-20",
+      "query": "在 Hot Chips 2025 大会上，META 对 GPU/XPU 集群规模未来十年的扩容预期是什么？",
+      "valid": true,
+      "violations": [],
+      "signals": {
+        "entities": [
+          "Chips",
+          "GPU",
+          "Hot",
+          "META",
+          "XPU",
+          "meta"
+        ],
+        "dimensions": [
+          "扩容",
+          "规模"
+        ],
+        "length": 53
+      }
+    }
+  ]
+}

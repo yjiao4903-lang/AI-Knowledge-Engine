@@ -1,0 +1,13 @@
+{
+  "captured_at": "2026-09-11T13:03:52",
+  "documents": 3566,
+  "sections": 62248,
+  "chunks": 296385,
+  "fts_terms": 296385,
+  "fts_trigram": 296385,
+  "qdrant_points": 296385,
+  "consistent": true,
+  "qdrant_chunks_collection": "kb_chunks_full_v1",
+  "qdrant_sections_collection": "kb_sections_full_v1",
+  "catalog": "D:\\AI-Knowledge-Engine\\data\\catalog_full.db"
+}

@@ -1,0 +1,420 @@
+{
+  "split": "development",
+  "questions": ".p8_local_dev/v2/development_v2.jsonl",
+  "topn": 50,
+  "per_query": [
+    {
+      "id": "DEV2-01",
+      "family": "numeric",
+      "tier": "flagship",
+      "query": "NOAA CPC 在 2026 年 8 月预测 2026-27 年出现「历史级」厄尔尼诺的概率是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 3,
+      "pooled_grade3": 3,
+      "gold_size": 4,
+      "gold_g3": 4,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 58
+    },
+    {
+      "id": "DEV2-02",
+      "family": "comparison",
+      "tier": "flagship",
+      "query": "HBM 占 DRAM 营收的比例在 2024 年与 2025E 分别是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 3,
+      "pooled_grade3": 3,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 48
+    },
+    {
+      "id": "DEV2-03",
+      "family": "entity_context",
+      "tier": "flagship",
+      "query": "在 AI capex 信用传导框架里，「Spread fatigue」的含义是什么？",
+      "pool_size": 89,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 22
+    },
+    {
+      "id": "DEV2-04",
+      "family": "temporal",
+      "tier": "flagship",
+      "query": "英国 1700–1870 年的人均 GDP 年均增速是多少？",
+      "pool_size": 84,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 3,
+      "pooled_grade3": 3,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 54
+    },
+    {
+      "id": "DEV2-05",
+      "family": "multi_evidence",
+      "tier": "flagship",
+      "query": "PRIMA 视网膜下芯片的 PRIMAvera 试验纳入了多少名干性 AMD 晚期患者，主要视力改善结果是什么？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 35
+    },
+    {
+      "id": "DEV2-06",
+      "family": "numeric",
+      "tier": "broker_report",
+      "query": "ASML 报告的季度销售额（欧元）与毛利率分别是多少？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 7,
+      "gold_g3": 7,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 49
+    },
+    {
+      "id": "DEV2-07",
+      "family": "comparison",
+      "tier": "broker_report",
+      "query": "2025 年第一季度 Microsoft Azure 的 AI 收入占比是多少？同期中国主要云服务商的 AI 收入占比大致区间是多少？",
+      "pool_size": 100,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 55
+    },
+    {
+      "id": "DEV2-08",
+      "family": "mechanism",
+      "tier": "broker_report",
+      "query": "为什么 AVC 被认为将受益于 2026 年 ASIC 液冷需求的增长？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 2,
+      "pooled_grade3": 2,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 55
+    },
+    {
+      "id": "DEV2-09",
+      "family": "temporal",
+      "tier": "broker_report",
+      "query": "2025 年中国固定资产投资（FAI）同比增速的预测值是多少，与 1-5 月实际值相比如何？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 50
+    },
+    {
+      "id": "DEV2-10",
+      "family": "numeric",
+      "tier": "daily_report",
+      "query": "Morgan Stanley 对 Meta FY27 的 EPS 预测是多少美元？10% 的裁员预计带来多少年化节省？",
+      "pool_size": 99,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 47
+    },
+    {
+      "id": "DEV2-11",
+      "family": "mechanism",
+      "tier": "daily_report",
+      "query": "韩国股市当日下跌 2% 的政策原因是什么？三星与 SK 海力士分别下跌多少？",
+      "pool_size": 96,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 56
+    },
+    {
+      "id": "DEV2-12",
+      "family": "multi_evidence",
+      "tier": "daily_report",
+      "query": "Anthropic 的年度经常性收入（ARR）被报道为多少美元？与 2025 年底的水平相比增加了多少？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 44
+    },
+    {
+      "id": "DEV2-13",
+      "family": "numeric",
+      "tier": "trading_desk",
+      "query": "2026 年以来美国上市杠杆 ETF 的日均成交量约为多少亿美元，占复杂型产品 AUM 的比例是多少？",
+      "pool_size": 96,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 50
+    },
+    {
+      "id": "DEV2-14",
+      "family": "entity_context",
+      "tier": "trading_desk",
+      "query": "GIR 指出 1948 年以来标普 500 滚动四季度盈利在衰退前后的峰谷中位跌幅是多少？",
+      "pool_size": 97,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 72
+    },
+    {
+      "id": "DEV2-15",
+      "family": "mechanism",
+      "tier": "trading_desk",
+      "query": "为什么 AI 板块短期（T+1）EPS 波动可能较大，而中期更可能得到支撑？",
+      "pool_size": 101,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 2,
+      "pooled_grade3": 2,
+      "gold_size": 3,
+      "gold_g3": 3,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 54
+    },
+    {
+      "id": "DEV2-16",
+      "family": "mechanism",
+      "tier": "research_media",
+      "query": "为什么中国会在国产芯片供应短缺时大量采购 NVIDIA H20？",
+      "pool_size": 92,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 2,
+      "pooled_grade3": 2,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 38
+    },
+    {
+      "id": "DEV2-17",
+      "family": "comparison",
+      "tier": "research_media",
+      "query": "在内存资本开支预期上调之后，AMAT、LAM 与 KLA 的评级分别被调整为什么？",
+      "pool_size": 96,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 44
+    },
+    {
+      "id": "DEV2-18",
+      "family": "multi_evidence",
+      "tier": "research_media",
+      "query": "Rubin CPX GPU 的制造成本约为完整版 R200 GPU 的多少，其算力占比是多少？",
+      "pool_size": 86,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 2,
+      "pooled_grade3": 2,
+      "gold_size": 2,
+      "gold_g3": 2,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 20
+    },
+    {
+      "id": "DEV2-19",
+      "family": "numeric",
+      "tier": "discussion",
+      "query": "Groq 的融资规模与估值分别是多少？",
+      "pool_size": 93,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 0,
+      "pooled_grade3": 0,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 22
+    },
+    {
+      "id": "DEV2-20",
+      "family": "temporal",
+      "tier": "discussion",
+      "query": "在 Hot Chips 2025 大会上，META 对 GPU/XPU 集群规模未来十年的扩容预期是什么？",
+      "pool_size": 98,
+      "pool_by_view": {
+        "dense": 50,
+        "lexical": 50,
+        "hybrid": 50,
+        "hybrid_rerank": 24
+      },
+      "pooled_relevant": 1,
+      "pooled_grade3": 1,
+      "gold_size": 1,
+      "gold_g3": 1,
+      "fn_corrections": 0,
+      "fn": [],
+      "cross_split_ignored": 47
+    }
+  ],
+  "fn_corrections": 0,
+  "pooled_relevant_total": 28,
+  "summary": {
+    "n": 20,
+    "elapsed_s": 42.7,
+    "pool_size_median": 97,
+    "pool_size_max": 101,
+    "pooled_relevant_median": 1,
+    "pooled_grade3_median": 1,
+    "queries_with_no_pooled_grade3": 2,
+    "queries_with_gold_grade3_after_split_scope": 20,
+    "fn_corrections": 0
+  }
+}

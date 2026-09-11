@@ -1,0 +1,1337 @@
+{
+  "generated_at": "2026-09-11T12:58:33",
+  "exp_all": "A0_baseline_all",
+  "exp_isolation": "isolation_flagship",
+  "metrics_all": {
+    "n": 50,
+    "hit1": 0.52,
+    "hit3": 0.72,
+    "hit5": 0.82,
+    "recall5": 0.487,
+    "recall10": 0.534,
+    "mrr": 0.64,
+    "ndcg": 0.678,
+    "p50_ms": 890.8,
+    "p95_ms": 1310.3
+  },
+  "metrics_isolation": {
+    "n": 50,
+    "hit1": 0.62,
+    "hit3": 0.86,
+    "hit5": 0.9,
+    "recall5": 0.544,
+    "recall10": 0.626,
+    "mrr": 0.752,
+    "ndcg": 0.787,
+    "p50_ms": 953.6,
+    "p95_ms": 2061.2
+  },
+  "presence_all": {
+    "dense50": 0.86,
+    "terms50": 0.78,
+    "trigram30": 0.46,
+    "union50": 0.96,
+    "fusion30": 0.84,
+    "fusion50": 0.9,
+    "rerank24": 0.84,
+    "final_hit5": 0.82
+  },
+  "presence_isolation": {
+    "dense50": 0.96,
+    "terms50": 0.82,
+    "trigram30": 0.54,
+    "union50": 1.0,
+    "fusion30": 0.94,
+    "fusion50": 1.0,
+    "rerank24": 0.94,
+    "final_hit5": 0.9
+  },
+  "delta": {
+    "hit1": 0.1,
+    "hit3": 0.14,
+    "hit5": 0.08,
+    "mrr": 0.112,
+    "ndcg": 0.109,
+    "presence_union50": 0.04,
+    "presence_fusion30": 0.1,
+    "n_no_recall_all": 2,
+    "n_no_recall_flag": 0
+  },
+  "verdict": {
+    "H1_corpus_competition": {
+      "claim": "语料竞争压制排序（旗舰隔离后 Hit@5 回升至 ≈0.92）",
+      "observed": {
+        "hit5_all": 0.82,
+        "hit5_flag": 0.9,
+        "delta": 0.08
+      },
+      "judgement": "成立",
+      "note": "隔离后 Hit@5 回升 +0.080，NO_RECALL 2→0，union50 题级存在率 0.96→1.0。竞争是主要退化来源，但隔离集内仍有 5 题失败（融合/重排残余），非纯竞争问题。"
+    },
+    "residual_failures_in_isolation": [
+      "E02",
+      "C01",
+      "C03",
+      "R01",
+      "X01"
+    ],
+    "recovered_by_isolation": [
+      "S01",
+      "W01",
+      "O02",
+      "X03"
+    ]
+  },
+  "per_query": [
+    {
+      "id": "E01",
+      "type": "exact",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 24,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "E02",
+      "type": "exact",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": null,
+        "trigram_rank": 6,
+        "union50_rank": 106,
+        "fused_rank": 65,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": null,
+        "terms_rank": null,
+        "trigram_rank": 2,
+        "union50_rank": 101,
+        "fused_rank": 49,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "E03",
+      "type": "exact",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 2,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "E04",
+      "type": "exact",
+      "all": {
+        "dense_rank": 27,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 27,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 4,
+        "terms_rank": 1,
+        "trigram_rank": 1,
+        "union50_rank": 4,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "E05",
+      "type": "exact",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 4,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 3,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "E06",
+      "type": "exact",
+      "all": {
+        "dense_rank": 8,
+        "terms_rank": 22,
+        "trigram_rank": null,
+        "union50_rank": 8,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 4,
+        "terms_rank": 14,
+        "trigram_rank": 10,
+        "union50_rank": 4,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S01",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 37,
+        "terms_rank": 3,
+        "trigram_rank": null,
+        "union50_rank": 37,
+        "fused_rank": 7,
+        "rerank_input_pos": 7,
+        "final_rank": null,
+        "bucket": "RERANK"
+      },
+      "flagship": {
+        "dense_rank": 19,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 19,
+        "fused_rank": 8,
+        "rerank_input_pos": 8,
+        "final_rank": 4,
+        "bucket": "OK"
+      },
+      "final_delta": -95
+    },
+    {
+      "id": "S02",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 5,
+        "terms_rank": 3,
+        "trigram_rank": 5,
+        "union50_rank": 5,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 4,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 5,
+        "terms_rank": 3,
+        "trigram_rank": 5,
+        "union50_rank": 5,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 4,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S03",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 3,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 3,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S04",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 2,
+        "terms_rank": 3,
+        "trigram_rank": 1,
+        "union50_rank": 2,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 2,
+        "terms_rank": 3,
+        "trigram_rank": 1,
+        "union50_rank": 2,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S05",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 2,
+        "terms_rank": 4,
+        "trigram_rank": null,
+        "union50_rank": 2,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 2,
+        "terms_rank": 4,
+        "trigram_rank": null,
+        "union50_rank": 2,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S06",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 8,
+        "terms_rank": 23,
+        "trigram_rank": null,
+        "union50_rank": 8,
+        "fused_rank": 8,
+        "rerank_input_pos": 8,
+        "final_rank": 4,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 6,
+        "terms_rank": 19,
+        "trigram_rank": null,
+        "union50_rank": 6,
+        "fused_rank": 10,
+        "rerank_input_pos": 10,
+        "final_rank": 3,
+        "bucket": "OK"
+      },
+      "final_delta": -1
+    },
+    {
+      "id": "S07",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 12,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 13,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "S08",
+      "type": "semantic",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 6,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 6,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C01",
+      "type": "causal",
+      "all": {
+        "dense_rank": 34,
+        "terms_rank": 16,
+        "trigram_rank": null,
+        "union50_rank": 34,
+        "fused_rank": 40,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": 28,
+        "terms_rank": 11,
+        "trigram_rank": null,
+        "union50_rank": 28,
+        "fused_rank": 39,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C02",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C03",
+      "type": "causal",
+      "all": {
+        "dense_rank": 20,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 20,
+        "fused_rank": 33,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": 12,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 12,
+        "fused_rank": 24,
+        "rerank_input_pos": 24,
+        "final_rank": 8,
+        "bucket": "RERANK"
+      },
+      "final_delta": -91
+    },
+    {
+      "id": "C04",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 8,
+        "trigram_rank": 3,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 4,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": -3
+    },
+    {
+      "id": "C05",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 4,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 4,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C06",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 14,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 15,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C07",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "C08",
+      "type": "causal",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 5,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 5,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "P01",
+      "type": "comparison",
+      "all": {
+        "dense_rank": 4,
+        "terms_rank": 6,
+        "trigram_rank": null,
+        "union50_rank": 4,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 5,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 4,
+        "terms_rank": 4,
+        "trigram_rank": null,
+        "union50_rank": 4,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": -3
+    },
+    {
+      "id": "P02",
+      "type": "comparison",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": 1,
+        "trigram_rank": 15,
+        "union50_rank": 51,
+        "fused_rank": 9,
+        "rerank_input_pos": 9,
+        "final_rank": 5,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": null,
+        "terms_rank": 1,
+        "trigram_rank": 2,
+        "union50_rank": 51,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": -4
+    },
+    {
+      "id": "P03",
+      "type": "comparison",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 3,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 3,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "P04",
+      "type": "comparison",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "P05",
+      "type": "comparison",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "P06",
+      "type": "comparison",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": 2,
+        "trigram_rank": 15,
+        "union50_rank": 51,
+        "fused_rank": 8,
+        "rerank_input_pos": 8,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "M01",
+      "type": "metric",
+      "all": {
+        "dense_rank": 7,
+        "terms_rank": 2,
+        "trigram_rank": null,
+        "union50_rank": 7,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 3,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 2,
+        "trigram_rank": 17,
+        "union50_rank": 1,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": -1
+    },
+    {
+      "id": "M02",
+      "type": "metric",
+      "all": {
+        "dense_rank": 6,
+        "terms_rank": 3,
+        "trigram_rank": 2,
+        "union50_rank": 6,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 6,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 6,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "M03",
+      "type": "metric",
+      "all": {
+        "dense_rank": 4,
+        "terms_rank": 1,
+        "trigram_rank": 2,
+        "union50_rank": 4,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 1,
+        "trigram_rank": 2,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "M04Q",
+      "type": "metric",
+      "all": {
+        "dense_rank": 2,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 2,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 2,
+        "terms_rank": 2,
+        "trigram_rank": 2,
+        "union50_rank": 2,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "M05Q",
+      "type": "metric",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 4,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 4,
+        "trigram_rank": 2,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "W01",
+      "type": "monitoring",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": null,
+        "fused_rank": null,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "NO_RECALL"
+      },
+      "flagship": {
+        "dense_rank": 11,
+        "terms_rank": 20,
+        "trigram_rank": null,
+        "union50_rank": 11,
+        "fused_rank": 16,
+        "rerank_input_pos": 16,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": -97
+    },
+    {
+      "id": "W02",
+      "type": "monitoring",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 6,
+        "trigram_rank": 17,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 5,
+        "trigram_rank": 17,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "W03",
+      "type": "monitoring",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 32,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 31,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 4,
+        "rerank_input_pos": 4,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "W04",
+      "type": "monitoring",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 4,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 6,
+        "rerank_input_pos": 6,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 5,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 6,
+        "rerank_input_pos": 6,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "W05",
+      "type": "monitoring",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 31,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 26,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "O01",
+      "type": "overview",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": 7,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 6,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "O02",
+      "type": "overview",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": 29,
+        "trigram_rank": null,
+        "union50_rank": 71,
+        "fused_rank": 62,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": 47,
+        "terms_rank": 27,
+        "trigram_rank": null,
+        "union50_rank": 47,
+        "fused_rank": 15,
+        "rerank_input_pos": 15,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": -98
+    },
+    {
+      "id": "O03",
+      "type": "overview",
+      "all": {
+        "dense_rank": 3,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 3,
+        "fused_rank": 11,
+        "rerank_input_pos": 11,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 3,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 3,
+        "fused_rank": 12,
+        "rerank_input_pos": 12,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "O04",
+      "type": "overview",
+      "all": {
+        "dense_rank": 5,
+        "terms_rank": 16,
+        "trigram_rank": null,
+        "union50_rank": 5,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 5,
+        "terms_rank": 16,
+        "trigram_rank": null,
+        "union50_rank": 5,
+        "fused_rank": 1,
+        "rerank_input_pos": 1,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "R01",
+      "type": "reference",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": null,
+        "trigram_rank": 16,
+        "union50_rank": 110,
+        "fused_rank": 97,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": 12,
+        "terms_rank": null,
+        "trigram_rank": 16,
+        "union50_rank": 12,
+        "fused_rank": 10,
+        "rerank_input_pos": 10,
+        "final_rank": 7,
+        "bucket": "RERANK"
+      },
+      "final_delta": -92
+    },
+    {
+      "id": "R02",
+      "type": "reference",
+      "all": {
+        "dense_rank": 4,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 4,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 4,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 4,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "R03",
+      "type": "reference",
+      "all": {
+        "dense_rank": 3,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 3,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 3,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 3,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "X01",
+      "type": "cross_document",
+      "all": {
+        "dense_rank": 24,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 24,
+        "fused_rank": 36,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "flagship": {
+        "dense_rank": 19,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": 19,
+        "fused_rank": 31,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "FUSION"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "X02",
+      "type": "cross_document",
+      "all": {
+        "dense_rank": 17,
+        "terms_rank": null,
+        "trigram_rank": 6,
+        "union50_rank": 17,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 3,
+        "terms_rank": null,
+        "trigram_rank": 1,
+        "union50_rank": 3,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": -1
+    },
+    {
+      "id": "X03",
+      "type": "cross_document",
+      "all": {
+        "dense_rank": null,
+        "terms_rank": null,
+        "trigram_rank": null,
+        "union50_rank": null,
+        "fused_rank": null,
+        "rerank_input_pos": null,
+        "final_rank": null,
+        "bucket": "NO_RECALL"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": 6,
+        "trigram_rank": null,
+        "union50_rank": 1,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": -98
+    },
+    {
+      "id": "X04",
+      "type": "cross_document",
+      "all": {
+        "dense_rank": 1,
+        "terms_rank": null,
+        "trigram_rank": 15,
+        "union50_rank": 1,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 1,
+        "terms_rank": null,
+        "trigram_rank": 1,
+        "union50_rank": 1,
+        "fused_rank": 3,
+        "rerank_input_pos": 3,
+        "final_rank": 1,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    },
+    {
+      "id": "X05",
+      "type": "cross_document",
+      "all": {
+        "dense_rank": 17,
+        "terms_rank": 1,
+        "trigram_rank": null,
+        "union50_rank": 17,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "flagship": {
+        "dense_rank": 15,
+        "terms_rank": 1,
+        "trigram_rank": null,
+        "union50_rank": 15,
+        "fused_rank": 2,
+        "rerank_input_pos": 2,
+        "final_rank": 2,
+        "bucket": "OK"
+      },
+      "final_delta": 0
+    }
+  ]
+}

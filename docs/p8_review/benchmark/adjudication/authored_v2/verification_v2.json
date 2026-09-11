@@ -1,0 +1,138 @@
+{
+  "legacy": {
+    "path": "D:\\AI-Knowledge-Engine\\docs\\p8_review\\benchmark\\legacy_v1\\golden_queries.jsonl",
+    "sha256": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea",
+    "expected": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea",
+    "n": 50,
+    "pass": true
+  },
+  "splits": {
+    "development": {
+      "n": 20,
+      "errors": [],
+      "pass": true,
+      "by_tier": {
+        "broker_report": 4,
+        "daily_report": 3,
+        "discussion": 2,
+        "flagship": 5,
+        "research_media": 3,
+        "trading_desk": 3
+      },
+      "by_query_type": {
+        "comparison": 3,
+        "entity_context": 2,
+        "mechanism": 4,
+        "multi_evidence": 3,
+        "numeric": 5,
+        "temporal": 3
+      },
+      "by_source_type": {
+        "daily": 6,
+        "discussion": 2,
+        "flagship": 5,
+        "formal_report": 4,
+        "other": 3
+      },
+      "max_tier_share": 0.25,
+      "min_tier_share": 0.1,
+      "ocr_derived": 6,
+      "distinct_gold_docs": 27,
+      "max_queries_per_doc": 4,
+      "target_docs": [
+        "18001162",
+        "18001162__5e3c0051",
+        "18002205",
+        "18002212",
+        "18002711",
+        "18002752",
+        "18003081",
+        "18003105__998e6d80",
+        "18003215",
+        "18003227__776b4549",
+        "18003240",
+        "1800448",
+        "1800513",
+        "1800576",
+        "1800889",
+        "1800889__b3988d85",
+        "22811844124422841",
+        "5124241545118184",
+        "5124241545118184__07f1f470",
+        "8852185412555582",
+        "8852228244181222",
+        "8854585555458482",
+        "AI_capex信用传导_表外债务利差定价_最终报告",
+        "T2_脑机接口与意识边界_最终报告",
+        "T7_气候金融与绿色资本周期_最终报告",
+        "内存产业技术源流与发展_最终报告",
+        "第一次工业革命_最终报告"
+      ],
+      "tier_guardrail_pass": true,
+      "ocr_share": 0.3
+    },
+    "holdout": {
+      "n": 10,
+      "errors": [],
+      "pass": true,
+      "by_tier": {
+        "broker_report": 2,
+        "daily_report": 2,
+        "discussion": 1,
+        "flagship": 2,
+        "research_media": 2,
+        "trading_desk": 1
+      },
+      "by_query_type": {
+        "comparison": 2,
+        "entity_context": 1,
+        "mechanism": 2,
+        "multi_evidence": 1,
+        "numeric": 3,
+        "temporal": 1
+      },
+      "by_source_type": {
+        "daily": 3,
+        "discussion": 1,
+        "flagship": 2,
+        "formal_report": 2,
+        "other": 2
+      },
+      "max_tier_share": 0.2,
+      "min_tier_share": 0.1,
+      "ocr_derived": 3,
+      "distinct_gold_docs": 12,
+      "max_queries_per_doc": 4,
+      "target_docs": [
+        "18001271__ec8f8e87",
+        "1800127__533066a3",
+        "18002042",
+        "1800212",
+        "18003423",
+        "1800536",
+        "1800631",
+        "1800647",
+        "2852482514125511",
+        "4845445482412218",
+        "M12",
+        "先进封装与HBM技术路线_最终报告"
+      ],
+      "tier_guardrail_pass": true,
+      "ocr_share": 0.3
+    }
+  },
+  "leakage": {
+    "dev_target_docs": 27,
+    "holdout_target_docs": 12,
+    "overlap": [],
+    "pass": true
+  },
+  "sealing": {
+    "holdout_path": "E:\\研报提取资料库\\_golden\\p8_bench02_adjudication\\v2\\holdout_v2_frozen.jsonl",
+    "holdout_in_repo": false,
+    "pass": true,
+    "sha256": "02f2fef24d133fd2fe205173280d29932fa919e22794a9c49663b69f7ddee8a2",
+    "dev_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976"
+  },
+  "pass": true
+}

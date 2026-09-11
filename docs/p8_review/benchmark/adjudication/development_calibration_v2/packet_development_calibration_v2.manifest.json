@@ -1,0 +1,86 @@
+{
+  "packet_version": "1.0",
+  "seed": "p8-bench-02-adjudication-20260911",
+  "split": "development",
+  "source_questions": "docs/p8_review/benchmark/adjudication/authored_v2/development_v2_frozen.jsonl",
+  "source_questions_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+  "n_questions_available": 20,
+  "n_sampled": 20,
+  "sampling": "family 覆盖优先 + tier 轮转（seed 确定性）",
+  "blinding": {
+    "hidden_from_reviewer": [
+      "view 归属",
+      "视图内名次",
+      "融合/RRF 分数",
+      "auto_prelabel grade"
+    ],
+    "shuffle": "random.Random('p8-bench-02-adjudication-20260911|<qid>|shuffle')",
+    "cand_id": "<qid>#c<index>，index 为打散后位置，不携带名次信息",
+    "key_file": "docs\\p8_review\\benchmark\\adjudication\\_keys\\key_development_calibration_v2.json",
+    "key_file_in_repo": true
+  },
+  "selection": {
+    "view_topn": 50,
+    "per_view_k": 6,
+    "max_candidates": 20,
+    "always_included": "auto_prelabel gold + 池内 FN 候选 + authored ground/source anchor（无条件，judging pool）",
+    "cross_split_candidates_excluded": 920
+  },
+  "authored_anchor_integrity": {
+    "n_queries_with_authored_anchor": 20,
+    "anchors_in_judging_pool": 20,
+    "anchors_recalled_by_any_view": 18,
+    "anchors_forced_into_pool_not_recalled": 2,
+    "rule": "authored anchor 属 judging pool 而非检索输出：即使四个冻结视图全部未召回也必须进入人审包，避免把真实 retrieval miss 当 reject 排除（survivor bias）。强制纳入不计为 retrieval hit —— 正式指标只按 views_ranked 计算。",
+    "failure_mode": "export 对锚点缺失/跨 split 直接 fail（非 warning）。",
+    "per_query_status": "仅记录于 key.authored_anchors（包内不可见）。"
+  },
+  "candidate_count": {
+    "min": 15,
+    "max": 20,
+    "median": 20
+  },
+  "coverage": {
+    "by_tier": {
+      "broker_report": 4,
+      "daily_report": 3,
+      "discussion": 2,
+      "flagship": 5,
+      "research_media": 3,
+      "trading_desk": 3
+    },
+    "by_family": {
+      "comparison": 3,
+      "entity_context": 2,
+      "mechanism": 4,
+      "multi_evidence": 3,
+      "numeric": 5,
+      "temporal": 3
+    }
+  },
+  "pooling_assumption": "包内候选未判定的块按不相关计（标准 pooling 假设）；候选集为有界抽样，非全语料穷举。",
+  "packet_sha256": "4cf9a91afbf459c4711212bbef0e9da213dfa860ae409d0a4b51a1b8d971201d",
+  "key_sha256": "58e7e1c87a9b3b24ed938da6b876a6f1de96837c7d4731759cf862b94063e70f",
+  "queries": [
+    "DEV2-01",
+    "DEV2-02",
+    "DEV2-03",
+    "DEV2-04",
+    "DEV2-05",
+    "DEV2-06",
+    "DEV2-07",
+    "DEV2-08",
+    "DEV2-09",
+    "DEV2-10",
+    "DEV2-11",
+    "DEV2-12",
+    "DEV2-13",
+    "DEV2-14",
+    "DEV2-15",
+    "DEV2-16",
+    "DEV2-17",
+    "DEV2-18",
+    "DEV2-19",
+    "DEV2-20"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "frozen_at": "2026-09-11T13:03:52",
+  "generator": "pipeline/p8_freeze_baseline.py",
+  "read_only": true,
+  "config_hashes": {
+    "config_snapshot.yaml": {
+      "source": "D:\\AI-Knowledge-Engine\\config\\config.yaml",
+      "sha256": "6d3167314db424a0252ec7a9e9534954c06a83b0280d2e16e2211f6bbd5426dd"
+    },
+    "config_full_snapshot.yaml": {
+      "source": "D:\\AI-Knowledge-Engine\\config\\config.full.yaml",
+      "sha256": "d7907f3e59961a8c7ff529aaf7c7426162306c0798ff1a52580668602bf627fe"
+    }
+  },
+  "corpus_status": {
+    "captured_at": "2026-09-11T13:03:52",
+    "documents": 3566,
+    "sections": 62248,
+    "chunks": 296385,
+    "fts_terms": 296385,
+    "fts_trigram": 296385,
+    "qdrant_points": 296385,
+    "consistent": true,
+    "qdrant_chunks_collection": "kb_chunks_full_v1",
+    "qdrant_sections_collection": "kb_sections_full_v1",
+    "catalog": "D:\\AI-Knowledge-Engine\\data\\catalog_full.db"
+  },
+  "artifacts": [
+    {
+      "file": "full_corpus_regression.json",
+      "sha256": "a2b3db1fa6021daaf444049d8312709b8c2f57d0e0e2a3d4e5922aabeed09281",
+      "bytes": 4654,
+      "source": "E:\\研报提取资料库\\_golden\\full_corpus_regression.json"
+    },
+    {
+      "file": "full_corpus_regression_failures.json",
+      "sha256": "db8e6139b1b9cd4f416894317e2e9eb4dd28528a4cd909522150530fc48ea605",
+      "bytes": 104544,
+      "source": "E:\\研报提取资料库\\_golden\\full_corpus_regression_failures.json"
+    },
+    {
+      "file": "config_snapshot.yaml",
+      "sha256": "6d3167314db424a0252ec7a9e9534954c06a83b0280d2e16e2211f6bbd5426dd",
+      "bytes": 4570,
+      "source": "D:\\AI-Knowledge-Engine\\config\\config.yaml"
+    },
+    {
+      "file": "config_full_snapshot.yaml",
+      "sha256": "d7907f3e59961a8c7ff529aaf7c7426162306c0798ff1a52580668602bf627fe",
+      "bytes": 2670,
+      "source": "D:\\AI-Knowledge-Engine\\config\\config.full.yaml"
+    },
+    {
+      "file": "index_status.json",
+      "source": "api:/api/index/status"
+    },
+    {
+      "file": "manifest_snapshot.json",
+      "count": 3566
+    },
+    {
+      "file": "flagship_doc_ids.json",
+      "count": 187
+    },
+    {
+      "file": "metrics_summary.md"
+    }
+  ]
+}
