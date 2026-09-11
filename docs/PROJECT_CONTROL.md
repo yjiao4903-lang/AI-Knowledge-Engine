@@ -4,6 +4,20 @@ Effective: 2026-09-11
 Controller: `WEB-CONTROL`  
 Online board: GitHub Issue #30
 
+## 0. Execution-efficiency rule
+
+Project control must optimize for **decision quality per unit of human attention**, not procedural volume.
+
+Default behavior:
+- use the lightest governance/Gate that matches the actual risk and reversibility;
+- low-risk reversible details stay with the assigned executor and should be completed without repeated WEB-CONTROL round-trips;
+- batch related checks, fixes, reviews and evidence into one pass;
+- reuse still-valid evidence instead of repeating work for formality;
+- do not apply major-project ceremony to small implementation/documentation/test details;
+- escalate only for material scope expansion, architecture/schema/public-contract/benchmark-semantic changes, durable or sealed data mutation, production/formal writes, or merge/release/cutover authorization.
+
+A process that is technically correct but repeatedly consumes human review for trivial reversible details is considered inefficient and should be simplified.
+
 ## 1. Operating model
 
 The project uses three execution identities:
@@ -65,7 +79,9 @@ merge
 update CURRENT_STATE / close Issue
 ```
 
-Discovery that changes architecture, schema, contract, benchmark semantics, gold data or irreversible data operations returns to WEB-CONTROL before implementation continues.
+This lifecycle is a control model, not a requirement to stop at every arrow. For low-risk in-scope work, executors should collapse multiple steps into one execution pass and return a consolidated evidence package.
+
+Discovery that changes architecture, schema, contract, benchmark semantics, gold data or irreversible data operations returns to WEB-CONTROL before implementation continues. Minor reversible implementation details do not require a new control cycle.
 
 ## 5. Gate classes
 
@@ -91,6 +107,8 @@ Required in addition to G1/G2 for retrieval/ranking/chunking/corpus-routing chan
 - latency impact;
 - no gold mutation;
 - Development vs Holdout separation.
+
+**Gate selection rule:** apply the minimum Gate class that covers the changed risk surface. Do not require G2/G3 evidence for changes that do not touch those boundaries.
 
 ## 6. Current program assessment
 
