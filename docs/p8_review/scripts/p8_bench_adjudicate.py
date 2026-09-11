@@ -30,14 +30,15 @@
 用法
 ----
   # 1) 生成人审包（Dev 包与 key 可入库；Holdout 的包与 key 必须留在仓库外）
+  #    注意：--questions 必须是**该批次自己的冻结题集**（v2 = authored_v2/development_v2_frozen.jsonl）
   python docs/p8_review/scripts/p8_bench_adjudicate.py export \\
-      --questions docs/p8_review/benchmark/development_v1/pilot_v1_auto_prelabel.jsonl \\
-      --split development --n 20 \\
-      --outdir docs/p8_review/benchmark/adjudication/development_calibration_v1 \\
-      --keydir docs/p8_review/benchmark/adjudication/development_calibration_v1 \\
-      --pool-audit docs/p8_review/benchmark/development_v1/pool_audit_v1.json
+      --questions docs/p8_review/benchmark/adjudication/authored_v2/development_v2_frozen.jsonl \\
+      --split development --n 20 --version-tag v2 \\
+      --outdir docs/p8_review/benchmark/adjudication/development_calibration_v2 \\
+      --keydir docs/p8_review/benchmark/adjudication/_keys \\
+      --pool-audit docs/p8_review/benchmark/adjudication/authored_v2/development_pool_audit_v2.json
 
-  # 2) 人工填好 judgments 后导入（只由人工 grade 重算 gold）
+  # 2) 人工填好 judgments 后导入（只由人工 grade 重算 gold；--questions 必须与 key 同批次）
   python docs/p8_review/scripts/p8_bench_adjudicate.py import \\
       --judgments <filled.jsonl> --key <key.json> --questions <frozen.jsonl> \\
       --split development --adjudication-out <adj.jsonl> \\
@@ -134,6 +135,67 @@ def norm_text(s: str | None, limit: int) -> str:
     return t if len(t) <= limit else t[:limit] + " …"
 
 
+def authored_anchors_of(q: dict) -> list[str]:
+    """取出某条冻结题的 authoritative authored ground/source anchor。
+
+    v2 人工作题把锚定 chunk 冻结在 `judging.meta.ground_chunk`。这是**出题时确定的正例**，
+    与检索输出无关，因此必须进入 human judging pool。
+    """
+    meta = (q.get("judging") or {}).get("meta") or {}
+    a = meta.get("ground_chunk")
+    return [a] if a else []
+
+
+def select_judging_pool(views: dict, rows: dict, allowed_docs: set, auto_gold, fn_ids,
+                        anchors, per_view_k: int, max_candidates: int):
+    """构建**盲化人工判定池**（judging pool）。
+
+    与检索输出的边界（必须保持）
+    -----------------------------
+    - `anchors`（authored ground/source anchor）**无条件纳入** judging pool，即使四个冻结
+      检索视图全部没有召回它 —— 否则一次真实 retrieval miss 会被人审包吞掉，审阅者只能把
+      有效题误判为 reject，产生 survivor bias 并抬高 Hit@K / MRR / NDCG。
+    - 强制纳入**只影响 judging pool**：它不进入任何 retrieval 名次列表，key 中标记
+      `forced_into_judging_pool`；正式 retrieval 指标只按 `views_ranked` 计算，因此不会把
+      强制纳入当成 hit。
+    - 锚点**追加在去重集合末尾**（若尚未存在）而非插入队首：锚点本就被召回的题，其候选集
+      与打散顺序完全不变，已完成的 human judgment 可原样复用。
+
+    返回 (chosen, anchor_ranks, diagnostics)。
+    """
+    excluded = {cid for cid, r in rows.items() if r["document_id"] not in allowed_docs}
+    rank_of = {v: {cid: r for r, cid in enumerate(views[v], 1)} for v in VIEW_NAMES}
+
+    gold_fn = [c for c in dict.fromkeys(list(auto_gold) + list(fn_ids))
+               if c in rows and c not in excluded]
+    chosen = list(dict.fromkeys(gold_fn))
+    for a in anchors:                      # 追加（不重排）→ 未受影响题的映射保持不变
+        if a not in chosen:
+            chosen.append(a)
+
+    per_view = {v: [c for c in views[v] if c in rows and c not in excluded] for v in VIEW_NAMES}
+    cursor = {v: 0 for v in VIEW_NAMES}
+    rounds = 0
+    while len(chosen) < max_candidates and rounds < per_view_k:
+        for v in VIEW_NAMES:
+            if len(chosen) >= max_candidates:
+                break
+            while cursor[v] < len(per_view[v]) and per_view[v][cursor[v]] in chosen:
+                cursor[v] += 1
+            if cursor[v] < len(per_view[v]):
+                chosen.append(per_view[v][cursor[v]])
+                cursor[v] += 1
+        rounds += 1
+    chosen = list(dict.fromkeys(chosen))
+
+    anchor_ranks = {a: {v: rank_of[v].get(a) for v in VIEW_NAMES} for a in anchors}
+    diag = {"cross_split_excluded": len(excluded),
+            "anchors_in_pool": sum(1 for a in anchors if a in chosen),
+            "anchors_recalled": sum(1 for a in anchors
+                                    if any(r is not None for r in anchor_ranks[a].values()))}
+    return chosen, anchor_ranks, diag
+
+
 # ------------------------------------------------------------------ 校准抽样
 def sample_calibration(items: list[dict], n: int, seed: str) -> list[dict]:
     """确定性分层抽样：先保证 family 覆盖，再按 tier 轮转补足。
@@ -206,46 +268,59 @@ def cmd_export(a) -> int:
     sample = sample_calibration(questions, a.n, a.seed)
     fv = FrozenViews(conn=conn)
 
+    # authoritative authored anchors：出题时冻结的正例，必须进入 judging pool（与检索输出无关）
+    anchor_by_qid = {q["id"]: authored_anchors_of(q) for q in sample}
+    anchor_rows = rows_for(conn, sorted({c for v in anchor_by_qid.values() for c in v}))
+
     packet, key_queries, cand_counts = [], {}, []
     cross_excluded = 0
+    anchor_integrity = {"n_queries_with_authored_anchor": 0, "anchors_in_judging_pool": 0,
+                        "anchors_recalled_by_any_view": 0,
+                        "anchors_forced_into_pool_not_recalled": 0}
     for i, q in enumerate(sample, 1):
         views, _ = fv.views(q["query"], topn=a.topn)
         rows = rows_for(conn, list(dict.fromkeys(sum(views.values(), []))))
         rank_of = {v: {cid: r for r, cid in enumerate(views[v], 1)} for v in VIEW_NAMES}
 
-        excluded = {cid for cid, r in rows.items() if r["document_id"] not in allowed}
-        cross_excluded += len(excluded)
+        anchors = anchor_by_qid[q["id"]]
+        # B1 硬门（fail-fast，不是 warning）：锚点必须存在、不得跨 split
+        for a_ in anchors:
+            if a_ not in anchor_rows:
+                raise SystemExit(f"REFUSING: {q['id']} authored anchor 不存在于 catalog：{a_}")
+            if anchor_rows[a_]["document_id"] not in allowed:
+                raise SystemExit(
+                    f"REFUSING: {q['id']} authored anchor 属于其它 split 文档（反泄漏失败）："
+                    f"{a_} @ {anchor_rows[a_]['document_id']}")
 
         auto_gold = {c["chunk_id"]: c["grade"] for c in q["gold"]["chunks"]}
-        special = [c for c in auto_gold] + [c for c in fn_by_qid.get(q["id"], [])]
-        special = list(dict.fromkeys([c for c in special if c in rows and c not in excluded]))
-        chosen = list(special)
-
-        # 4 视图有界轮转抽样（视图身份不在包内可见）
-        per_view = {v: [c for c in views[v] if c in rows and c not in excluded] for v in VIEW_NAMES}
-        cursor = {v: 0 for v in VIEW_NAMES}
-        rounds = 0
-        while len(chosen) < a.max_candidates and rounds < a.per_view_k:
-            for v in VIEW_NAMES:
-                if len(chosen) >= a.max_candidates:
-                    break
-                while cursor[v] < len(per_view[v]) and per_view[v][cursor[v]] in chosen:
-                    cursor[v] += 1
-                if cursor[v] < len(per_view[v]):
-                    chosen.append(per_view[v][cursor[v]])
-                    cursor[v] += 1
-            rounds += 1
-        chosen = list(dict.fromkeys(chosen))
+        chosen, anchor_ranks, diag = select_judging_pool(
+            views, rows, allowed, list(auto_gold), fn_by_qid.get(q["id"], []), anchors,
+            a.per_view_k, a.max_candidates)
+        for a_ in anchors:                      # B1 硬门：锚点必须出现在 judging pool
+            if a_ not in chosen:
+                raise SystemExit(f"REFUSING: {q['id']} authored anchor 未进入 judging pool：{a_}")
+        cross_excluded += diag["cross_split_excluded"]
+        if anchors:
+            recalled = sum(1 for a_ in anchors
+                           if any(r is not None for r in anchor_ranks[a_].values()))
+            anchor_integrity["n_queries_with_authored_anchor"] += 1
+            anchor_integrity["anchors_in_judging_pool"] += diag["anchors_in_pool"]
+            anchor_integrity["anchors_recalled_by_any_view"] += recalled
+            anchor_integrity["anchors_forced_into_pool_not_recalled"] += len(anchors) - recalled
 
         # 确定性打散（同一 qid + seed 必得同一顺序）→ cand_id 不携带任何名次信息
         rnd = random.Random(f"{a.seed}|{q['id']}|shuffle")
         rnd.shuffle(chosen)
 
+        pool_rows = dict(rows)
+        for a_ in anchors:                     # 锚点可能不在任何检索视图，需要单独取行
+            pool_rows.setdefault(a_, anchor_rows[a_])
+
         rubric = (q.get("judging") or {}).get("rubric") or {"req": [], "requires_any": []}
-        cands, key_cands = [], {}
+        cands, key_cands, cid_of = [], {}, {}
         for k, cid in enumerate(chosen, 1):
             cand_id = f"{q['id']}#c{k:03d}"
-            row = rows[cid]
+            row = pool_rows[cid]
             blob = ((row["plain_text"] or "") + "\n" + (row["heading_path"] or "")).lower()
             cands.append({
                 "cand_id": cand_id,
@@ -253,6 +328,7 @@ def cmd_export(a) -> int:
                 "heading_path": row["heading_path"],
                 "text": norm_text(row["plain_text"], a.text_chars),
             })
+            cid_of[cid] = cand_id
             key_cands[cand_id] = {
                 "chunk_id": cid,
                 "document_id": row["document_id"],
@@ -266,11 +342,18 @@ def cmd_export(a) -> int:
             "query": q["query"], "query_type": q["query_type"], "corpus_tier": q["corpus_tier"],
             "candidates": cands,
         })
+        # key 侧记录锚点 retrieval-miss 状态；blinded packet 不含任何此信息
         key_queries[q["id"]] = {
             "query": q["query"], "query_type": q["query_type"], "corpus_tier": q["corpus_tier"],
             "auto_prelabel_gold": [{"chunk_id": c, "grade": g} for c, g in sorted(auto_gold.items())],
             "views_ranked": {v: list(views[v]) for v in VIEW_NAMES},
             "candidates": key_cands,
+            "authored_anchors": {a_: {
+                "cand_id": cid_of.get(a_),
+                "retrieval_view_ranks": anchor_ranks[a_],
+                "recalled_by_any_view": any(r is not None for r in anchor_ranks[a_].values()),
+                "forced_into_judging_pool": not any(r is not None for r in anchor_ranks[a_].values()),
+            } for a_ in anchors},
         }
         cand_counts.append(len(cands))
         if i % 10 == 0 or i == len(sample):
@@ -298,8 +381,16 @@ def cmd_export(a) -> int:
         },
         "selection": {"view_topn": a.topn, "per_view_k": a.per_view_k,
                       "max_candidates": a.max_candidates,
-                      "always_included": "auto_prelabel gold + 池内 FN 候选",
+                      "always_included": "auto_prelabel gold + 池内 FN 候选 + "
+                                         "authored ground/source anchor（无条件，judging pool）",
                       "cross_split_candidates_excluded": cross_excluded},
+        "authored_anchor_integrity": dict(
+            anchor_integrity,
+            rule="authored anchor 属 judging pool 而非检索输出：即使四个冻结视图全部未召回也必须"
+                 "进入人审包，避免把真实 retrieval miss 当 reject 排除（survivor bias）。"
+                 "强制纳入不计为 retrieval hit —— 正式指标只按 views_ranked 计算。",
+            failure_mode="export 对锚点缺失/跨 split 直接 fail（非 warning）。",
+            per_query_status="仅记录于 key.authored_anchors（包内不可见）。"),
         "candidate_count": {"min": min(cand_counts), "max": max(cand_counts),
                             "median": sorted(cand_counts)[len(cand_counts) // 2]},
         "coverage": {"by_tier": dict(sorted(cov_tier.items())),
@@ -541,6 +632,15 @@ def cmd_import(a) -> int:
         if qid not in key_queries:
             errs.append(f"{qid}: 不在 key 中")
             continue
+        fq = questions.get(qid)
+        if fq is None:
+            errs.append(f"{qid}: 不在 frozen questions 中 —— --questions 与 --key/--judgments 批次不一致"
+                        f"（v2 必须使用 authored_v2/<split>_v2_frozen.jsonl，不得使用 v1 记录）")
+            continue
+        if key_queries[qid].get("query") != fq.get("query"):
+            errs.append(f"{qid}: key 与 frozen questions 的 query 文本不一致 —— 疑似混用不同批次"
+                        f"（key={key_queries[qid].get('query')!r} vs questions={fq.get('query')!r}）")
+            continue
         if qid in seen:
             errs.append(f"{qid}: 重复判定记录")
         seen.add(qid)
@@ -602,6 +702,99 @@ def cmd_import(a) -> int:
                       "warnings": freeze["warnings"],
                       "outputs": {"adjudication": str(a.adjudication_out),
                                   "gold": str(a.gold_out), "freeze": str(a.freeze_out)}},
+                     ensure_ascii=False, indent=2))
+    return 0
+
+
+
+# ------------------------------------------------------------------ migrate
+def cmd_migrate(a) -> int:
+    """把已完成的 human judgment 迁移到重新生成的 packet：只复用候选集完全兼容的题。
+
+    规则（确定性，不生成任何 human grade）：
+      - query 文本未变 且 旧 cand_id → chunk 映射未变 且 候选集合未变 ⇒ 该题 human judgment 可原样复用；
+      - 否则标记 `needs_human_re_review`，并给出需要人审的最小 qid 集合与原因；
+      - 不改写、不补判、不把 auto_prelabel 转成 human grade；旧判定（含 reject）原样保留在
+        原 judgments 文件中用于审计。
+    """
+    old_key = json.loads(Path(a.old_key).read_text(encoding="utf-8"))
+    new_key = json.loads(Path(a.new_key).read_text(encoding="utf-8"))
+    refuse_if_withdrawn(new_key, a.new_key, getattr(a, "allow_withdrawn", False))
+    oq, nq = old_key["queries"], new_key["queries"]
+    recs = load_jsonl(a.judgments)
+
+    reusable, needs, unavailable = [], [], []
+    for rec in recs:
+        qid = rec.get("qid")
+        if qid not in nq:
+            unavailable.append({"qid": qid, "reasons": ["qid 不在新 key 中"]})
+            continue
+        o, n = oq.get(qid), nq[qid]
+        if o is None:
+            unavailable.append({"qid": qid, "reasons": ["qid 不在旧 key 中（新增题）"]})
+            continue
+        reasons = []
+        if (o.get("query") or "") != (n.get("query") or ""):
+            reasons.append("query 文本变化")
+        o_map = {c: v["chunk_id"] for c, v in o["candidates"].items()}
+        n_map = {c: v["chunk_id"] for c, v in n["candidates"].items()}
+        if o_map != n_map:
+            added_chunks = sorted(set(n_map.values()) - set(o_map.values()))
+            removed_chunks = sorted(set(o_map.values()) - set(n_map.values()))
+            remapped = sorted(c for c in o_map if c in n_map and o_map[c] != n_map[c])
+            if added_chunks:
+                reasons.append(f"新增候选 chunk {len(added_chunks)} 个")
+            if removed_chunks:
+                reasons.append(f"移除候选 chunk {len(removed_chunks)} 个")
+            if remapped:
+                reasons.append(f"cand_id→chunk 重映射 {len(remapped)} 个")
+        if reasons:
+            needs.append({
+                "qid": qid, "reasons": reasons, "reuse": False,
+                "old_status": rec.get("status"),
+                "old_grade_dist": {str(g): sum(1 for x in (rec.get("grades") or [])
+                                               if x.get("grade") == g)
+                                   for g in (0, 1, 2, 3)},
+                "new_candidates_not_previously_reviewed": sorted(
+                    c for c, v in n["candidates"].items()
+                    if v["chunk_id"] not in set(o_map.values())),
+                "note": "不得模型补判；需人类审阅者对该题完整候选集重新判定",
+            })
+        else:
+            reusable.append(qid)
+
+    report = {
+        "migration_version": "1.0",
+        "old_key": str(a.old_key), "old_key_sha256": sha256_file(a.old_key),
+        "new_key": str(a.new_key), "new_key_sha256": sha256_file(a.new_key),
+        "judgments": str(a.judgments), "judgments_sha256": sha256_file(a.judgments),
+        "n_judgments": len(recs),
+        "n_reusable": len(reusable), "n_needs_re_review": len(needs), "n_unavailable": len(unavailable),
+        "safe_to_reuse": sorted(reusable),
+        "needs_human_re_review": sorted(needs, key=lambda x: x["qid"]),
+        "unavailable": sorted(unavailable, key=lambda x: x["qid"]),
+        "rules": [
+            "query 未变 且 cand_id→chunk 映射未变 且 候选集合未变 ⇒ 原样复用",
+            "否则 needs_human_re_review；不模型补判、不把 auto_prelabel 转成 human grade",
+            "旧判定（含 reject）保留在原 judgments 文件中用于审计，不被静默改写",
+        ],
+    }
+    write_json(a.out, report)
+    if a.md:
+        L = [f"# 人审迁移审计（{a.old_key} → {a.new_key}）", "",
+             f"- 判定记录：{report['n_judgments']} ｜ 可原样复用：**{report['n_reusable']}**"
+             f" ｜ 需重审：**{report['n_needs_re_review']}** ｜ 不可用：{report['n_unavailable']}", "",
+             "## safe_to_reuse", ""]
+        L += [f"- `{q}`" for q in report["safe_to_reuse"]] or ["- （无）"]
+        L += ["", "## needs_human_re_review", "", "| qid | 原状态 | 原因 | 新增未审候选 |", "|---|---|---|---|"]
+        for r in report["needs_human_re_review"]:
+            L.append(f"| `{r['qid']}` | {r['old_status']} | {'；'.join(r['reasons'])} | "
+                     f"{', '.join(r['new_candidates_not_previously_reviewed']) or '—'} |")
+        path_md = Path(a.md)
+        path_md.parent.mkdir(parents=True, exist_ok=True)
+        path_md.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(json.dumps({k: v for k, v in report.items()
+                      if k not in ("needs_human_re_review", "unavailable")},
                      ensure_ascii=False, indent=2))
     return 0
 
@@ -951,6 +1144,79 @@ def cmd_self_test(a) -> int:
     chk("report：缺题时 human_review_complete=False",
         r3["human_review_complete"] is False and r3["candidate_completeness"]["coverage"] == 1.0)
 
+    # 15) authored anchor 完全不被任何检索视图召回 → 仍必须进入 judging pool
+    views_t = {"dense": ["v1", "v2"], "lexical": ["v3"], "hybrid": ["v1", "v3", "v2"],
+               "hybrid_rerank": ["v2"]}
+    rows_t = {c: {"document_id": "D1", "plain_text": "t", "heading_path": "h"}
+              for c in ["v1", "v2", "v3"]}
+    chosen_t, ranks_t, diag_t = select_judging_pool(
+        views_t, rows_t, {"D1"}, ["v1"], [], ["ANCHOR"], 6, 20)
+    chk("anchor 不被任何视图召回仍进入 judging pool", "ANCHOR" in chosen_t)
+    chk("未召回锚点的 view 名次为 null（retrieval-miss 可观测）",
+        all(r is None for r in ranks_t["ANCHOR"].values()))
+    # 16) 锚点本被召回时：名次非空，且候选顺序与不加锚点时完全一致（append 而非重排）
+    chosen_r, ranks_r, _ = select_judging_pool(views_t, rows_t, {"D1"}, ["v1"], [], ["v2"], 6, 20)
+    base_c, _, _ = select_judging_pool(views_t, rows_t, {"D1"}, ["v1"], [], [], 6, 20)
+    chk("被召回锚点的 view 名次非空", any(r is not None for r in ranks_r["v2"].values()))
+    chk("锚点已被召回时候选顺序不变（人审可原样复用）", base_c == chosen_r)
+    # 17) 强制纳入不计为 retrieval hit：锚点不在 views_ranked ⇒ recall 分母含它、分子不含
+    key_ms = {"key_version": KEY_VERSION, "split": "development", "seed": "st", "topn": 50,
+              "queries": {"Q1": {
+                  "query": "qm", "query_type": "numeric", "corpus_tier": "flagship",
+                  "auto_prelabel_gold": [{"chunk_id": "ch1", "grade": 3}],
+                  "views_ranked": {v: ["ch1"] for v in VIEW_NAMES},
+                  "candidates": {
+                      "Q1#c001": {"chunk_id": "ch1", "document_id": "D1",
+                                  "views": {v: 1 for v in VIEW_NAMES}, "auto_prelabel_grade": 3,
+                                  "auto_prelabel_gold_grade": 3},
+                      "Q1#c002": {"chunk_id": "ch2", "document_id": "D1",
+                                  "views": {v: None for v in VIEW_NAMES}, "auto_prelabel_grade": 0,
+                                  "auto_prelabel_gold_grade": None}},
+                  "authored_anchors": {"ch2": {"cand_id": "Q1#c002",
+                                               "retrieval_view_ranks": {v: None for v in VIEW_NAMES},
+                                               "recalled_by_any_view": False,
+                                               "forced_into_judging_pool": True}}}}}
+    kp_ms, jp_ms = tmp / "key_ms.json", tmp / "j_ms.jsonl"
+    write_json(kp_ms, key_ms)
+    dump_jsonl(jp_ms, [dict(base, grades=[{"cand_id": "Q1#c001", "grade": 2},
+                                          {"cand_id": "Q1#c002", "grade": 3}])])
+    cmd_report(argparse.Namespace(judgments=str(jp_ms), key=str(kp_ms), split="development",
+                                  out=str(tmp / "r_ms.json"), md=str(tmp / "r_ms.md"), recall_k=20))
+    r_ms = json.loads((tmp / "r_ms.json").read_text(encoding="utf-8"))
+    chk("强制纳入的锚点不计为 retrieval hit（recall=0.5 而非 1.0）",
+        r_ms["pooled_recall_benchmark_side"]["per_view_mean"]["dense"] == 0.5)
+    # 18) migrate：候选集不变 ⇒ 复用；新增候选 ⇒ needs_human_re_review
+    new_key = copy.deepcopy(key)
+    new_key["queries"]["Q1"]["candidates"]["Q1#c003"] = {
+        "chunk_id": "ch4", "document_id": "D1", "views": {v: None for v in VIEW_NAMES},
+        "auto_prelabel_grade": 0, "auto_prelabel_gold_grade": None}
+    kp_old, kp_new = tmp / "k_old.json", tmp / "k_new.json"
+    write_json(kp_old, key)
+    write_json(kp_new, new_key)
+    jp_mg = tmp / "j_mg.jsonl"
+    dump_jsonl(jp_mg, [dict(base, grades=[{"cand_id": "Q1#c001", "grade": 3},
+                                          {"cand_id": "Q1#c002", "grade": 2}]),
+                       dict(base, qid="Q2", status="reject", grades=[])])
+    cmd_migrate(argparse.Namespace(old_key=str(kp_old), new_key=str(kp_new), judgments=str(jp_mg),
+                                   out=str(tmp / "mg.json"), md=str(tmp / "mg.md")))
+    mg = json.loads((tmp / "mg.json").read_text(encoding="utf-8"))
+    chk("migrate：候选集未变的题可原样复用", mg["safe_to_reuse"] == ["Q2"])
+    chk("migrate：新增候选的题被标记 needs_human_re_review",
+        [r["qid"] for r in mg["needs_human_re_review"]] == ["Q1"]
+        and mg["needs_human_re_review"][0]["old_status"] == "accept"
+        and mg["needs_human_re_review"][0]["new_candidates_not_previously_reviewed"] == ["Q1#c003"])
+    # 19) query 变化同样触发重审
+    new_key2 = copy.deepcopy(key)
+    new_key2["queries"]["Q1"]["query"] = "q1 rewritten"
+    kp_new2 = tmp / "k_new2.json"
+    write_json(kp_new2, new_key2)
+    cmd_migrate(argparse.Namespace(old_key=str(kp_old), new_key=str(kp_new2), judgments=str(jp_mg),
+                                   out=str(tmp / "mg2.json"), md=str(tmp / "mg2.md")))
+    mg2 = json.loads((tmp / "mg2.json").read_text(encoding="utf-8"))
+    chk("migrate：query 变化的题需重审",
+        any(r["qid"] == "Q1" and "query 文本变化" in r["reasons"]
+            for r in mg2["needs_human_re_review"]))
+
     passed = all(v for _, v in ok)
     print(json.dumps({"self_test_pass": passed, "n_checks": len(ok),
                       "failed": [n for n, v in ok if not v], "tmp": str(tmp)},
@@ -1001,6 +1267,15 @@ def main() -> int:
     r.add_argument("--md")
     r.add_argument("--recall-k", type=int, default=20)
     r.set_defaults(func=cmd_report)
+
+    m = sub.add_parser("migrate", help="把旧 packet 的人审迁移到新 packet（只复用候选集完全兼容的题）")
+    m.add_argument("--old-key", required=True)
+    m.add_argument("--new-key", required=True)
+    m.add_argument("--judgments", required=True)
+    m.add_argument("--out", required=True)
+    m.add_argument("--md")
+    m.add_argument("--allow-withdrawn", action="store_true")
+    m.set_defaults(func=cmd_migrate)
 
     s = sub.add_parser("self-test", help="无 GPU 确定性自检")
     s.set_defaults(func=cmd_self_test)

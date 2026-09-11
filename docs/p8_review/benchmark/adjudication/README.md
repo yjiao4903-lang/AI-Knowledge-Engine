@@ -93,10 +93,16 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_
 ```bat
 D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py import ^
   --judgments <filled.jsonl> --key docs\p8_review\benchmark\adjudication\_keys\key_development_calibration_v2.json ^
-  --questions docs\p8_review\benchmark\development_v1\pilot_v1_auto_prelabel.jsonl ^
+  --questions docs\p8_review\benchmark\adjudication\authored_v2\development_v2_frozen.jsonl ^
   --split development --require-complete ^
   --adjudication-out <adj.jsonl> --gold-out <gold.jsonl> --freeze-out <freeze.json>
 ```
+
+> **批次必须同源**：`--questions` 必须是生成该 key 的同一份冻结题集
+> （v2 = `adjudication\authored_v2\development_v2_frozen.jsonl`）。
+> `build_gold_record()` 会从 `--questions` 继承冻结记录来生成 human gold，因此
+> **v2 judgments + v1 frozen record** 的混用会产生错误金标。`import` 现在对此 fail-fast：
+> judgment qid 不在 `--questions` 中、或 key 与 `--questions` 的 query 文本不一致时直接拒绝。
 
 - gold **只**由人工 grade ≥2 生成（`evidence_class = human_adjudicated`）；
 - 同时做人工判定后的 false-negative 审计，把"人工判为相关但预标注 gold 未收录"的块记入

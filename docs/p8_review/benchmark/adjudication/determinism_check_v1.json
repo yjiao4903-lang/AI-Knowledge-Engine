@@ -179,5 +179,63 @@
       "note": "Holdout 包与 key 在仓库外密封；此处仅落 SHA256。"
     },
     "withdrawal_guard": "p8_bench_adjudicate.py import 对带 key.withdrawn 的批次直接拒绝（除非 --allow-withdrawn）"
+  },
+  "dev20_anchor_pool_fix_r2": {
+    "date": "2026-09-12",
+    "trigger": "WEB-CONTROL blocking review on 1f19765b（DEV2-19 authored anchor 未入人审包）",
+    "root_cause": "export 以四视图并集建 rows 后用 `if c in rows` 过滤 auto-gold/FN，未被任何视图召回的 authored ground_chunk 被静默丢弃。",
+    "fix": "select_judging_pool()：anchor 无条件纳入 judging pool（追加不重排）；export fail-fast；key.authored_anchors 记录 retrieval-miss；packet 仍盲化。",
+    "audit": "docs/p8_review/benchmark/adjudication/development_calibration_v2/anchor_audit_v2r2.json",
+    "summary": {
+      "total_queries": 20,
+      "missing_anchor_before": 2,
+      "missing_anchor_before_qids": [
+        "DEV2-17",
+        "DEV2-19"
+      ],
+      "missing_anchor_after": 0,
+      "anchors_recalled_by_any_view": 18,
+      "anchors_forced_into_pool_not_recalled": 2,
+      "qids_with_changed_packet": [
+        "DEV2-17",
+        "DEV2-19"
+      ],
+      "qids_safe_to_reuse_human_judgment": [
+        "DEV2-01",
+        "DEV2-02",
+        "DEV2-03",
+        "DEV2-04",
+        "DEV2-05",
+        "DEV2-06",
+        "DEV2-07",
+        "DEV2-08",
+        "DEV2-09",
+        "DEV2-10",
+        "DEV2-11",
+        "DEV2-12",
+        "DEV2-13",
+        "DEV2-14",
+        "DEV2-15",
+        "DEV2-16",
+        "DEV2-18",
+        "DEV2-20"
+      ],
+      "qids_needing_human_re_review": [
+        "DEV2-17",
+        "DEV2-19"
+      ]
+    },
+    "hashes": {
+      "packet_before": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+      "key_before": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+      "manifest_before": "040e2112ddfdcacd2586716da1f416b9de57851bfbfae4be2cfc32c3b835a568",
+      "packet_after": "4cf9a91afbf459c4711212bbef0e9da213dfa860ae409d0a4b51a1b8d971201d",
+      "key_after": "58e7e1c87a9b3b24ed938da6b876a6f1de96837c7d4731759cf862b94063e70f",
+      "manifest_after": "47fed9281f4ed2ff5b879f2203cad44a7196831a25b676b4bbec4b60bcaa209e",
+      "frozen_questions": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+      "migration_report": "88a07a2101b14a495ba29dc28692e88f4e9fdec459cc304191366953993500eb"
+    },
+    "migration": "p8_bench_adjudicate.py migrate：18 题候选集完全不变可复用原人审；DEV2-17 / DEV2-19 需人工重审（不模型补判）。",
+    "import_fail_fast": "v2 judgments + v1 questions 已实测被拒绝（20 条『不在 frozen questions 中』错误）；v2 judgments + v2 questions 通过校验。"
   }
 }

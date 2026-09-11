@@ -64,6 +64,50 @@ Holdout 为 **0/10**，FN 修正各 0。按 Issue #39，检索名次/分数**未
 按 WEB-CONTROL 要求，该清单已在提交人审前单独贴出供 sanity review。
 
 
+## 0c. 人审包锚点修复（2026-09-12，WEB-CONTROL blocking review on `1f19765b`）
+
+Dev20 人工审阅已录入（19 accept / DEV2-19 reject，`judgments_development_calibration_v2.jsonl`，
+**provisional，不作为最终 benchmark 状态**）。审阅暴露一个方法学缺陷：
+
+- **根因**：`export` 以四个冻结视图的并集构建候选行集，再用 `if c in rows` 过滤 auto-gold / FN；
+  authored v2 的 `judging.meta.ground_chunk`（出题时冻结的 grade-3 源锚点）若未被任何视图召回，
+  会被**静默丢出人审包**。
+- **后果**：DEV2-19 的锚点不在包内 → 审阅者看不到直接答案候选 → 只能 `reject`。
+  把有效题按 reject 排除会删除一次真实 retrieval miss（survivor bias），系统性抬高 Hit@K/MRR/NDCG。
+- **修复**：新增 `select_judging_pool()`——authored anchor **无条件纳入 judging pool**（追加在去重集合
+  末尾，不重排）；`export` 对锚点缺失/跨 split **直接 fail**（非 warning）；key 侧
+  `authored_anchors` 记录 retrieval-miss 状态；blinded packet 仍不含 view/rank/score/prelabel；
+  强制纳入**不计为 retrieval hit**（正式指标只按 `views_ranked` 计算）。
+
+### Dev20 审计结果（`adjudication/development_calibration_v2/anchor_audit_v2r2.json`）
+
+| 项 | 值 |
+|---|---|
+| total queries | 20 |
+| 旧 packet 缺 authored anchor | **2/20**（DEV2-17、DEV2-19） |
+| 新 packet 缺 authored anchor | **0/20** |
+| 锚点被至少一个视图召回 | 18/20 |
+| 锚点未被任何视图召回、强制纳入 judging pool | 2/20（DEV2-17、DEV2-19） |
+| packet 实质变化（需重审） | **DEV2-17、DEV2-19** |
+| 可原样复用既有 human judgment | **18 题** |
+| 不可用判定 | 0 |
+
+- DEV2-19 的旧 `reject` **原样保留**在 judgments 文件中用于审计，未被静默改成 accept；
+  新包中其锚点为 `DEV2-19#c016`，需人类审阅者重判，LOCAL-DEV 不代判。
+- 人审迁移由 `p8_bench_adjudicate.py migrate` 确定性完成（`migration_report_v2r2.json`）：
+  query 未变 + cand_id→chunk 映射未变 + 候选集合未变 ⇒ 复用；否则 `needs_human_re_review`。
+- `import` 增加**批次同源 fail-fast**：v2 judgments + v1 questions 已实测被拒（20 条错误），
+  v2 + v2 通过校验；README/脚本文档中的 v2 import 示例已改为
+  `adjudication/authored_v2/development_v2_frozen.jsonl`。
+- packet 重新生成：`889d6ee0…` → `4cf9a91a…`（同路径覆盖，旧哈希记录于 audit / determinism check，
+  Git history 可溯源）。
+- 诊断（不在本轮修复范围）：另有 **10 个非锚点** auto_prelabel gold chunk（分布在 7 题，DEV2-06 占 6）
+  未被任何视图召回、因此不在人审池。其偏差方向与锚点缺失**相反**（保守：把检索命中的相关块当不相关），
+  是否扩展强制纳入范围由 WEB-CONTROL 决定。
+- 未调 retrieval weights / routing / reranker；未改 query 文本、语料、Legacy 50；
+  未进入 sealed Holdout 人审。
+
+
 ## 1. 证据分级（本报告所有数字的引用前提）
 
 | 证据类别 | 来源 | 可否用于效度/检索质量结论 |

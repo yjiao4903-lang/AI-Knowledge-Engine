@@ -451,6 +451,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "T7_气候金融与绿色资本周期_最终报告:ch1-3:0007": {
+          "cand_id": "DEV2-01#c001",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": 1,
+            "hybrid": 1,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-02": {
@@ -896,6 +909,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "内存产业技术源流与发展_最终报告:top1:o2:o4:0003": {
+          "cand_id": "DEV2-02#c014",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": 3,
+            "hybrid": 5,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-03": {
@@ -1332,6 +1358,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "AI_capex信用传导_表外债务利差定价_最终报告:ch1-4:0007": {
+          "cand_id": "DEV2-03#c017",
+          "retrieval_view_ranks": {
+            "dense": 28,
+            "lexical": 4,
+            "hybrid": 3,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -1778,6 +1817,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "第一次工业革命_最终报告:ch3:0010": {
+          "cand_id": "DEV2-04#c004",
+          "retrieval_view_ranks": {
+            "dense": 1,
+            "lexical": 2,
+            "hybrid": 1,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-05": {
@@ -2214,6 +2266,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "T2_脑机接口与意识边界_最终报告:ch3-2:0014": {
+          "cand_id": "DEV2-05#c010",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": 1,
+            "hybrid": 1,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -2676,6 +2741,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "18003215:top1:o2:0005": {
+          "cand_id": "DEV2-06#c012",
+          "retrieval_view_ranks": {
+            "dense": 14,
+            "lexical": null,
+            "hybrid": 33,
+            "hybrid_rerank": null
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-07": {
@@ -3112,6 +3190,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "1800448:top1:o2:0036": {
+          "cand_id": "DEV2-07#c004",
+          "retrieval_view_ranks": {
+            "dense": 1,
+            "lexical": null,
+            "hybrid": 9,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -3554,6 +3645,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "1800576:top1:o2:0038": {
+          "cand_id": "DEV2-08#c011",
+          "retrieval_view_ranks": {
+            "dense": 2,
+            "lexical": null,
+            "hybrid": 2,
+            "hybrid_rerank": 2
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-09": {
@@ -3990,6 +4094,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "1800513:top1:o2:0036": {
+          "cand_id": "DEV2-09#c006",
+          "retrieval_view_ranks": {
+            "dense": 5,
+            "lexical": null,
+            "hybrid": 8,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -4428,6 +4545,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "18002752:top1:o2:o20:0020": {
+          "cand_id": "DEV2-10#c014",
+          "retrieval_view_ranks": {
+            "dense": 2,
+            "lexical": null,
+            "hybrid": 2,
+            "hybrid_rerank": 2
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-11": {
@@ -4864,6 +4994,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "18002711:top1:o2:o4:0003": {
+          "cand_id": "DEV2-11#c013",
+          "retrieval_view_ranks": {
+            "dense": 2,
+            "lexical": 7,
+            "hybrid": 1,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -5306,6 +5449,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "18002212:top1:o2:o6:0005": {
+          "cand_id": "DEV2-12#c014",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": 7,
+            "hybrid": 33,
+            "hybrid_rerank": null
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-13": {
@@ -5743,6 +5899,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "18003081:top1:o35:o38:0032": {
+          "cand_id": "DEV2-13#c005",
+          "retrieval_view_ranks": {
+            "dense": 1,
+            "lexical": 1,
+            "hybrid": 1,
+            "hybrid_rerank": 2
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-14": {
@@ -6123,6 +6292,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "8852228244181222:top1:o2:0002": {
+          "cand_id": "DEV2-14#c009",
+          "retrieval_view_ranks": {
+            "dense": 2,
+            "lexical": null,
+            "hybrid": 4,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     },
@@ -6569,6 +6751,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "18001162__5e3c0051:top1:o2:o13:0012": {
+          "cand_id": "DEV2-15#c019",
+          "retrieval_view_ranks": {
+            "dense": 34,
+            "lexical": null,
+            "hybrid": null,
+            "hybrid_rerank": null
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-16": {
@@ -7010,6 +7205,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "8852185412555582:top1:o2:0002": {
+          "cand_id": "DEV2-16#c012",
+          "retrieval_view_ranks": {
+            "dense": 1,
+            "lexical": 1,
+            "hybrid": 6,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-17": {
@@ -7208,162 +7416,6 @@
       },
       "candidates": {
         "DEV2-17#c001": {
-          "chunk_id": "18002106:top1:o2:o37:0037",
-          "document_id": "18002106",
-          "views": {
-            "dense": 9,
-            "lexical": null,
-            "hybrid": 20,
-            "hybrid_rerank": 21
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c002": {
-          "chunk_id": "18002752:top1:o2:o21:0021",
-          "document_id": "18002752",
-          "views": {
-            "dense": null,
-            "lexical": 6,
-            "hybrid": 28,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c003": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:o5:0223",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 1,
-            "lexical": null,
-            "hybrid": 11,
-            "hybrid_rerank": 13
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c004": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0147",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 3,
-            "lexical": 32,
-            "hybrid": 2,
-            "hybrid_rerank": 5
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c005": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0218",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 11,
-            "lexical": null,
-            "hybrid": 23,
-            "hybrid_rerank": 17
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c006": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0076",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 12,
-            "lexical": null,
-            "hybrid": 25,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c007": {
-          "chunk_id": "18002936:top1:o2:o46:0046",
-          "document_id": "18002936",
-          "views": {
-            "dense": null,
-            "lexical": 3,
-            "hybrid": 22,
-            "hybrid_rerank": 3
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c008": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:o7:0242",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 4,
-            "lexical": null,
-            "hybrid": 14,
-            "hybrid_rerank": 6
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c009": {
-          "chunk_id": "18001662:top1:o2:o20:0020",
-          "document_id": "18001662",
-          "views": {
-            "dense": null,
-            "lexical": 5,
-            "hybrid": 26,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c010": {
-          "chunk_id": "18002765__c01ae530:top1:o2:0243",
-          "document_id": "18002765__c01ae530",
-          "views": {
-            "dense": null,
-            "lexical": 40,
-            "hybrid": 9,
-            "hybrid_rerank": 12
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c011": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:o3:0220",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 7,
-            "lexical": null,
-            "hybrid": 17,
-            "hybrid_rerank": 16
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c012": {
-          "chunk_id": "18003339:top1:o2:o24:0024",
-          "document_id": "18003339",
-          "views": {
-            "dense": 5,
-            "lexical": null,
-            "hybrid": 15,
-            "hybrid_rerank": 15
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c013": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0148",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 13,
-            "lexical": null,
-            "hybrid": 27,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c014": {
           "chunk_id": "1800990:top1:o2:o37:0036",
           "document_id": "1800990",
           "views": {
@@ -7375,43 +7427,115 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-17#c015": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0128",
+        "DEV2-17#c002": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0126",
           "document_id": "18002753__c064d5c2",
           "views": {
-            "dense": 10,
+            "dense": 6,
             "lexical": null,
-            "hybrid": 21,
-            "hybrid_rerank": 9
+            "hybrid": 16,
+            "hybrid_rerank": 11
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-17#c016": {
-          "chunk_id": "18002752:top1:o2:o23:0023",
+        "DEV2-17#c003": {
+          "chunk_id": "5124241545118184:top1:o2:0004",
+          "document_id": "5124241545118184",
+          "views": {
+            "dense": null,
+            "lexical": null,
+            "hybrid": null,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 3,
+          "auto_prelabel_gold_grade": 3
+        },
+        "DEV2-17#c004": {
+          "chunk_id": "18002936:top1:o2:o46:0046",
+          "document_id": "18002936",
+          "views": {
+            "dense": null,
+            "lexical": 3,
+            "hybrid": 22,
+            "hybrid_rerank": 3
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c005": {
+          "chunk_id": "18002106:top1:o2:o37:0037",
+          "document_id": "18002106",
+          "views": {
+            "dense": 9,
+            "lexical": null,
+            "hybrid": 20,
+            "hybrid_rerank": 21
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c006": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0218",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 11,
+            "lexical": null,
+            "hybrid": 23,
+            "hybrid_rerank": 17
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c007": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:o5:0223",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 1,
+            "lexical": null,
+            "hybrid": 11,
+            "hybrid_rerank": 13
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c008": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0147",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 3,
+            "lexical": 32,
+            "hybrid": 2,
+            "hybrid_rerank": 5
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c009": {
+          "chunk_id": "18003339:top1:o2:o24:0024",
+          "document_id": "18003339",
+          "views": {
+            "dense": 5,
+            "lexical": null,
+            "hybrid": 15,
+            "hybrid_rerank": 15
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c010": {
+          "chunk_id": "18002752:top1:o2:o21:0021",
           "document_id": "18002752",
           "views": {
             "dense": null,
-            "lexical": 11,
-            "hybrid": 34,
+            "lexical": 6,
+            "hybrid": 28,
             "hybrid_rerank": null
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-17#c017": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0183",
-          "document_id": "18002753__c064d5c2",
-          "views": {
-            "dense": 18,
-            "lexical": null,
-            "hybrid": 33,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-17#c018": {
+        "DEV2-17#c011": {
           "chunk_id": "18003518__870c31f8:top1:o2:0053",
           "document_id": "18003518__870c31f8",
           "views": {
@@ -7423,7 +7547,43 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-17#c019": {
+        "DEV2-17#c012": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:o7:0242",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 4,
+            "lexical": null,
+            "hybrid": 14,
+            "hybrid_rerank": 6
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c013": {
+          "chunk_id": "18002752:top1:o2:o23:0023",
+          "document_id": "18002752",
+          "views": {
+            "dense": null,
+            "lexical": 11,
+            "hybrid": 34,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c014": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:o3:0220",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 7,
+            "lexical": null,
+            "hybrid": 17,
+            "hybrid_rerank": 16
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c015": {
           "chunk_id": "M15:ch4-2:0050",
           "document_id": "M15",
           "views": {
@@ -7435,17 +7595,78 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-17#c020": {
-          "chunk_id": "18002753__c064d5c2:top1:o2:0126",
+        "DEV2-17#c016": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0076",
           "document_id": "18002753__c064d5c2",
           "views": {
-            "dense": 6,
+            "dense": 12,
             "lexical": null,
-            "hybrid": 16,
-            "hybrid_rerank": 11
+            "hybrid": 25,
+            "hybrid_rerank": null
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c017": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0148",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 13,
+            "lexical": null,
+            "hybrid": 27,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c018": {
+          "chunk_id": "18002765__c01ae530:top1:o2:0243",
+          "document_id": "18002765__c01ae530",
+          "views": {
+            "dense": null,
+            "lexical": 40,
+            "hybrid": 9,
+            "hybrid_rerank": 12
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c019": {
+          "chunk_id": "18001662:top1:o2:o20:0020",
+          "document_id": "18001662",
+          "views": {
+            "dense": null,
+            "lexical": 5,
+            "hybrid": 26,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-17#c020": {
+          "chunk_id": "18002753__c064d5c2:top1:o2:0128",
+          "document_id": "18002753__c064d5c2",
+          "views": {
+            "dense": 10,
+            "lexical": null,
+            "hybrid": 21,
+            "hybrid_rerank": 9
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "5124241545118184:top1:o2:0004": {
+          "cand_id": "DEV2-17#c003",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": null,
+            "hybrid": null,
+            "hybrid_rerank": null
+          },
+          "recalled_by_any_view": false,
+          "forced_into_judging_pool": true
         }
       }
     },
@@ -7888,6 +8109,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         }
+      },
+      "authored_anchors": {
+        "1800889__b3988d85:top1:o2:o15:0062": {
+          "cand_id": "DEV2-18#c017",
+          "retrieval_view_ranks": {
+            "dense": 1,
+            "lexical": 2,
+            "hybrid": 1,
+            "hybrid_rerank": 3
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
+        }
       }
     },
     "DEV2-19": {
@@ -8086,114 +8320,6 @@
       },
       "candidates": {
         "DEV2-19#c001": {
-          "chunk_id": "45811822155141588:top1:o2:o10:0030",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 47,
-            "lexical": 46,
-            "hybrid": 8,
-            "hybrid_rerank": 8
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c002": {
-          "chunk_id": "45811822155141588:top1:o2:o7:0020",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 15,
-            "lexical": null,
-            "hybrid": 12,
-            "hybrid_rerank": 12
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c003": {
-          "chunk_id": "AI时代的价值投资与叙事经济_最终报告:ch6-1:0027",
-          "document_id": "AI时代的价值投资与叙事经济_最终报告",
-          "views": {
-            "dense": null,
-            "lexical": 1,
-            "hybrid": 31,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c004": {
-          "chunk_id": "45811822155141588:top1:o2:0001",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 5,
-            "lexical": null,
-            "hybrid": 7,
-            "hybrid_rerank": 13
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c005": {
-          "chunk_id": "45811822155141588:top1:o2:o9:0024",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 9,
-            "lexical": null,
-            "hybrid": 15,
-            "hybrid_rerank": 3
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c006": {
-          "chunk_id": "M14:ch13-4:0079",
-          "document_id": "M14",
-          "views": {
-            "dense": null,
-            "lexical": 3,
-            "hybrid": 33,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c007": {
-          "chunk_id": "45811822155141588:top1:o2:o3:0007",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 10,
-            "lexical": null,
-            "hybrid": 9,
-            "hybrid_rerank": 5
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c008": {
-          "chunk_id": "45811822155141588:top1:o2:o5:0010",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 2,
-            "lexical": null,
-            "hybrid": 11,
-            "hybrid_rerank": 14
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c009": {
-          "chunk_id": "45811822155141588:top1:o2:o8:0021",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 12,
-            "lexical": null,
-            "hybrid": 22,
-            "hybrid_rerank": 11
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c010": {
           "chunk_id": "45811822155141588:top1:o2:o11:0035",
           "document_id": "45811822155141588",
           "views": {
@@ -8205,43 +8331,7 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c011": {
-          "chunk_id": "45811822155141588:top1:o2:o7:0019",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 28,
-            "lexical": null,
-            "hybrid": 24,
-            "hybrid_rerank": 9
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c012": {
-          "chunk_id": "45811822155141588:top1:o2:o3:0003",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 6,
-            "lexical": null,
-            "hybrid": 13,
-            "hybrid_rerank": 19
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c013": {
-          "chunk_id": "18002902:top1:o2:o31:0031",
-          "document_id": "18002902",
-          "views": {
-            "dense": null,
-            "lexical": 4,
-            "hybrid": 34,
-            "hybrid_rerank": null
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c014": {
+        "DEV2-19#c002": {
           "chunk_id": "18001919:top1:o2:o11:0011",
           "document_id": "18001919",
           "views": {
@@ -8253,19 +8343,7 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c015": {
-          "chunk_id": "45811822155141588:top1:o2:o5:0011",
-          "document_id": "45811822155141588",
-          "views": {
-            "dense": 4,
-            "lexical": 36,
-            "hybrid": 3,
-            "hybrid_rerank": 16
-          },
-          "auto_prelabel_grade": 0,
-          "auto_prelabel_gold_grade": null
-        },
-        "DEV2-19#c016": {
+        "DEV2-19#c003": {
           "chunk_id": "45811822155141588:top1:o2:o4:0008",
           "document_id": "45811822155141588",
           "views": {
@@ -8277,7 +8355,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c017": {
+        "DEV2-19#c004": {
+          "chunk_id": "45811822155141588:top1:o2:o3:0007",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 10,
+            "lexical": null,
+            "hybrid": 9,
+            "hybrid_rerank": 5
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c005": {
           "chunk_id": "45811822155141588:top1:o2:o9:0025",
           "document_id": "45811822155141588",
           "views": {
@@ -8289,7 +8379,55 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c018": {
+        "DEV2-19#c006": {
+          "chunk_id": "45811822155141588:top1:o2:o5:0010",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 2,
+            "lexical": null,
+            "hybrid": 11,
+            "hybrid_rerank": 14
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c007": {
+          "chunk_id": "45811822155141588:top1:o2:o5:0011",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 4,
+            "lexical": 36,
+            "hybrid": 3,
+            "hybrid_rerank": 16
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c008": {
+          "chunk_id": "45811822155141588:top1:o2:o9:0024",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 9,
+            "lexical": null,
+            "hybrid": 15,
+            "hybrid_rerank": 3
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c009": {
+          "chunk_id": "45811822155141588:top1:o2:o10:0030",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 47,
+            "lexical": 46,
+            "hybrid": 8,
+            "hybrid_rerank": 8
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c010": {
           "chunk_id": "18002191:top1:o17:o23:0022",
           "document_id": "18002191",
           "views": {
@@ -8301,19 +8439,19 @@
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c019": {
-          "chunk_id": "45811822155141588:top1:o2:o11:0033",
+        "DEV2-19#c011": {
+          "chunk_id": "45811822155141588:top1:o2:o7:0020",
           "document_id": "45811822155141588",
           "views": {
-            "dense": 11,
-            "lexical": 24,
-            "hybrid": 4,
-            "hybrid_rerank": 18
+            "dense": 15,
+            "lexical": null,
+            "hybrid": 12,
+            "hybrid_rerank": 12
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
         },
-        "DEV2-19#c020": {
+        "DEV2-19#c012": {
           "chunk_id": "45811822155141588:top1:o2:o10:0028",
           "document_id": "45811822155141588",
           "views": {
@@ -8324,6 +8462,115 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c013": {
+          "chunk_id": "45811822155141588:top1:o2:0001",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 5,
+            "lexical": null,
+            "hybrid": 7,
+            "hybrid_rerank": 13
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c014": {
+          "chunk_id": "45811822155141588:top1:o2:o8:0021",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 12,
+            "lexical": null,
+            "hybrid": 22,
+            "hybrid_rerank": 11
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c015": {
+          "chunk_id": "M14:ch13-4:0079",
+          "document_id": "M14",
+          "views": {
+            "dense": null,
+            "lexical": 3,
+            "hybrid": 33,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c016": {
+          "chunk_id": "22811844124422841:top1:o2:0017",
+          "document_id": "22811844124422841",
+          "views": {
+            "dense": null,
+            "lexical": null,
+            "hybrid": null,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 3,
+          "auto_prelabel_gold_grade": 3
+        },
+        "DEV2-19#c017": {
+          "chunk_id": "AI时代的价值投资与叙事经济_最终报告:ch6-1:0027",
+          "document_id": "AI时代的价值投资与叙事经济_最终报告",
+          "views": {
+            "dense": null,
+            "lexical": 1,
+            "hybrid": 31,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c018": {
+          "chunk_id": "45811822155141588:top1:o2:o3:0003",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 6,
+            "lexical": null,
+            "hybrid": 13,
+            "hybrid_rerank": 19
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c019": {
+          "chunk_id": "18002902:top1:o2:o31:0031",
+          "document_id": "18002902",
+          "views": {
+            "dense": null,
+            "lexical": 4,
+            "hybrid": 34,
+            "hybrid_rerank": null
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        },
+        "DEV2-19#c020": {
+          "chunk_id": "45811822155141588:top1:o2:o11:0033",
+          "document_id": "45811822155141588",
+          "views": {
+            "dense": 11,
+            "lexical": 24,
+            "hybrid": 4,
+            "hybrid_rerank": 18
+          },
+          "auto_prelabel_grade": 0,
+          "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "22811844124422841:top1:o2:0017": {
+          "cand_id": "DEV2-19#c016",
+          "retrieval_view_ranks": {
+            "dense": null,
+            "lexical": null,
+            "hybrid": null,
+            "hybrid_rerank": null
+          },
+          "recalled_by_any_view": false,
+          "forced_into_judging_pool": true
         }
       }
     },
@@ -8761,6 +9008,19 @@
           },
           "auto_prelabel_grade": 0,
           "auto_prelabel_gold_grade": null
+        }
+      },
+      "authored_anchors": {
+        "8854585555458482:top1:o2:o5:0004": {
+          "cand_id": "DEV2-20#c009",
+          "retrieval_view_ranks": {
+            "dense": 2,
+            "lexical": 1,
+            "hybrid": 1,
+            "hybrid_rerank": 1
+          },
+          "recalled_by_any_view": true,
+          "forced_into_judging_pool": false
         }
       }
     }

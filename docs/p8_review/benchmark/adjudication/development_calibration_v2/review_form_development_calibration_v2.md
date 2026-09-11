@@ -1,7 +1,7 @@
 # P8-BENCH-02 盲化人审表（blinded human adjudication form）
 
 - split：**development** ｜ 题数：**20** ｜ seed：`p8-bench-02-adjudication-20260911`
-- 包 SHA256：`889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0`
+- 包 SHA256：`4cf9a91afbf459c4711212bbef0e9da213dfa860ae409d0a4b51a1b8d971201d`
 - 抽样：family 覆盖优先 + tier 轮转（seed 确定性）
 - **本表刻意不显示**：检索视图归属、视图内名次、融合分数、auto_prelabel grade。
 - 候选为 4 个冻结视图 top-N 的**有界抽样**；未在本表出现的 chunk 不参与 gold（standard pooling 假设）。
@@ -3371,65 +3371,35 @@
 
 #### 1. `DEV2-17#c001`
 
-- document：`18002106`
-- heading：1302科技日报2 > 元信息 > 看多者认为_AMAT正处于由AI驱动的多年WFE扩张期_其中_最难_的支出类别
+- document：`1800990`
+- heading：2409科技日报2 > 元信息 > 富国银行将亚马逊评级从_中性_上调至_增持__目标价设为280美元_理由是对AW
 - 文本：
 
-> 看多者认为，AMAT正处于由AI驱动的多年WFE扩张期，其中“最难”的支出类别（先进制程逻辑、先进DRAM/HBM和先进封装）在结构上比整个半导体行业的增速更快。在这一框架下，关键不仅在于WFE的总量上升，而在于WFE密度的提高，因为下一代逻辑制程转换（如GAA+背面供电）和HBM扩产增加了沉积、刻蚀和量测的复杂性。AMAT的看多者认为，该公司具有独特优势，因为它是最广泛的平台供应商，处于最复杂工艺步骤的核心，并且可以通过“按价值定价”而非仅仅增加出货量来变现技术拐点。就公司自身而言，看多者看到了在重大技术拐点（GAA、布线、背面供电、封装工艺模块）获得市场份额的路径，以及随着装机量的增长和维护工具变得更加AI化和预测化，服务业务将带来持久的增长动力。他们还认为，“中国市场隐忧”正日益消散：如果中国/ICAPS业务持平，而AI引领的细分市场加速增长，那么增长结构自然会转向AMAT最擅长的领域，估值折价应当收窄。本季度，看多者指出，明确的“2026日历年半导体设备增长 >20%”指引（对比此前华尔街低得多的预期）、4月份指引的强劲上调、创纪录的DRAM动态以及利润率的上行空间，都证明了上行周期比预期来得更早，且利润率表现更好。看多者认为，以17美元以上的每股收益（EPS）配合30倍以上的市盈率，目标价可达500美元以上。
+> 富国银行将亚马逊评级从“中性”上调至“增持”，目标价设为280美元，理由是对AWS（亚马逊云服务）与Anthropic合作及云需求增长前景更具信心。该行预测，2026年AWS收入增速将达到 22%，较市场预期高出4个百分点，而“Rainier项目”新增产能将在2026/27年贡献约 5-7%的增长。富国认为AWS市场份额流失将在2025年达到峰值（同比减少470个基点），之后随着行业增长和Anthropic增量投入的推动，2026-2028年状况将改善。风险因素包括Rainier项目执行情况、Trainium芯片性能表现以及AI相关利润率压力。报告将亚马逊2026-2028年每股收益预期上调1-2%，AWS收入预期上调3-7%，这些调整强化了AWS作为亚马逊估值重估核心驱动力的市场信心。 NOW: Morgan Stanley Upgrades to Overweight on Agentic AI Opportunity, PT $1,250 摩根士丹利上调评级至增持，看好智能代理AI机遇，目标价1250美元
 
 `grade（0/1/2/3）`：______
 
 #### 2. `DEV2-17#c002`
 
-- document：`18002752`
-- heading：1805科技日报 > 元信息 > 摩根士丹利表示_Meta预期的裁员_放缓招聘及严格的费用管理应有助于抵消不断上升
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
 - 文本：
 
-> 摩根士丹利表示，Meta预期的裁员、放缓招聘及严格的费用管理应有助于抵消不断上升的AI资本支出。该机构将2027财年每股收益预期上调约 3%至约34美元，同时维持"增持"评级和 775美元目标价。据摩根士丹利估算，10%的裁员规模可在 2027财年带来约35亿美元的年化成本节约（约合每股收益 1.20美元）。除核心的AI广告/产品主题外，该机构还指出潜在的"新云备份"选项一一认为过剩算力最终可通过外部变现，为 2028年每股收益带来约 8%的上行空间。 Semicap/WFE/AMAT/LAM/MKS: Morgan Stanley Raises 2026/2027 WFE Outlook Again on Memory/Logic Strength 半导体/WFE/AMAT/LAM/MKS：摩根士丹利因存储/逻辑业务强劲再次上调2026/2027年 WFE展望
+> 10,000 30% 8,000 20% 10% 6,000 0% 4,000 -10% 2,000 -20% 0 -30% 2022 2023 2024 2025 2026e 2027e 2028e 2022 2023 2024 2025 2026e 2027e 2028e Source: Company data, Morgan Stanley Research. e = Morgan Stanley Research estimates Source: Company data, Morgan Stanley Research. e = Morgan Stanley Research estimates 14 <!-- page: 15 --> IdeaM LAM up to OW, AMAT down to EW LAM’s valuation premium vs AMAT has tracked in 3 stages over the last 10 years: • 0% (2015-20): minimal share movement between the 2 companies. • 5% (2021-23): minimal share shift during 2021/22, initial premium during 2023 due to dep …
 
 `grade（0/1/2/3）`：______
 
 #### 3. `DEV2-17#c003`
 
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p33 OCR）
+- document：`5124241545118184`
+- heading：Global Technology: Investor Feedback and FAQs on AI NAND > 元信息
 - 文本：
 
-> 图表文字（glm-ocr，evidence=L3）： > KLA Corp (KLAC.0) - As of 05/17/26 GMT in USD > > Industry : Semiconductor Capital Equipment > > > > Stock Rating History: 5/1/21 : E/I; 12/7/23 : E/C; 3/30/25 : 0/C; 5/22/25 : 0/I; 9/22/25 : E/I; 1/15/26 : 0/I > > Price Target History: 4/30/21 : 364; 7/30/21 : 389; 10/28/21 : 399; 12/14/21 : 431; 1/28/22 : 400; 4/25/22 : 375; 4/29/22 : 373; > > 7/24/22 : 377; 7/28/22 : 381; 9/6/22 : 358; 10/17/22 : 289; 10/27/22 : 318; 1/27/23 : 420; 4/26/23 : 414; 7/28/23 : 529; > > Effective January 13, 2014, the stocks covered by Morgan Stanley Asia Pacific will be rated relati …
+> memory capex to skew to the upside. Based on the revised estimates, Shane Brett upgraded AMAT to OW, upgraded LAM to EW, and downgraded KLA to EW. Valuation. Our Japan semiconductor analyst Kazuo Yoshikawa believes that 7.2x P/E (a 10% discount to the historical mid-cycle range for memory players) based on FY3/27e EPS remains a reasonable base case fair value for KIOXIA. His bull case target price is 8.0x P/E. On SanDisk, our US semiconductor analyst Joseph Moore considers 2x NTM book value per share ($140) a reasonable upcycle valuation scenario to aim for. And on the earnings front he sees a …
 
 `grade（0/1/2/3）`：______
 
 #### 4. `DEV2-17#c004`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> <!-- page: 19 --> IdeaM Hillwood2024 @wechat: reports More Morgan Stanley Research 19 <!-- page: 20 --> IdeaM RiskRisk RewardReward– Applied- AppliedMaterials Inc.Materials(AMAT.O) Inc. (AMAT.O) DRAM/Leading Logic upside & China/ICAPS derisked PRICE TARGET $502.00 EQUAL-WEIGHT THESIS ~28x CY27e EPS of $17.94, a 6-turn discount to LAM and 5-turns to KLA to reflect growth ▪AMAT has traded at a material valuation prospects in DRAM but concerns around market share loss in China. discount vs LAM & KLA given execution and concerns around market share loss in China. $442.83 We think AMAT will be a sh …
-
-`grade（0/1/2/3）`：______
-
-#### 5. `DEV2-17#c005`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> 12-18 months. Unless otherwise specified, the time frame for price targets included in Morgan Stanley Research is 12 to 18 months. Analyst Industry ViewsHillwood2024 Attractive (A): The analyst expects the performance of his or her industry coverage universe over the next 12-18 months to be attractive vs. the relevant broad market benchmark, as indicated below. In-Line (I): The analyst expects the performance of his or her industry coverage universe over the next 12-18 months to be in line with the relevant broad market benchmark, as indicated below. Cautious (C): The analyst views the perform …
-
-`grade（0/1/2/3）`：______
-
-#### 6. `DEV2-17#c006`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> From To while in memory we would look to adjust our estimates as we gain greater visibility Price Target $354.00 $374.00Hillwood2024 into project scale. Overall, we believe
-
-`grade（0/1/2/3）`：______
-
-#### 7. `DEV2-17#c007`
 
 - document：`18002936`
 - heading：1006科技日报2 > 元信息 > 巴克莱大幅上调了其晶圆厂设备_WFE_预测_目前预计2026年将达到1540亿美
@@ -3439,47 +3409,47 @@
 
 `grade（0/1/2/3）`：______
 
+#### 5. `DEV2-17#c005`
+
+- document：`18002106`
+- heading：1302科技日报2 > 元信息 > 看多者认为_AMAT正处于由AI驱动的多年WFE扩张期_其中_最难_的支出类别
+- 文本：
+
+> 看多者认为，AMAT正处于由AI驱动的多年WFE扩张期，其中“最难”的支出类别（先进制程逻辑、先进DRAM/HBM和先进封装）在结构上比整个半导体行业的增速更快。在这一框架下，关键不仅在于WFE的总量上升，而在于WFE密度的提高，因为下一代逻辑制程转换（如GAA+背面供电）和HBM扩产增加了沉积、刻蚀和量测的复杂性。AMAT的看多者认为，该公司具有独特优势，因为它是最广泛的平台供应商，处于最复杂工艺步骤的核心，并且可以通过“按价值定价”而非仅仅增加出货量来变现技术拐点。就公司自身而言，看多者看到了在重大技术拐点（GAA、布线、背面供电、封装工艺模块）获得市场份额的路径，以及随着装机量的增长和维护工具变得更加AI化和预测化，服务业务将带来持久的增长动力。他们还认为，“中国市场隐忧”正日益消散：如果中国/ICAPS业务持平，而AI引领的细分市场加速增长，那么增长结构自然会转向AMAT最擅长的领域，估值折价应当收窄。本季度，看多者指出，明确的“2026日历年半导体设备增长 >20%”指引（对比此前华尔街低得多的预期）、4月份指引的强劲上调、创纪录的DRAM动态以及利润率的上行空间，都证明了上行周期比预期来得更早，且利润率表现更好。看多者认为，以17美元以上的每股收益（EPS）配合30倍以上的市盈率，目标价可达500美元以上。
+
+`grade（0/1/2/3）`：______
+
+#### 6. `DEV2-17#c006`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
+- 文本：
+
+> 12-18 months. Unless otherwise specified, the time frame for price targets included in Morgan Stanley Research is 12 to 18 months. Analyst Industry ViewsHillwood2024 Attractive (A): The analyst expects the performance of his or her industry coverage universe over the next 12-18 months to be attractive vs. the relevant broad market benchmark, as indicated below. In-Line (I): The analyst expects the performance of his or her industry coverage universe over the next 12-18 months to be in line with the relevant broad market benchmark, as indicated below. Cautious (C): The analyst views the perform …
+
+`grade（0/1/2/3）`：______
+
+#### 7. `DEV2-17#c007`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p33 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > KLA Corp (KLAC.0) - As of 05/17/26 GMT in USD > > Industry : Semiconductor Capital Equipment > > > > Stock Rating History: 5/1/21 : E/I; 12/7/23 : E/C; 3/30/25 : 0/C; 5/22/25 : 0/I; 9/22/25 : E/I; 1/15/26 : 0/I > > Price Target History: 4/30/21 : 364; 7/30/21 : 389; 10/28/21 : 399; 12/14/21 : 431; 1/28/22 : 400; 4/25/22 : 375; 4/29/22 : 373; > > 7/24/22 : 377; 7/28/22 : 381; 9/6/22 : 358; 10/17/22 : 289; 10/27/22 : 318; 1/27/23 : 420; 4/26/23 : 414; 7/28/23 : 529; > > Effective January 13, 2014, the stocks covered by Morgan Stanley Asia Pacific will be rated relati …
+
+`grade（0/1/2/3）`：______
+
 #### 8. `DEV2-17#c008`
 
 - document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p34 OCR）
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
 - 文本：
 
-> fixed income research reports as providing stand-alone analysis and should not expect continuing analysis or additional reports relating to such issuers and/or individual fixed income products. Morgan Stanley may hold, from time to time, material financial and commercial interests regarding the company subject to the Research report. Registration granted by SEBI and certification from the National Institute of Securities Markets (NISM) in no way guarantee performance of the intermediary or provide any assurance of returns to investors. Investment in securities market are subject to market risk …
+> <!-- page: 19 --> IdeaM Hillwood2024 @wechat: reports More Morgan Stanley Research 19 <!-- page: 20 --> IdeaM RiskRisk RewardReward– Applied- AppliedMaterials Inc.Materials(AMAT.O) Inc. (AMAT.O) DRAM/Leading Logic upside & China/ICAPS derisked PRICE TARGET $502.00 EQUAL-WEIGHT THESIS ~28x CY27e EPS of $17.94, a 6-turn discount to LAM and 5-turns to KLA to reflect growth ▪AMAT has traded at a material valuation prospects in DRAM but concerns around market share loss in China. discount vs LAM & KLA given execution and concerns around market share loss in China. $442.83 We think AMAT will be a sh …
 
 `grade（0/1/2/3）`：______
 
 #### 9. `DEV2-17#c009`
-
-- document：`18001662`
-- heading：1812科技日报2 > 元信息 > 美国银行的Vivek将评级上调至买入_他对内存周期的持续性和美光资产负债表的品质
-- 文本：
-
-> 美国银行的Vivek将评级上调至买入，他对内存周期的持续性和美光资产负债表的品质改变了看法，将该公司2026财年、 2027财年和2028财年预期每股收益分别较此前预测上调了 62%、80%和 42%。这位分析师告诉投资者，尽管人工智能需求可能存在一些波动，但高带宽内存在整个2026年再次售罄，且客户已签署多年协议，这使得美光相较于之前的周期，可能处于一个更具持续性的上行周期中。 Bull vs. Bear debate 牛市与熊市之辩
-
-`grade（0/1/2/3）`：______
-
-#### 10. `DEV2-17#c010`
-
-- document：`18002765__c01ae530`
-- heading：US Technology: Large-Cap Institutional Ownership 1Q26: Mega-Cap Tech Under-Ownership Narrows > 元信息
-- 文本：
-
-> <!-- page: 56 --> UpdateM RiskRisk RewardReward– Applied- AppliedMaterials Inc.Materials(AMAT.O) Inc. (AMAT.O) DRAM/Leading Logic upside & China/ICAPS derisked PRICE TARGET $502.00 EQUAL-WEIGHT THESIS ~28x CY27e EPS of $17.94, a 6-turn discount to LAM and 5-turns to KLA to reflect growth ▪AMAT has traded at a material valuation prospects in DRAM but concerns around market share loss in China. discount vs LAM & KLA given execution and concerns around market share loss in China. $492.77 We think AMAT will be a share gainer in Consensus Price Target Distribution $308.00 $575.00 2026 but given our …
-
-`grade（0/1/2/3）`：______
-
-#### 11. `DEV2-17#c011`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p32 OCR）
-- 文本：
-
-> 图表文字（glm-ocr，evidence=L3）： > Applied Materials Inc. (AMAT.0) - As of 05/17/26 GMT in USD > > Industry : Semiconductor Capital Equipment > > > > Stock Rating History: 5/1/21 : E/I; 12/7/23 : E/C; 12/5/24 : U/C; 5/22/25 : U/I; 6/5/25 : E/I; 9/22/25 : O/I > > Price Target History: 19/21 : 113; 5/17/21 : 137; 5/21/21 : 139; 8/20/21 : 150; 12/14/21 : 160; 5/19/22 : 133; 7/24/22 : 115; > > 9/6/22 : 109; 10/13/22 : 99; 10/17/22 : 89; 11/18/23 : 88; 2/16/23 : 125; 8/17/23 : 139; 11/16/23 : 142; 2/12/24 : 190; > > 2/15/24 : 206; 4/8/24 : 215; 5/16/24 : 223; 8/15/24 : 224; 9/16/24 : 185; 11/14/24 : 179; …
-
-`grade（0/1/2/3）`：______
-
-#### 12. `DEV2-17#c012`
 
 - document：`18003339`
 - heading：0308科技日报 > 元信息 > 花旗在8月13日财报发布前对AMAT开启30日上行催化剂观察_预计其10月季度指
@@ -3489,57 +3459,17 @@
 
 `grade（0/1/2/3）`：______
 
-#### 13. `DEV2-17#c013`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> growing in 2027. 800 $693.00(+58.72%)$693.00$693.00(+58.72%)(+58.72%) ProbProbProb (>693.00)~6.2%(>693.00)~6.2%(>693.00)~6.2% Consensus Rating Distribution 600 85% Overweight $502.00(+14.97%)$502.00$502.00(+14.97%)(+14.97%) ProbProbProb (>502.00)~24.7%(>502.00)~24.7%(>502.00)~24.7% 15% Equal-weight $436.62$436.62$436.62 0% UnderweightHillwood2024 400 MS Rating Source: Refinitiv, Morgan Stanley Research $330.00(-24.42%)$330.00$330.00(-24.42%)(-24.42%) ProbProbProb (<330.00)~37.1%(<330.00)~37.1%(<330.00)~37.1% 200
-
-`grade（0/1/2/3）`：______
-
-#### 14. `DEV2-17#c014`
-
-- document：`1800990`
-- heading：2409科技日报2 > 元信息 > 富国银行将亚马逊评级从_中性_上调至_增持__目标价设为280美元_理由是对AW
-- 文本：
-
-> 富国银行将亚马逊评级从“中性”上调至“增持”，目标价设为280美元，理由是对AWS（亚马逊云服务）与Anthropic合作及云需求增长前景更具信心。该行预测，2026年AWS收入增速将达到 22%，较市场预期高出4个百分点，而“Rainier项目”新增产能将在2026/27年贡献约 5-7%的增长。富国认为AWS市场份额流失将在2025年达到峰值（同比减少470个基点），之后随着行业增长和Anthropic增量投入的推动，2026-2028年状况将改善。风险因素包括Rainier项目执行情况、Trainium芯片性能表现以及AI相关利润率压力。报告将亚马逊2026-2028年每股收益预期上调1-2%，AWS收入预期上调3-7%，这些调整强化了AWS作为亚马逊估值重估核心驱动力的市场信心。 NOW: Morgan Stanley Upgrades to Overweight on Agentic AI Opportunity, PT $1,250 摩根士丹利上调评级至增持，看好智能代理AI机遇，目标价1250美元
-
-`grade（0/1/2/3）`：______
-
-#### 15. `DEV2-17#c015`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> 25.0 0%reports 20.0 -10% 15.0More -20% 10.0 5.0 -30% 0.0 -40% May-16 May-17 May-18 May-19 May-20 May-21 May-22 May-23 May-24 May-25 Source: FactSet, Morgan Stanley Research NAND shifts the needle for LAM, not for AMAT. We preferred AMAT in 2026 given the company’s outsized exposure to DRAM. DRAM WFE upward revisions had a larger impact on AMAT than LAM (CY26 mix 32% vs 23%). As we look towards 2027, the growth rates of each company’s NAND shipments aren’t entirely that different, NAND WFE revisions will have a larger impact on LAM than AMAT due to mix (20% vs 7%). Where could we be wrong? 2 ar …
-
-`grade（0/1/2/3）`：______
-
-#### 16. `DEV2-17#c016`
+#### 10. `DEV2-17#c010`
 
 - document：`18002752`
-- heading：1805科技日报 > 元信息 > 摩根士丹利_Shane_Brett_再次上调WFE_晶圆制造设备_市场规模预测
+- heading：1805科技日报 > 元信息 > 摩根士丹利表示_Meta预期的裁员_放缓招聘及严格的费用管理应有助于抵消不断上升
 - 文本：
 
-> 摩根士丹利（Shane Brett）再次上调WFE（晶圆制造设备）市场规模预测：2026年同比增长 27%至1490亿美元，2027年同比增长 28%至1910亿美元，并首次给出2028年增长 13%的预期，认为半导体设备上升周期的持续性将超出此前预期。上调幅度最大的领域来自NAND，摩根士丹利大幅提高了三星和铠侠的绿地晶圆产能假设，因为NAND资本支出在经历多年投资不足后终于开始追赶。该机构目前认为2027年WFE设备支出排序为：NAND >非台积电代工厂 >台积电 >DRAM。其将LAM评级上调至超配，将MKS列为首选股，并下调AMAT评级——此前该机构更偏好DRAM WFE而非NAND，但鉴于这一偏好已发生转变，目前更看好LAM而非AMAT。 Full notes here via X 完整笔记请通过X平台查看 KIOXIA (limit up overnight): Morgan Stanley Names Top Pick on NAND ASP/LTA Upside and Improving Capital Returns 铠侠（隔夜涨停）：摩根士丹利将其列为首选股，看好NAND平均售价/长期协议上行空间及资本回报改善 Morgan Stanley's Kazuo Yoshikawa raises conviction on KIOXIA as his top pic …
+> 摩根士丹利表示，Meta预期的裁员、放缓招聘及严格的费用管理应有助于抵消不断上升的AI资本支出。该机构将2027财年每股收益预期上调约 3%至约34美元，同时维持"增持"评级和 775美元目标价。据摩根士丹利估算，10%的裁员规模可在 2027财年带来约35亿美元的年化成本节约（约合每股收益 1.20美元）。除核心的AI广告/产品主题外，该机构还指出潜在的"新云备份"选项一一认为过剩算力最终可通过外部变现，为 2028年每股收益带来约 8%的上行空间。 Semicap/WFE/AMAT/LAM/MKS: Morgan Stanley Raises 2026/2027 WFE Outlook Again on Memory/Logic Strength 半导体/WFE/AMAT/LAM/MKS：摩根士丹利因存储/逻辑业务强劲再次上调2026/2027年 WFE展望
 
 `grade（0/1/2/3）`：______
 
-#### 17. `DEV2-17#c017`
-
-- document：`18002753__c064d5c2`
-- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
-- 文本：
-
-> Lam Research Corporation Balance Sheet $ in millions; fiscal year ends in June) | C3Q24A C4Q24E C1Q25A C2Q25A Sep-24 Dec-24 Mar-25 Jun-25 2025/1F 2025/2F 2025/3F 2025/4F | C3Q25A C4Q25A C1Q26A Sep-25 Dec-25 Mar-26 2026/1F 2026/2F 2026/3F | C2Q26E Jun-26 2026/4F | C3Q26E C4Q26E C1Q27E C2Q27E Sep-26 Dec-26 Mar-27 Jun-27 2027/1F 2027/2F 2027/3F 2027/4F | C3Q27E C4Q27E C1Q28E C2Q28E Sep-27 Dec-27 Mar-28 Jun-28 2028/1F 2028/2F 2028/3F 2028/4F Assets: Cash and cash equivalents Marketable securities Accounts receivable, net Inventory Deferred income taxes Other current assets Total current assets PP& …
-
-`grade（0/1/2/3）`：______
-
-#### 18. `DEV2-17#c018`
+#### 11. `DEV2-17#c011`
 
 - document：`18003518__870c31f8`
 - heading：Semiconductor Capital Equipment: 3Q'26 WFE update: 2026/27 Bull Case is the Base Case > 元信息
@@ -3549,7 +3479,37 @@
 
 `grade（0/1/2/3）`：______
 
-#### 19. `DEV2-17#c019`
+#### 12. `DEV2-17#c012`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p34 OCR）
+- 文本：
+
+> fixed income research reports as providing stand-alone analysis and should not expect continuing analysis or additional reports relating to such issuers and/or individual fixed income products. Morgan Stanley may hold, from time to time, material financial and commercial interests regarding the company subject to the Research report. Registration granted by SEBI and certification from the National Institute of Securities Markets (NISM) in no way guarantee performance of the intermediary or provide any assurance of returns to investors. Investment in securities market are subject to market risk …
+
+`grade（0/1/2/3）`：______
+
+#### 13. `DEV2-17#c013`
+
+- document：`18002752`
+- heading：1805科技日报 > 元信息 > 摩根士丹利_Shane_Brett_再次上调WFE_晶圆制造设备_市场规模预测
+- 文本：
+
+> 摩根士丹利（Shane Brett）再次上调WFE（晶圆制造设备）市场规模预测：2026年同比增长 27%至1490亿美元，2027年同比增长 28%至1910亿美元，并首次给出2028年增长 13%的预期，认为半导体设备上升周期的持续性将超出此前预期。上调幅度最大的领域来自NAND，摩根士丹利大幅提高了三星和铠侠的绿地晶圆产能假设，因为NAND资本支出在经历多年投资不足后终于开始追赶。该机构目前认为2027年WFE设备支出排序为：NAND >非台积电代工厂 >台积电 >DRAM。其将LAM评级上调至超配，将MKS列为首选股，并下调AMAT评级——此前该机构更偏好DRAM WFE而非NAND，但鉴于这一偏好已发生转变，目前更看好LAM而非AMAT。 Full notes here via X 完整笔记请通过X平台查看 KIOXIA (limit up overnight): Morgan Stanley Names Top Pick on NAND ASP/LTA Upside and Improving Capital Returns 铠侠（隔夜涨停）：摩根士丹利将其列为首选股，看好NAND平均售价/长期协议上行空间及资本回报改善 Morgan Stanley's Kazuo Yoshikawa raises conviction on KIOXIA as his top pic …
+
+`grade（0/1/2/3）`：______
+
+#### 14. `DEV2-17#c014`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息 > 图表（p32 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > Applied Materials Inc. (AMAT.0) - As of 05/17/26 GMT in USD > > Industry : Semiconductor Capital Equipment > > > > Stock Rating History: 5/1/21 : E/I; 12/7/23 : E/C; 12/5/24 : U/C; 5/22/25 : U/I; 6/5/25 : E/I; 9/22/25 : O/I > > Price Target History: 19/21 : 113; 5/17/21 : 137; 5/21/21 : 139; 8/20/21 : 150; 12/14/21 : 160; 5/19/22 : 133; 7/24/22 : 115; > > 9/6/22 : 109; 10/13/22 : 99; 10/17/22 : 89; 11/18/23 : 88; 2/16/23 : 125; 8/17/23 : 139; 11/16/23 : 142; 2/12/24 : 190; > > 2/15/24 : 206; 4/8/24 : 215; 5/16/24 : 223; 8/15/24 : 224; 9/16/24 : 185; 11/14/24 : 179; …
+
+`grade（0/1/2/3）`：______
+
+#### 15. `DEV2-17#c015`
 
 - document：`M15`
 - heading：资本狂热、技术泡沫与资产定价的微观动力学 > 第 4 章：本轮 AI 资本开支（Capex）超级周期深度解剖 > 4.2 寡头博弈：囚徒困境下的防御性过度投资
@@ -3559,13 +3519,53 @@
 
 `grade（0/1/2/3）`：______
 
+#### 16. `DEV2-17#c016`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
+- 文本：
+
+> From To while in memory we would look to adjust our estimates as we gain greater visibility Price Target $354.00 $374.00Hillwood2024 into project scale. Overall, we believe
+
+`grade（0/1/2/3）`：______
+
+#### 17. `DEV2-17#c017`
+
+- document：`18002753__c064d5c2`
+- heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
+- 文本：
+
+> growing in 2027. 800 $693.00(+58.72%)$693.00$693.00(+58.72%)(+58.72%) ProbProbProb (>693.00)~6.2%(>693.00)~6.2%(>693.00)~6.2% Consensus Rating Distribution 600 85% Overweight $502.00(+14.97%)$502.00$502.00(+14.97%)(+14.97%) ProbProbProb (>502.00)~24.7%(>502.00)~24.7%(>502.00)~24.7% 15% Equal-weight $436.62$436.62$436.62 0% UnderweightHillwood2024 400 MS Rating Source: Refinitiv, Morgan Stanley Research $330.00(-24.42%)$330.00$330.00(-24.42%)(-24.42%) ProbProbProb (<330.00)~37.1%(<330.00)~37.1%(<330.00)~37.1% 200
+
+`grade（0/1/2/3）`：______
+
+#### 18. `DEV2-17#c018`
+
+- document：`18002765__c01ae530`
+- heading：US Technology: Large-Cap Institutional Ownership 1Q26: Mega-Cap Tech Under-Ownership Narrows > 元信息
+- 文本：
+
+> <!-- page: 56 --> UpdateM RiskRisk RewardReward– Applied- AppliedMaterials Inc.Materials(AMAT.O) Inc. (AMAT.O) DRAM/Leading Logic upside & China/ICAPS derisked PRICE TARGET $502.00 EQUAL-WEIGHT THESIS ~28x CY27e EPS of $17.94, a 6-turn discount to LAM and 5-turns to KLA to reflect growth ▪AMAT has traded at a material valuation prospects in DRAM but concerns around market share loss in China. discount vs LAM & KLA given execution and concerns around market share loss in China. $492.77 We think AMAT will be a share gainer in Consensus Price Target Distribution $308.00 $575.00 2026 but given our …
+
+`grade（0/1/2/3）`：______
+
+#### 19. `DEV2-17#c019`
+
+- document：`18001662`
+- heading：1812科技日报2 > 元信息 > 美国银行的Vivek将评级上调至买入_他对内存周期的持续性和美光资产负债表的品质
+- 文本：
+
+> 美国银行的Vivek将评级上调至买入，他对内存周期的持续性和美光资产负债表的品质改变了看法，将该公司2026财年、 2027财年和2028财年预期每股收益分别较此前预测上调了 62%、80%和 42%。这位分析师告诉投资者，尽管人工智能需求可能存在一些波动，但高带宽内存在整个2026年再次售罄，且客户已签署多年协议，这使得美光相较于之前的周期，可能处于一个更具持续性的上行周期中。 Bull vs. Bear debate 牛市与熊市之辩
+
+`grade（0/1/2/3）`：______
+
 #### 20. `DEV2-17#c020`
 
 - document：`18002753__c064d5c2`
 - heading：Semiconductor Capital Equipment: 2Q'26 WFE update, memory mismatch unresolved, LAM up to OW, AMAT down to EW > 元信息
 - 文本：
 
-> 10,000 30% 8,000 20% 10% 6,000 0% 4,000 -10% 2,000 -20% 0 -30% 2022 2023 2024 2025 2026e 2027e 2028e 2022 2023 2024 2025 2026e 2027e 2028e Source: Company data, Morgan Stanley Research. e = Morgan Stanley Research estimates Source: Company data, Morgan Stanley Research. e = Morgan Stanley Research estimates 14 <!-- page: 15 --> IdeaM LAM up to OW, AMAT down to EW LAM’s valuation premium vs AMAT has tracked in 3 stages over the last 10 years: • 0% (2015-20): minimal share movement between the 2 companies. • 5% (2021-23): minimal share shift during 2021/22, initial premium during 2023 due to dep …
+> 25.0 0%reports 20.0 -10% 15.0More -20% 10.0 5.0 -30% 0.0 -40% May-16 May-17 May-18 May-19 May-20 May-21 May-22 May-23 May-24 May-25 Source: FactSet, Morgan Stanley Research NAND shifts the needle for LAM, not for AMAT. We preferred AMAT in 2026 given the company’s outsized exposure to DRAM. DRAM WFE upward revisions had a larger impact on AMAT than LAM (CY26 mix 32% vs 23%). As we look towards 2027, the growth rates of each company’s NAND shipments aren’t entirely that different, NAND WFE revisions will have a larger impact on LAM than AMAT due to mix (20% vs 7%). Where could we be wrong? 2 ar …
 
 `grade（0/1/2/3）`：______
 
@@ -3796,96 +3796,6 @@
 #### 1. `DEV2-19#c001`
 
 - document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p16 OCR）
-- 文本：
-
-> <!-- page: 19 --> Currently the largest MoE models sit in the 1-2 trillion parameter range, but we expect Google and OpenAI to launch >10 trillion parameter models over the next year that will require inference systems of hundreds of GPUs and 10s of TB of memory. While Mixtral is currently the most important model for fine tuning, API services, and on premises today, this will not be the case in ~3 months. LLAMA 3 and larger Mistral models are coming. 目前，最大的混合专家模型参数规模在 1 至 2 万亿范围内，但我们预计谷歌和 OpenAI 将在未来一年内发布参数超过 10 万亿的模型，这需要数百个 GPU 和数十 TB 内存的推理系统支持。虽然 Mixtral 目前是微调、API 服务及本地部署中最关键的 模型，但约 3 个月后这一 …
-
-`grade（0/1/2/3）`：______
-
-#### 2. `DEV2-19#c002`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p11 OCR）
-- 文本：
-
-> 值得注意的是，8 块英伟达 GPU 仅需 2 颗 CPU，而 Groq 的 576 芯片系统目前配备 了 144 颗 CPU 和 144TB 内存。 Adding up these component costs, we arrive at $35,000 per Groq LPU server, which includes 8 Groq LPUs and all the of the other hardware listed above. The Mixtral Groq inference deployment uses 8 racks of 9 servers per rack, or $2,520,000 for an inference deployment with 576 LPU chips in total. By comparison, a typical H100 HGX system costs $350,000 of upfront capex and includes 8 H100s. Most H100-based Mixtral inference instances only use 2 H100 chips, so 4 inference deployments can be had per <!-- chart: p13 rect=(33,0 …
-
-`grade（0/1/2/3）`：______
-
-#### 3. `DEV2-19#c003`
-
-- document：`AI时代的价值投资与叙事经济_最终报告`
-- heading：信息密度的胜利？——从信息套利到反叙事套利：AI 时代价值投资的范式演化与股票基金投资研判 > 6. 技术革命周期中的资产定价史：铁路→电力→互联网→AI > 6.1 铁路革命的"收入幻象"
-- 文本：
-
-> 1840s 英国铁路泡沫中，铁路股估值基于"英里里程叙事"而非实际利润——与今天 AI 股基于"算力叙事"（token 量、资本开支）高度同构。【本报告判断，推理链：历史类比】铁路叙事和 AI 叙事的共同结构是"以投入规模替代产出验证"：修了多少英里/买了多少 GPU ≠ 赚了多少钱。
-
-`grade（0/1/2/3）`：______
-
-#### 4. `DEV2-19#c004`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息
-- 文本：
-
-> - 发布：2025-12-25 ｜ 作者：180K ｜ 分类：#公众号 - 源文件：45811822155141588_Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics Speed, But At What Cost_.pdf ｜ 证据等级：L1 ｜ 质量层：B <!-- page: 1 --> Groq Inference Tokenomics: Speed, But At What Cost? Groq 推理通证经济学：速度，但代价几何？ Faster than Nvidia? Dissecting the economics 比英伟达更快？剖析背后的经济学 DYLAN PATEL AND DANIEL NISHBALL 迪伦·帕特尔与丹尼尔·尼什鲍尔 FEB 21, 2024 2024 年 2 月 21 日∙ PAID ∙ 付费内容 121 5 Share 分享 Groq, an AI hardware startup, has been making the rounds recently because of their extremely impressive demos showcasing the leading open-source model, Mistral Mixtral 8x7b on their  …
-
-`grade（0/1/2/3）`：______
-
-#### 5. `DEV2-19#c005`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p14 OCR）
-- 文本：
-
-> Month</td><td>USD/mth</td><td>$2,586</td><td>$2,586</td><td>$58,409</td><td>$58,409</td></tr><tr><td>Capital Cost as % of Total System Cost / Month</td><td>%</td><td>77%</td><td>77%</td><td>52%</td><td>73%</td></tr><tr><td>Total System Capital + Hosting Cost per Month</td><td>USD/mth</td><td>$11,474</td><td>$11,474</td><td>$122,400</td><td>$219,657</td></tr><tr><td>Total System Capital + Hosting Cost per Hour</td><td>USD/hour</td><td>$15.7</td><td>$15.7</td><td>$167.7</td><td>$300.9</td></tr></table> > > W = Watts. kW = Kilowatts. kWh = Kilowatt-hours. <!-- page: 15 --> comes out to be $122,40 …
-
-`grade（0/1/2/3）`：______
-
-#### 6. `DEV2-19#c006`
-
-- document：`M14`
-- heading：M14 全球利率周期、债务危机与央行资产负债表扩张史 > 十三、监测看板：识别法律违约之前的路径切换 > 13.4 美元功能
-- 文本：
-
-> 分别跟踪COFER储备份额及估值调整、BIS美元跨境银行债权、贸易发票币种、FX turnover、美元掉期基差、美债期限溢价和海外官方/私人持有需求。一个指标移动只触发“功能重价”标签；至少三个网络同向变化，才提高“外部融资特权弱化”的等级；五个功能共同、持续、无替代摩擦地下降，才接近缺失实验的强冲击情景。
-
-`grade（0/1/2/3）`：______
-
-#### 7. `DEV2-19#c007`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p2 OCR）
-- 文本：
-
-> 同样的情况却不能用来评价其他提供 Mixtral API 的服务商。他们要么在量化方面撒 谎，要么就是在烧掉风险投资人的钱来获取用户基础。Groq 则采取了一种大胆的策 略，以极低的每百万 Token 0.27 美元的价格与这些竞争对手在定价上抗衡。 <!-- chart: p5 rect=(33,206,579,536) file=raw/charts/45811822155141588Groq_推理通证经济学_速度_但代价几何---GroqInferenceTokenomicsSpeedButAtWhatCost_最终报告p5_1.png -->
-
-`grade（0/1/2/3）`：______
-
-#### 8. `DEV2-19#c008`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p7 OCR）
-- 文本：
-
-> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > [a] > > </div> > > > > <div align="center"> > > Figure 6: Scale-out topology block diagram. > > </div> <!-- page: 8 --> The wafer cost used to fabricate Groq’s chip is likely less than $6,000 per wafer. Compare this to Nvidia’s H100 at 814mm2 die size on a custom variant of TSMC’s 5nm called 4N. The cost for these wafers is closer to $16,000 per wafer. On the flip side, Groq’s architecture seems less viable for implementing yield harvesting versus Nvidia’s, who has an extremely high parametric yield, due to them disabling ~15% of die for mo …
-
-`grade（0/1/2/3）`：______
-
-#### 9. `DEV2-19#c009`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p13 OCR）
-- 文本：
-
-> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > GN1-B8C Specifications > > </div> > > <table border="1"><tr><td>Feature</td><td>Description</td></tr><tr><td>Availability</td><td>Shipping now</td></tr><tr><td>Chassis</td><td>GroqNode 4U server chassis,7.0&quot;(H)x17.2&quot;(W)x29&quot;(D)</td></tr><tr><td>Accelerators</td><td>Up to 8x GroqCard1(GC1-010B)accelerators with a fully connected internal RealScale network delivering accelerated compute performance up to 6POPs,1.5PFLOPs(INT8,FP16)</td></tr><tr><td>Model Memory</td><td>1.76GB on-die SRAM(230MB per GroqChip™)Up to 640TB/s on-die m …
-
-`grade（0/1/2/3）`：______
-
-#### 10. `DEV2-19#c010`
-
-- document：`45811822155141588`
 - heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p20 OCR）
 - 文本：
 
@@ -3893,37 +3803,7 @@
 
 `grade（0/1/2/3）`：______
 
-#### 11. `DEV2-19#c011`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p11 OCR）
-- 文本：
-
-> 资本成本包含门槛收益率，即考量项目提出者期望获得的投资回报率，以此来证 明项目风险是合理的。 Nvidia applies a huge gross margin to their GPU baseboards. Furthermore, this $350,000 price charged for the server, which is well above the hyperscaler cost for an H100 server, also includes significant costs for memory, 8 InfiniBand NICs with aggregate bandwidth of 3.2Tbps (not needed for this inference application), and a decent OEM margins stacked on top of Nvidia’s margins. 英伟达对其 GPU 基板应用了极高的毛利率。此外，这台服务器标价 35 万美元，远超 超大规模数据中心一台 H100 服务器的成本，还包含了内存成本、8 个总带宽达 3.2Tbps 的 InfiniBand 网卡（此推理应用并不需要）的成本，以及在英伟达毛利率之 上叠加的相当可观的 OEM 利润。 For Groq, we are esti …
-
-`grade（0/1/2/3）`：______
-
-#### 12. `DEV2-19#c012`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p2 OCR）
-- 文本：
-
-> 图表文字（glm-ocr，evidence=L3）： > ## Throughput vs. Price > > Quality: General reasoning index, Throughput: Tokens per Second, Price: USD per 1M Tokens > > <!-- page: 3 --> chips require memory from South Korea, and chips/advanced packaging from Taiwan. 这一切引发了关于 Groq 硬件和推理服务将对人工智能行业带来革命性变革的巨大炒 作。虽然这对某些市场和应用来说确实是一个改变游戏规则的存在，但速度只是方程 式的一部分。供应链多样化是另一个对 Groq 有利的因素。他们的芯片完全在美国制 造和封装。而英伟达、谷歌、AMD 和其他人工智能芯片需要来自韩国的内存，以及 来自台湾的芯片/先进封装技术。 These are positives for Groq, but the primary formula for evaluating if hardware is revolutionary is performance / total cost of ownership. This is something Google understands …
-
-`grade（0/1/2/3）`：______
-
-#### 13. `DEV2-19#c013`
-
-- document：`18002902`
-- heading：0806科技周报 > 元信息 > David_Solomon__Goldman_Sachs_CEO__had_so
-- 文本：
-
-> David Solomon (Goldman Sachs CEO) had some good color on the Odd Lots Podcast around the GOOGL raise. He said they spent 5 months helping GOOGL think through whether to do equity or debt and how much to do and expects more companies to follow GOOGL's lead and mix in equity (we already heard rumors of META doing the same Friday afternoon). 高盛首席执行官大卫·所罗门在 Odd Lots 播客节目中就谷歌 （GOOGL）的增发提供了不少有价值的见解。他表示，他们花了五个月时间协助谷歌权衡是发行股票还是债券、以及发行规模应为多少，并预计将有更多公司效仿谷歌的做法，在融资中搭配股权融资（我们已在周五下午听到关于Meta可能采取同样行动的传闻）。
-
-`grade（0/1/2/3）`：______
-
-#### 14. `DEV2-19#c014`
+#### 2. `DEV2-19#c002`
 
 - document：`18001919`
 - heading：2201科技日报2 > 元信息 > 5-10_的下滑将被AIO_AIM_Gemini到2027年分别达到40亿_20
@@ -3933,17 +3813,7 @@
 
 `grade（0/1/2/3）`：______
 
-#### 15. `DEV2-19#c015`
-
-- document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p7 OCR）
-- 文本：
-
-> 此外，英伟达每块 H100 芯片需要向 SK 海力士采购 80GB 的 HBM 内存，成本约为 1150 美元。英伟达还需支付台积电 CoWoS 封装费用并承担相应良率损耗，而 Groq 完全不使用片外内存。因此 Groq 芯片的原始物料成本明显更低。但 Groq 作为初创企 业，其芯片生产规模较小/相对固定成本更高，这包括需要向 Marvell 支付高额定制 ASIC 服务溢价。 The table below presents three deployments, one is for Groq, with their current pipeline parallelism and with batch size 3, which we we hear they will implement in production next week, and the others outline a latency optimized H100 inference deployment with speculative decoding as well as a throughput optimized H100 inference deployment. 下表展示三种部署配置：一是 Groq 当前采用的流水线并行方案，批次大小为 3，据悉 将于下周投入生产；另外两种则分别展示了基于推 …
-
-`grade（0/1/2/3）`：______
-
-#### 16. `DEV2-19#c016`
+#### 3. `DEV2-19#c003`
 
 - document：`45811822155141588`
 - heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p5 OCR）
@@ -3953,7 +3823,17 @@
 
 `grade（0/1/2/3）`：______
 
-#### 17. `DEV2-19#c017`
+#### 4. `DEV2-19#c004`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p2 OCR）
+- 文本：
+
+> 同样的情况却不能用来评价其他提供 Mixtral API 的服务商。他们要么在量化方面撒 谎，要么就是在烧掉风险投资人的钱来获取用户基础。Groq 则采取了一种大胆的策 略，以极低的每百万 Token 0.27 美元的价格与这些竞争对手在定价上抗衡。 <!-- chart: p5 rect=(33,206,579,536) file=raw/charts/45811822155141588Groq_推理通证经济学_速度_但代价几何---GroqInferenceTokenomicsSpeedButAtWhatCost_最终报告p5_1.png -->
+
+`grade（0/1/2/3）`：______
+
+#### 5. `DEV2-19#c005`
 
 - document：`45811822155141588`
 - heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p14 OCR）
@@ -3963,7 +3843,47 @@
 
 `grade（0/1/2/3）`：______
 
-#### 18. `DEV2-19#c018`
+#### 6. `DEV2-19#c006`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p7 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > [a] > > </div> > > > > <div align="center"> > > Figure 6: Scale-out topology block diagram. > > </div> <!-- page: 8 --> The wafer cost used to fabricate Groq’s chip is likely less than $6,000 per wafer. Compare this to Nvidia’s H100 at 814mm2 die size on a custom variant of TSMC’s 5nm called 4N. The cost for these wafers is closer to $16,000 per wafer. On the flip side, Groq’s architecture seems less viable for implementing yield harvesting versus Nvidia’s, who has an extremely high parametric yield, due to them disabling ~15% of die for mo …
+
+`grade（0/1/2/3）`：______
+
+#### 7. `DEV2-19#c007`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p7 OCR）
+- 文本：
+
+> 此外，英伟达每块 H100 芯片需要向 SK 海力士采购 80GB 的 HBM 内存，成本约为 1150 美元。英伟达还需支付台积电 CoWoS 封装费用并承担相应良率损耗，而 Groq 完全不使用片外内存。因此 Groq 芯片的原始物料成本明显更低。但 Groq 作为初创企 业，其芯片生产规模较小/相对固定成本更高，这包括需要向 Marvell 支付高额定制 ASIC 服务溢价。 The table below presents three deployments, one is for Groq, with their current pipeline parallelism and with batch size 3, which we we hear they will implement in production next week, and the others outline a latency optimized H100 inference deployment with speculative decoding as well as a throughput optimized H100 inference deployment. 下表展示三种部署配置：一是 Groq 当前采用的流水线并行方案，批次大小为 3，据悉 将于下周投入生产；另外两种则分别展示了基于推 …
+
+`grade（0/1/2/3）`：______
+
+#### 8. `DEV2-19#c008`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p14 OCR）
+- 文本：
+
+> Month</td><td>USD/mth</td><td>$2,586</td><td>$2,586</td><td>$58,409</td><td>$58,409</td></tr><tr><td>Capital Cost as % of Total System Cost / Month</td><td>%</td><td>77%</td><td>77%</td><td>52%</td><td>73%</td></tr><tr><td>Total System Capital + Hosting Cost per Month</td><td>USD/mth</td><td>$11,474</td><td>$11,474</td><td>$122,400</td><td>$219,657</td></tr><tr><td>Total System Capital + Hosting Cost per Hour</td><td>USD/hour</td><td>$15.7</td><td>$15.7</td><td>$167.7</td><td>$300.9</td></tr></table> > > W = Watts. kW = Kilowatts. kWh = Kilowatt-hours. <!-- page: 15 --> comes out to be $122,40 …
+
+`grade（0/1/2/3）`：______
+
+#### 9. `DEV2-19#c009`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p16 OCR）
+- 文本：
+
+> <!-- page: 19 --> Currently the largest MoE models sit in the 1-2 trillion parameter range, but we expect Google and OpenAI to launch >10 trillion parameter models over the next year that will require inference systems of hundreds of GPUs and 10s of TB of memory. While Mixtral is currently the most important model for fine tuning, API services, and on premises today, this will not be the case in ~3 months. LLAMA 3 and larger Mistral models are coming. 目前，最大的混合专家模型参数规模在 1 至 2 万亿范围内，但我们预计谷歌和 OpenAI 将在未来一年内发布参数超过 10 万亿的模型，这需要数百个 GPU 和数十 TB 内存的推理系统支持。虽然 Mixtral 目前是微调、API 服务及本地部署中最关键的 模型，但约 3 个月后这一 …
+
+`grade（0/1/2/3）`：______
+
+#### 10. `DEV2-19#c010`
 
 - document：`18002191`
 - heading：0303科技日报1 > Let's get to it... 让我们进入正题... > Aehr测试系统_AEHR_大涨_17__威廉_布莱尔公司将其评级上调至买入_称
@@ -3973,23 +3893,103 @@
 
 `grade（0/1/2/3）`：______
 
-#### 19. `DEV2-19#c019`
+#### 11. `DEV2-19#c011`
 
 - document：`45811822155141588`
-- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p20 OCR）
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p11 OCR）
 - 文本：
 
-> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > Cumulative Average NLL for Code > > </div> > > <!-- page: 21 --> AMD based inference solutions. 考虑到键值缓存的容量需求，我们难以想象 Groq 如何实现超大上下文长度。这将需 要数万枚芯片组成的系统，而非当前谷歌、英伟达和 AMD 推理方案中使用的数十或 数百枚芯片规模。 Groq’s ability to network chips at low latency is impressive, but it would be extremely difficult to scale that to the tens of thousands of chips required for ultra long context with moderate sized models like Gemini Pro 1.5 or extremely large models like GPT-5 and Gemini Ultra 2. Groq 在网络芯片方面的低延迟处理能力令人印象深刻，但若想扩展到 Gemini Pro 1.5 这类中等规模模型，或是 GPT-5 和 Gemini Ul …
+> 值得注意的是，8 块英伟达 GPU 仅需 2 颗 CPU，而 Groq 的 576 芯片系统目前配备 了 144 颗 CPU 和 144TB 内存。 Adding up these component costs, we arrive at $35,000 per Groq LPU server, which includes 8 Groq LPUs and all the of the other hardware listed above. The Mixtral Groq inference deployment uses 8 racks of 9 servers per rack, or $2,520,000 for an inference deployment with 576 LPU chips in total. By comparison, a typical H100 HGX system costs $350,000 of upfront capex and includes 8 H100s. Most H100-based Mixtral inference instances only use 2 H100 chips, so 4 inference deployments can be had per <!-- chart: p13 rect=(33,0 …
 
 `grade（0/1/2/3）`：______
 
-#### 20. `DEV2-19#c020`
+#### 12. `DEV2-19#c012`
 
 - document：`45811822155141588`
 - heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p16 OCR）
 - 文本：
 
 > <td>19.2x</td><td>2.1x</td><td>7.2x</td><td>12.9x</td></tr></table> <!-- page: 17 --> which is nearly 20x off from break even if it used the same pricing. 与许多推理服务提供商类似，Groq 目前正在运营一种负毛利润的商业模式，需要将吞 吐量提升超过 7 倍才能达到盈亏平衡。这比延迟优化的推理部署（如 8xH100 单元） 要接近得多，后者如果采用相同的定价，距离盈亏平衡还有近 20 倍的差距。 In addition to selling an inference API service, Groq’s business model also includes selling its system outright. If Groq sold its systems at a 60% gross margin to a 3rd party operator, this would roughly match the H100 HGX’s capital intensity of total cost of ownership and would work out to a system price of about $6,350 …
+
+`grade（0/1/2/3）`：______
+
+#### 13. `DEV2-19#c013`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息
+- 文本：
+
+> - 发布：2025-12-25 ｜ 作者：180K ｜ 分类：#公众号 - 源文件：45811822155141588_Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics Speed, But At What Cost_.pdf ｜ 证据等级：L1 ｜ 质量层：B <!-- page: 1 --> Groq Inference Tokenomics: Speed, But At What Cost? Groq 推理通证经济学：速度，但代价几何？ Faster than Nvidia? Dissecting the economics 比英伟达更快？剖析背后的经济学 DYLAN PATEL AND DANIEL NISHBALL 迪伦·帕特尔与丹尼尔·尼什鲍尔 FEB 21, 2024 2024 年 2 月 21 日∙ PAID ∙ 付费内容 121 5 Share 分享 Groq, an AI hardware startup, has been making the rounds recently because of their extremely impressive demos showcasing the leading open-source model, Mistral Mixtral 8x7b on their  …
+
+`grade（0/1/2/3）`：______
+
+#### 14. `DEV2-19#c014`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p13 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > GN1-B8C Specifications > > </div> > > <table border="1"><tr><td>Feature</td><td>Description</td></tr><tr><td>Availability</td><td>Shipping now</td></tr><tr><td>Chassis</td><td>GroqNode 4U server chassis,7.0&quot;(H)x17.2&quot;(W)x29&quot;(D)</td></tr><tr><td>Accelerators</td><td>Up to 8x GroqCard1(GC1-010B)accelerators with a fully connected internal RealScale network delivering accelerated compute performance up to 6POPs,1.5PFLOPs(INT8,FP16)</td></tr><tr><td>Model Memory</td><td>1.76GB on-die SRAM(230MB per GroqChip™)Up to 640TB/s on-die m …
+
+`grade（0/1/2/3）`：______
+
+#### 15. `DEV2-19#c015`
+
+- document：`M14`
+- heading：M14 全球利率周期、债务危机与央行资产负债表扩张史 > 十三、监测看板：识别法律违约之前的路径切换 > 13.4 美元功能
+- 文本：
+
+> 分别跟踪COFER储备份额及估值调整、BIS美元跨境银行债权、贸易发票币种、FX turnover、美元掉期基差、美债期限溢价和海外官方/私人持有需求。一个指标移动只触发“功能重价”标签；至少三个网络同向变化，才提高“外部融资特权弱化”的等级；五个功能共同、持续、无替代摩擦地下降，才接近缺失实验的强冲击情景。
+
+`grade（0/1/2/3）`：______
+
+#### 16. `DEV2-19#c016`
+
+- document：`22811844124422841`
+- heading：Groq Founder, Jonathan Ross: OpenAI & Anthropic Will Build Their Own Chips & Will NVIDIA Hit $10TRN > 元信息
+- 文本：
+
+> Generated by Podwise.AI (01:11:14)Groq's Fundraise, Margins, and the Chip Market in Five Years Ross confirms that Groq raised $750 million at a valuation of almost $7 billion. He states that hardware companies like Groq have positive margins on hardware sales. He wants Groq's margins to be as low as possible while maintaining business stability. Ross predicts that in five years, NVIDIA will still have over 50% of the revenue but a minority of the chips sold. He believes NVIDIA will charge high margins due to its brand. He states that Groq can produce nearly unlimited quantities of compute. Gro …
+
+`grade（0/1/2/3）`：______
+
+#### 17. `DEV2-19#c017`
+
+- document：`AI时代的价值投资与叙事经济_最终报告`
+- heading：信息密度的胜利？——从信息套利到反叙事套利：AI 时代价值投资的范式演化与股票基金投资研判 > 6. 技术革命周期中的资产定价史：铁路→电力→互联网→AI > 6.1 铁路革命的"收入幻象"
+- 文本：
+
+> 1840s 英国铁路泡沫中，铁路股估值基于"英里里程叙事"而非实际利润——与今天 AI 股基于"算力叙事"（token 量、资本开支）高度同构。【本报告判断，推理链：历史类比】铁路叙事和 AI 叙事的共同结构是"以投入规模替代产出验证"：修了多少英里/买了多少 GPU ≠ 赚了多少钱。
+
+`grade（0/1/2/3）`：______
+
+#### 18. `DEV2-19#c018`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p2 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > ## Throughput vs. Price > > Quality: General reasoning index, Throughput: Tokens per Second, Price: USD per 1M Tokens > > <!-- page: 3 --> chips require memory from South Korea, and chips/advanced packaging from Taiwan. 这一切引发了关于 Groq 硬件和推理服务将对人工智能行业带来革命性变革的巨大炒 作。虽然这对某些市场和应用来说确实是一个改变游戏规则的存在，但速度只是方程 式的一部分。供应链多样化是另一个对 Groq 有利的因素。他们的芯片完全在美国制 造和封装。而英伟达、谷歌、AMD 和其他人工智能芯片需要来自韩国的内存，以及 来自台湾的芯片/先进封装技术。 These are positives for Groq, but the primary formula for evaluating if hardware is revolutionary is performance / total cost of ownership. This is something Google understands …
+
+`grade（0/1/2/3）`：______
+
+#### 19. `DEV2-19#c019`
+
+- document：`18002902`
+- heading：0806科技周报 > 元信息 > David_Solomon__Goldman_Sachs_CEO__had_so
+- 文本：
+
+> David Solomon (Goldman Sachs CEO) had some good color on the Odd Lots Podcast around the GOOGL raise. He said they spent 5 months helping GOOGL think through whether to do equity or debt and how much to do and expects more companies to follow GOOGL's lead and mix in equity (we already heard rumors of META doing the same Friday afternoon). 高盛首席执行官大卫·所罗门在 Odd Lots 播客节目中就谷歌 （GOOGL）的增发提供了不少有价值的见解。他表示，他们花了五个月时间协助谷歌权衡是发行股票还是债券、以及发行规模应为多少，并预计将有更多公司效仿谷歌的做法，在融资中搭配股权融资（我们已在周五下午听到关于Meta可能采取同样行动的传闻）。
+
+`grade（0/1/2/3）`：______
+
+#### 20. `DEV2-19#c020`
+
+- document：`45811822155141588`
+- heading：Groq 推理通证经济学：速度，但代价几何？ --- Groq Inference Tokenomics: Speed, But At What Cost? > 元信息 > 图表（p20 OCR）
+- 文本：
+
+> 图表文字（glm-ocr，evidence=L3）： > <div align="center"> > > Cumulative Average NLL for Code > > </div> > > <!-- page: 21 --> AMD based inference solutions. 考虑到键值缓存的容量需求，我们难以想象 Groq 如何实现超大上下文长度。这将需 要数万枚芯片组成的系统，而非当前谷歌、英伟达和 AMD 推理方案中使用的数十或 数百枚芯片规模。 Groq’s ability to network chips at low latency is impressive, but it would be extremely difficult to scale that to the tens of thousands of chips required for ultra long context with moderate sized models like Gemini Pro 1.5 or extremely large models like GPT-5 and Gemini Ultra 2. Groq 在网络芯片方面的低延迟处理能力令人印象深刻，但若想扩展到 Gemini Pro 1.5 这类中等规模模型，或是 GPT-5 和 Gemini Ul …
 
 `grade（0/1/2/3）`：______
 
