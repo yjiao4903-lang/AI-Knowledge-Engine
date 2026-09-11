@@ -65,6 +65,10 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_
 
 - `status`：`accept` / `rewrite` / `reject` / `ambiguous`；
 - `grades[].grade`：0/1/2/3（3=直接回答，2=实质支撑，1=主题相关但不足，0=无关）；
+- **candidate-level completeness（强制）**：`accept` / `rewrite` 的每一题必须把该题人审包内的
+  **每一个候选都判定且仅判定一次** —— 缺候选、未知候选或重复候选都会被 `import` 直接拒绝。
+  这是 pooled false-negative 审计的前提；部分判定会静默缩小相关集合并污染分歧统计。
+- `reject` / `ambiguous` 是**题目级**处置，不要求逐候选判定；它们会被显式排除出 gold 与全部指标。
 - `accept` / `rewrite` 的题必须至少 1 个 grade-3；`rewrite` 必须填 `final_query`；
 - 填 `reviewer` / `reviewer_kind: human` / `reviewer_version` / `reviewed_at`（ISO8601）。
 
@@ -82,6 +86,10 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_
 - 同时做人工判定后的 false-negative 审计，把"人工判为相关但预标注 gold 未收录"的块记入
   `judging.fn_added_after_human_audit`；
 - `reject` / `ambiguous` 的题排除出 gold 并单独记录；
+- freeze 输出 `candidate_completeness`（`accepted_or_rewritten` / `fully_graded` /
+  `coverage` / `incomplete_queries` / 逐题 `graded` vs `packet`），并据此决定
+  `human_review_complete`：**未达 100% 候选覆盖一律为 false**；
+- `--require-complete` 额外要求覆盖**全部**校准题（不只是候选级完整）；
 - `--split holdout` 时若输出路径位于仓库内会**直接拒绝执行**（密封条款）。
 
 ### 4. report：auto_prelabel vs 人工分歧
@@ -93,6 +101,10 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_
 
 输出：candidate 级 grade 完全一致率 / ±1 一致率、二值相关（≥2）precision/recall/F1、
 grade-3 集合 Jaccard、人工相关但预标注漏收的块数、以及人审池内的 benchmark-side recall。
+
+指标**只由 `accept` / `rewrite` 的题计算**；`reject` / `ambiguous` 在报告的
+`excluded_from_metrics` 区块中逐题列出（status + notes）并被完全排除。报告同时输出
+`candidate_completeness`，且 `human_review_complete` 采用与 `import`/freeze 相同的判定口径。
 
 正式指标仍由既有评测器在**人工 gold** 上重算（不改检索行为）：
 
@@ -107,9 +119,12 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_trace.
 D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py self-test
 ```
 
-覆盖：schema 拒绝（未知 cand_id / 非法 grade / accept 无 grade-3 / rewrite 缺 final_query /
-缺 reviewer）、gold 往返只取人工 grade、FN 补入、freeze 哈希稳定、reject 不入 gold、
-Holdout 密封护栏、抽样确定性、family 覆盖。当前 **14/14 通过**。
+覆盖：schema 拒绝（未知 cand_id / 重复 cand_id / 非法 grade / accept 无 grade-3 /
+**accept 部分候选判定** / rewrite 缺 final_query / 缺 reviewer）、gold 往返只取人工 grade、
+FN 补入、freeze 哈希稳定、reject 不入 gold、**候选级完整度标志**（缺题 / 非 human /
+候选不完整 → `human_review_complete=false`；reject 不要求候选覆盖也不阻塞标志）、
+**report 将 reject/ambiguous 排除出指标**、Holdout 密封护栏、抽样确定性、family 覆盖。
+当前 **24/24 通过**。
 
 ## 已披露限制
 

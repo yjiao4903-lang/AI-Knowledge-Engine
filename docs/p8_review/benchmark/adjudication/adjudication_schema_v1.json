@@ -44,10 +44,19 @@
       "ambiguous": "无法判定，需复查；排除出 gold"
     }
   },
+  "candidate_level_completeness": {
+    "rule": "status=accept|rewrite 的每一题，grades 必须覆盖该题人审包 key 内的**全部** cand_id，且每个恰好判定一次。",
+    "gate": "import 会把提交的 cand_id 集合与 key 的完整 cand_id 集合比较，缺候选（missing）与未知候选（unknown）、重复候选（duplicate）一律拒绝导入。",
+    "exempt": "reject / ambiguous 是题目级处置，不要求逐候选判定；但它们会被显式排除出 gold 与全部指标计算。",
+    "why": "Issue #39 要求的 pooled false-negative 审计以'包内候选逐个判定'为前提；部分判定会静默缩小相关集合并污染分歧统计。",
+    "surfaced_in": "freeze 与 report 都输出 candidate_completeness（accepted_or_rewritten / fully_graded / coverage / incomplete_queries / per_query）。",
+    "flag_rule": "human_review_complete=true 需同时满足：全部校准题均有判定、reviewer_kind 全为 human、且所有 accept/rewrite 题的候选覆盖率为 100%。"
+  },
   "validation_rules": [
     "grades[].cand_id 必须存在于同一 qid 的人审包 key 中，否则整份判定拒绝导入",
     "grade 必须为 0/1/2/3 之一",
     "同一 qid 内 cand_id 不得重复",
+    "status=accept|rewrite 时 grades 必须覆盖该题人审包内的全部 cand_id（见 candidate_level_completeness），缺候选即拒绝导入",
     "status=accept|rewrite 时 grades 非空且至少含 1 个 grade-3",
     "status=rewrite 时必须提供 final_query",
     "reviewer / reviewer_kind / reviewer_version / reviewed_at 必填且合法",
@@ -70,6 +79,6 @@
   "freeze_outputs": {
     "adjudication_record": "审阅人原始判定（逐题），Holdout 版本留在仓库外",
     "gold": "只由人工 grade 重算的题集（gold.chunks = grade>=2），evidence_class=human_adjudicated",
-    "freeze": "judgments/key/questions/gold 的 SHA256、status 分布、reviewer 列表、human_review_complete 标志"
+    "freeze": "judgments/key/questions/gold 的 SHA256、status 分布、reviewer 列表、candidate_completeness、human_review_complete 标志与阻塞原因"
   }
 }

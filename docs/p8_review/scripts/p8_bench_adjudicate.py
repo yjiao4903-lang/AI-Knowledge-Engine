@@ -404,15 +404,24 @@ def validate_judgment(rec: dict, key_q: dict, errs: list[str]) -> None:
             errs.append(f"{qid}: cand_id 重复 {cid}")
         seen.add(cid)
         grade = g.get("grade")
-        if grade not in GRADES:
+        if grade is None:
+            errs.append(f"{qid}: grade 未填写（{cid}，模板占位未替换）")
+        elif grade not in GRADES:
             errs.append(f"{qid}: grade 非法 {grade!r}（{cid}）")
         elif grade == 3:
             g3 += 1
     judged = len(seen)
-    if judged == 0 and rec.get("status") in ("accept", "rewrite"):
-        errs.append(f"{qid}: accept/rewrite 必须给出候选 grade")
-    if rec.get("status") in ("accept", "rewrite") and g3 == 0:
-        errs.append(f"{qid}: accept/rewrite 必须至少 1 个 grade-3")
+    packet_ids = set(key_q["candidates"])
+    missing = sorted(packet_ids - seen)
+    if rec.get("status") in ("accept", "rewrite"):
+        # candidate-level completeness：accept/rewrite 必须把该题人审包内每个候选都判定且仅判定一次
+        if judged == 0:
+            errs.append(f"{qid}: accept/rewrite 必须给出候选 grade")
+        if missing:
+            errs.append(f"{qid}: 候选判定不完整 —— 该题人审包共 {len(packet_ids)} 个候选，缺 {len(missing)} 个"
+                        f"（例如 {missing[:5]}）；accept/rewrite 必须逐个候选判定")
+        if g3 == 0:
+            errs.append(f"{qid}: accept/rewrite 必须至少 1 个 grade-3")
 
 
 def build_gold_record(frozen: dict, rec: dict, key_q: dict) -> dict:
@@ -447,6 +456,60 @@ def build_gold_record(frozen: dict, rec: dict, key_q: dict) -> dict:
     })
     out["judging"] = j
     return out
+
+
+def candidate_completeness(recs: list[dict], key_queries: dict) -> dict:
+    """accept/rewrite 题的候选级判定完整度（拒答题不要求逐候选判定）。
+
+    只有 `accept` / `rewrite` 的题才进入 gold 与指标计算，因此也只有它们需要
+    100% 的候选覆盖（pooled false-negative 审计要求逐个候选判定）。
+    """
+    per_query, incomplete = {}, []
+    accepted = 0
+    for rec in recs:
+        if rec.get("status") not in ("accept", "rewrite"):
+            continue
+        qid = rec.get("qid")
+        kq = key_queries.get(qid)
+        if not kq:
+            continue
+        accepted += 1
+        packet = set(kq["candidates"])
+        graded = {g.get("cand_id") for g in (rec.get("grades") or [])} & packet
+        complete = graded == packet
+        per_query[qid] = {"graded": len(graded), "packet": len(packet), "complete": complete}
+        if not complete:
+            incomplete.append(qid)
+    return {
+        "accepted_or_rewritten": accepted,
+        "fully_graded": accepted - len(incomplete),
+        "coverage": round((accepted - len(incomplete)) / accepted, 4) if accepted else None,
+        "incomplete_queries": sorted(incomplete),
+        "per_query": dict(sorted(per_query.items())),
+    }
+
+
+def assess_review(recs: list[dict], key_queries: dict) -> dict:
+    """freeze 与 report 共用的审阅完备性评估（两处口径必须一致）。"""
+    seen = {r.get("qid") for r in recs}
+    missing = sorted(set(key_queries) - seen)
+    kinds = sorted({r.get("reviewer_kind") for r in recs})
+    status_dist = dict(sorted(Counter(r.get("status") for r in recs).items()))
+    cc = candidate_completeness(recs, key_queries)
+    warnings = []
+    if cc["accepted_or_rewritten"] == 0 and recs:
+        warnings.append("全部题被 reject/ambiguous，没有可用于评测的 gold。")
+    complete = (bool(recs) and kinds == ["human"] and not missing
+                and cc["coverage"] == 1.0)
+    return {
+        "n_records": len(recs), "n_queries_in_packet": len(key_queries), "missing_queries": missing,
+        "reviewer_kinds": kinds, "status_dist": status_dist,
+        "candidate_completeness": cc,
+        "human_review_complete": complete,
+        "warnings": warnings,
+        "human_review_blocker": None if complete else
+            "需全部校准题均由 human 判定且无缺题，且所有 accept/rewrite 题的候选覆盖率为 100%（或存在非 human 的 reviewer_kind）。",
+    }
 
 
 def cmd_import(a) -> int:
@@ -488,17 +551,18 @@ def cmd_import(a) -> int:
             continue
         gold_rows.append(build_gold_record(questions[qid], rec, key_queries[qid]))
 
-    human_kinds = {r.get("reviewer_kind") for r in recs}
-    human_complete = bool(recs) and human_kinds == {"human"} and not missing
+    assess = assess_review(recs, key_queries)
     freeze = {
         "adjudication_version": ADJUDICATION_VERSION, "split": a.split,
         "n_records": len(recs), "n_accepted": len(gold_rows), "n_rejected": len(rejected),
-        "status_dist": dict(sorted(status_dist.items())),
-        "reviewer_kinds": sorted(human_kinds),
+        "status_dist": assess["status_dist"],
+        "reviewer_kinds": assess["reviewer_kinds"],
         "reviewers": sorted({r.get("reviewer") for r in recs if r.get("reviewer")}),
-        "human_review_complete": human_complete,
-        "human_review_blocker": None if human_complete else
-            "存在非 human reviewer_kind（如 agent_assisted/selftest）或未覆盖全部校准题；不构成人工校准门线。",
+        # 候选级完整度：freeze 显式暴露每题的 graded/packet 计数
+        "candidate_completeness": assess["candidate_completeness"],
+        "human_review_complete": assess["human_review_complete"],
+        "human_review_blocker": assess["human_review_blocker"],
+        "warnings": assess["warnings"],
         "hashes": {
             "judgments_sha256": sha256_file(a.judgments),
             "key_sha256": sha256_file(a.key),
@@ -514,9 +578,15 @@ def cmd_import(a) -> int:
         freeze["hashes"]["gold_sha256"] = sha256_file(a.gold_out or f"{stem}_gold.jsonl")
     write_json(a.freeze_out or f"{stem}_freeze.json", freeze)
 
+    cc = freeze["candidate_completeness"]
     print(json.dumps({"pass": True, "n_records": len(recs), "n_gold": len(gold_rows),
                       "n_rejected": len(rejected), "status_dist": freeze["status_dist"],
-                      "human_review_complete": human_complete,
+                      "candidate_completeness": {"accepted_or_rewritten": cc["accepted_or_rewritten"],
+                                                 "fully_graded": cc["fully_graded"],
+                                                 "coverage": cc["coverage"],
+                                                 "incomplete_queries": cc["incomplete_queries"]},
+                      "human_review_complete": freeze["human_review_complete"],
+                      "warnings": freeze["warnings"],
                       "outputs": {"adjudication": str(a.adjudication_out),
                                   "gold": str(a.gold_out), "freeze": str(a.freeze_out)}},
                      ensure_ascii=False, indent=2))
@@ -533,23 +603,28 @@ def pooled_recall(ranked: list[str], rel: set[str], k: int) -> float | None:
 def cmd_report(a) -> int:
     key = json.loads(Path(a.key).read_text(encoding="utf-8"))
     key_queries = key["queries"]
-    recs = {r["qid"]: r for r in load_jsonl(a.judgments)}
+    rec_list = load_jsonl(a.judgments)
+    recs = {r["qid"]: r for r in rec_list}
+    assess = assess_review(rec_list, key_queries)
 
     per_query: list[dict] = []
+    excluded: list[dict] = []
     agree_c = 0
     pm1 = 0
     binary = {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
     hand3, auto3 = 0, 0
     jaccards, recall20 = [], defaultdict(list)
     fn_total, judged_total, packet_total = 0, 0, 0
-    kinds, statuses = Counter(), Counter()
 
     for qid, kq in key_queries.items():
         rec = recs.get(qid)
         if not rec:
             continue
-        kinds[rec.get("reviewer_kind")] += 1
-        statuses[rec.get("status")] += 1
+        # reject / ambiguous 是题目级处置：显式排除出 gold 与全部指标计算
+        if rec.get("status") not in ("accept", "rewrite"):
+            excluded.append({"qid": qid, "status": rec.get("status"),
+                             "notes": rec.get("notes", ""), "query": kq["query"]})
+            continue
         human = {}
         for g in rec.get("grades") or []:
             kg = kq["candidates"].get(g["cand_id"])
@@ -606,10 +681,19 @@ def cmd_report(a) -> int:
     rec_ = round(tp / (tp + fn), 4) if tp + fn else None
     f1 = round(2 * prec * rec_ / (prec + rec_), 4) if prec and rec_ else None
     report = {
-        "split": a.split, "n_queries_judged": len(per_query),
+        "split": a.split,
         "n_queries_in_packet": len(key_queries),
-        "reviewer_kinds": dict(kinds), "status_dist": dict(sorted(statuses.items())),
-        "human_review_complete": set(kinds) == {"human"} and len(per_query) == len(key_queries),
+        "n_queries_judged": len(recs),
+        "n_queries_measured": len(per_query),
+        "reviewer_kinds": assess["reviewer_kinds"], "dispositions": assess["status_dist"],
+        "candidate_completeness": assess["candidate_completeness"],
+        "human_review_complete": assess["human_review_complete"],
+        "human_review_blocker": assess["human_review_blocker"],
+        "warnings": assess["warnings"],
+        "excluded_from_metrics": {
+            "statuses": ["reject", "ambiguous"], "n": len(excluded), "queries": excluded,
+            "note": "reject/ambiguous 是题目级处置，已排除出 gold 与全部指标计算。",
+        },
         "coverage": {"candidates_total": packet_total, "candidates_judged": judged_total,
                      "judged_share": round(judged_total / packet_total, 4) if packet_total else 0},
         "auto_prelabel_vs_human": {
@@ -640,13 +724,28 @@ def cmd_report(a) -> int:
 def write_report_md(path: str | Path, rep: dict, a) -> None:
     path = Path(path)
     av = rep["auto_prelabel_vs_human"]
+    cc = rep["candidate_completeness"]
     L = [f"# P8-BENCH-02 人工判定 vs 自动预标注 · {rep['split']}", "",
          f"- 已判定题数：**{rep['n_queries_judged']} / {rep['n_queries_in_packet']}**"
          f" ｜ reviewer_kind：{rep['reviewer_kinds']}",
          f"- **human_review_complete**：`{rep['human_review_complete']}`",
+         f"- 处置分布：{rep['dispositions']}",
+         f"- 进入指标计算的题数：**{rep['n_queries_measured']}**"
+         f" ｜ 排除（reject/ambiguous）：**{rep['excluded_from_metrics']['n']}**",
+         f"- **候选级完整度**（accept/rewrite）：fully_graded "
+         f"**{cc['fully_graded']} / {cc['accepted_or_rewritten']}**（coverage `{cc['coverage']}`）；"
+         f"未完整题：{cc['incomplete_queries'] or '无'}",
          f"- 候选判定覆盖：{rep['coverage']['candidates_judged']} / {rep['coverage']['candidates_total']}"
-         f"（{rep['coverage']['judged_share']:.1%}）", "",
-         "## auto_prelabel 与人工判定的分歧", "",
+         f"（{rep['coverage']['judged_share']:.1%}）", ""]
+    if rep.get("warnings"):
+        L += [f"> ⚠ {'；'.join(rep['warnings'])}", ""]
+    if rep["excluded_from_metrics"]["n"]:
+        L += ["**排除的题（题目级处置，不进入 gold 与任何指标）**：",
+              "", "| qid | status | notes |", "|---|---|---|"]
+        for e in rep["excluded_from_metrics"]["queries"]:
+            L.append(f"| `{e['qid']}` | {e['status']} | {(e.get('notes') or '').replace('|', '/')[:80]} |")
+        L.append("")
+    L += ["## auto_prelabel 与人工判定的分歧", "",
          "| 指标 | 值 |", "|---|---|",
          f"| candidate 级 grade 完全一致率 | {av['exact_grade_agreement']} |",
          f"| ±1 grade 一致率 | {av['within_one_grade']} |",
@@ -680,24 +779,35 @@ def cmd_self_test(a) -> int:
         ok.append((name, bool(cond)))
         print(("  PASS  " if cond else "  FAIL  ") + name)
 
+    def cand(qid, n, chunk, doc, rank, ag, agg):
+        return {f"{qid}#c{n:03d}": {"chunk_id": chunk, "document_id": doc,
+                                    "views": {v: rank for v in VIEW_NAMES},
+                                    "auto_prelabel_grade": ag, "auto_prelabel_gold_grade": agg}}
+
     key = {"key_version": KEY_VERSION, "split": "development", "seed": "st", "topn": 50,
-           "queries": {"Q1": {
-               "query": "q1", "query_type": "numeric", "corpus_tier": "flagship",
-               "auto_prelabel_gold": [{"chunk_id": "ch1", "grade": 3}],
-               "views_ranked": {v: ["ch1", "ch2"] for v in VIEW_NAMES},
-               "candidates": {
-                   "Q1#c001": {"chunk_id": "ch1", "document_id": "D1",
-                               "views": {v: 1 for v in VIEW_NAMES}, "auto_prelabel_grade": 3,
-                               "auto_prelabel_gold_grade": 3},
-                   "Q1#c002": {"chunk_id": "ch2", "document_id": "D1",
-                               "views": {v: 2 for v in VIEW_NAMES}, "auto_prelabel_grade": 0,
-                               "auto_prelabel_gold_grade": None}}}}}
+           "queries": {
+               "Q1": {"query": "q1", "query_type": "numeric", "corpus_tier": "flagship",
+                      "auto_prelabel_gold": [{"chunk_id": "ch1", "grade": 3}],
+                      "views_ranked": {v: ["ch1", "ch2"] for v in VIEW_NAMES},
+                      "candidates": {**cand("Q1", 1, "ch1", "D1", 1, 3, 3),
+                                     **cand("Q1", 2, "ch2", "D1", 2, 0, None)}},
+               "Q2": {"query": "q2", "query_type": "temporal", "corpus_tier": "flagship",
+                      "auto_prelabel_gold": [{"chunk_id": "ch3", "grade": 3}],
+                      "views_ranked": {v: ["ch3"] for v in VIEW_NAMES},
+                      "candidates": {**cand("Q2", 1, "ch3", "D2", 1, 3, 3)}},
+           }}
     questions = [{"id": "Q1", "query": "q1", "query_type": "numeric", "source_type": "flagship",
                   "corpus_tier": "flagship", "split": "development", "difficulty": "hard",
                   "temporal": False, "version": "1.0", "ocr_derived": False,
                   "gold": {"mode": "chunk_ids", "chunks": [{"chunk_id": "ch1", "grade": 3}]},
                   "source_hashes": [{"document_id": "D1", "sha256": "x" * 64}],
-                  "judging": {"rubric": {"req": ["a"], "requires_any": []}}}]
+                  "judging": {"rubric": {"req": ["a"], "requires_any": []}}},
+                 {"id": "Q2", "query": "q2", "query_type": "temporal", "source_type": "flagship",
+                  "corpus_tier": "flagship", "split": "development", "difficulty": "medium",
+                  "temporal": True, "version": "1.0", "ocr_derived": False,
+                  "gold": {"mode": "chunk_ids", "chunks": [{"chunk_id": "ch3", "grade": 3}]},
+                  "source_hashes": [{"document_id": "D2", "sha256": "y" * 64}],
+                  "judging": {"rubric": {"req": ["b"], "requires_any": []}}}]
     kp, qp = tmp / "key.json", tmp / "questions.jsonl"
     write_json(kp, key)
     dump_jsonl(qp, questions)
@@ -775,6 +885,58 @@ def cmd_self_test(a) -> int:
     chk("抽样覆盖全部 family",
         len({x["query_type"] for x in sample_calibration(items, 8, "s")}) ==
         len({x["query_type"] for x in items}))
+
+    # 11) candidate-level completeness：accept 只判部分候选 → 拒绝
+    partial = dict(base, grades=[{"cand_id": "Q1#c001", "grade": 3}])
+    jp = tmp / "bad6.jsonl"; dump_jsonl(jp, [partial])
+    rc = cmd_import(argparse.Namespace(judgments=str(jp), key=str(kp), questions=str(qp),
+                                      split="development", adjudication_out=str(tmp / "x6.jsonl"),
+                                      gold_out=str(tmp / "x6g.jsonl"), freeze_out=str(tmp / "x6f.json")))
+    chk("拒绝 accept 的部分候选判定（缺候选）", rc == 1)
+    # 12) 重复 cand_id → 拒绝
+    jp = tmp / "dup.jsonl"
+    dump_jsonl(jp, [dict(base, grades=[{"cand_id": "Q1#c001", "grade": 3},
+                                       {"cand_id": "Q1#c002", "grade": 3},
+                                       {"cand_id": "Q1#c002", "grade": 2}])])
+    rc = cmd_import(argparse.Namespace(judgments=str(jp), key=str(kp), questions=str(qp),
+                                      split="development", adjudication_out=str(tmp / "x7.jsonl"),
+                                      gold_out=str(tmp / "x7g.jsonl"), freeze_out=str(tmp / "x7f.json")))
+    chk("拒绝重复 cand_id", rc == 1)
+    # 13) assess_review：缺题 / 非 human / 候选不完整 → human_review_complete=False
+    kq = key["queries"]
+    full_q1_q2 = [dict(base, grades=[{"cand_id": "Q1#c001", "grade": 3},
+                                     {"cand_id": "Q1#c002", "grade": 2}]),
+                  dict(base, qid="Q2", status="reject", grades=[])]
+    a_full = assess_review(full_q1_q2, kq)
+    chk("complete：全覆盖 + 全 human → True", a_full["human_review_complete"] is True)
+    chk("complete：reject 不要求候选覆盖", a_full["candidate_completeness"]["coverage"] == 1.0
+        and a_full["candidate_completeness"]["accepted_or_rewritten"] == 1)
+    a_missing = assess_review(full_q1_q2[:1], kq)
+    chk("complete：缺题 → False", a_missing["human_review_complete"] is False)
+    a_kind = assess_review([dict(r, reviewer_kind="agent_assisted") for r in full_q1_q2], kq)
+    chk("complete：非 human → False", a_kind["human_review_complete"] is False)
+    a_partial = assess_review([dict(base, grades=[{"cand_id": "Q1#c001", "grade": 3}]),
+                               full_q1_q2[1]], kq)
+    chk("complete：候选不完整 → False",
+        a_partial["human_review_complete"] is False
+        and a_partial["candidate_completeness"]["incomplete_queries"] == ["Q1"])
+    # 14) report：reject/ambiguous 显式排除出指标
+    jp = tmp / "mix.jsonl"; dump_jsonl(jp, full_q1_q2)
+    rc = cmd_report(argparse.Namespace(judgments=str(jp), key=str(kp), split="development",
+                                       out=str(tmp / "r2.json"), md=str(tmp / "r2.md"), recall_k=20))
+    r2 = json.loads((tmp / "r2.json").read_text(encoding="utf-8"))
+    chk("report：reject 排除出指标",
+        rc == 0 and r2["n_queries_measured"] == 1 and r2["excluded_from_metrics"]["n"] == 1
+        and r2["excluded_from_metrics"]["queries"][0]["qid"] == "Q2")
+    chk("report：reject 不阻塞 human_review_complete（候选全覆盖）",
+        r2["human_review_complete"] is True
+        and r2["candidate_completeness"]["accepted_or_rewritten"] == 1)
+    jp = tmp / "q1only.jsonl"; dump_jsonl(jp, full_q1_q2[:1])
+    cmd_report(argparse.Namespace(judgments=str(jp), key=str(kp), split="development",
+                                  out=str(tmp / "r3.json"), md=str(tmp / "r3.md"), recall_k=20))
+    r3 = json.loads((tmp / "r3.json").read_text(encoding="utf-8"))
+    chk("report：缺题时 human_review_complete=False",
+        r3["human_review_complete"] is False and r3["candidate_completeness"]["coverage"] == 1.0)
 
     passed = all(v for _, v in ok)
     print(json.dumps({"self_test_pass": passed, "n_checks": len(ok),

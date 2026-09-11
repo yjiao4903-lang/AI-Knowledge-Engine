@@ -52,7 +52,9 @@
 |---|---|
 | 盲化人审包生成（20 Dev / 10 sealed Holdout） | ✅ 完成，按 tier 轮转 + family 覆盖确定性抽样 |
 | 盲化（隐藏视图/名次/分数/预标注 grade） | ✅ 包内不含；映射单存 key；Holdout key 在仓库外 |
-| 判定 import schema 校验 | ✅ 完成（自检 14/14） |
+| 判定 import schema 校验 | ✅ 完成（自检 24/24） |
+| **candidate-level completeness 门** | ✅ 完成：`accept`/`rewrite` 必须对该题人审包内**每个候选**判定且仅判定一次；缺候选 / 未知候选 / 重复候选一律拒绝导入；freeze 与 report 均输出 `candidate_completeness`（逐题 `graded` vs `packet`），未达 100% 时 `human_review_complete=false` |
+| reject / ambiguous 的指标排除 | ✅ 完成：题目级处置，不要求逐候选判定，但在 `excluded_from_metrics` 中逐题列出并完全排除出 gold 与指标 |
 | 人工判定录入 | ❌ **未完成** —— 需人类领域审阅者填写 |
 | 只由人工 grade 重算 gold | ⏸ 待人工判定后执行 |
 | 人工判定后的 FN 审计 | ⏸ 同上（机制已就绪：`judging.fn_added_after_human_audit`） |
@@ -73,8 +75,9 @@
 | Dev 池化审计摘要 | 除耗时外完全一致（fn 2、无 grade-3 43/60、池中位 101） |
 | Holdout 池化重跑 | 冻结件 sha256 = `7a61cc07…`，**与 manifest 记录一致**（恢复密封件） |
 | 结构校验 `p8_bench_verify.py` | pass（Dev 60 / Holdout 40、tier 护栏、泄漏 0、密封、Legacy 冻结） |
-| 判定工具链 `self-test` | **14/14 通过** |
-| plumbing dry-run（真实 Dev 包 import→report） | exit 0；产物未入库，合成 grade 不作为证据 |
+| 判定工具链 `self-test` | **24/24 通过**（含缺候选 / 部分候选 / 重复候选 / 完整度标志 / reject 指标排除） |
+| plumbing dry-run（真实 Dev 包 import→report） | exit 0；7 题 accept 候选覆盖 100%，13 题 reject 被 `excluded_from_metrics` 排除；产物未入库、合成 grade 不作为证据 |
+| 反向验证：从某个 accept 题删掉 1 个候选 | `import` **exit 1**，报「候选判定不完整 —— 该题人审包共 20 个候选，缺 1 个」 |
 
 ## 5. 保留的 auto_prelabel 观察（仅作可复现记录，**不可**引用为效度结论）
 
@@ -95,6 +98,7 @@
 | 1 | 把自动产物重分类为 `auto_prelabel` / candidate bootstrap | ✅ manifest + 文件改名 + README + 报告 |
 | 2 | 确定性盲化判定包 export（隐藏视图/名次/分数） | ✅ `export` + 双 split 包 |
 | 3 | 判定 import/schema（grade 0–3、状态、审阅人、时间戳、freeze 哈希；Holdout 不入库） | ✅ `import` + schema + 密封护栏 |
+| 3b | **candidate-level completeness**：accept/rewrite 必须逐候选判定；缺/未知/重复候选拒绝；freeze/report 暴露完整度计数；未达 100% 不得 `human_review_complete=true`；reject/ambiguous 可题目级但须显式排除出指标 | ✅ 已修复（对应 2026-09-11 追加 review） |
 | 4 | 先做 20 Dev + 10 sealed Holdout 人工校准门线 | ✅ 包已生成（跨 tier/family） |
 | 5 | 对 30 题做人工领域判定；只用人工 grade 重算 gold；人审 FN 审计；报告 auto vs 人工分歧 | ❌ **阻塞：需人类判定**（机制全部就绪） |
 | 6 | 不据自动 rubric 推断检索质量/benchmark 无效；Legacy 冻结；不改检索 | ✅ 报告已撤回相关结论；Legacy `aa0412a2…` 未变 |

@@ -65,9 +65,16 @@
     "audit_summary_identical_except_elapsed": true
   },
   "adjudication_self_test": {
-    "n_checks": 14,
+    "n_checks": 24,
     "pass": true,
-    "failed": []
+    "failed": [],
+    "new_in_this_revision": [
+      "accept 部分候选判定（缺候选）拒绝导入",
+      "重复 cand_id 拒绝导入",
+      "缺题 / 非 human / 候选不完整 → human_review_complete=false",
+      "reject 不要求候选覆盖且不阻塞标志",
+      "report 将 reject/ambiguous 排除出指标"
+    ]
   },
   "structural_verification_pass": true,
   "leakage": {
@@ -94,7 +101,21 @@
       "binary_relevance_f1": 1.0,
       "grade3_jaccard_mean": 0.1867
     },
-    "note": "合成 grade 直接取自预标注，故一致率为 1.0 —— 该数字仅证明指标链路可运行，不构成任何效度证据。",
+    "note": "合成 grade 直接取自预标注，故一致率为 1.0 —— 该数字仅证明指标链路可运行，不构成任何效度证据。本轮在此基础上验证了 candidate-level completeness 门与 reject/ambiguous 的指标排除。",
     "artifacts_published": false
+  },
+  "candidate_level_completeness_gate": {
+    "rule": "status=accept|rewrite 必须对该题人审包内全部 cand_id 判定且仅判定一次；缺候选 / 未知候选 / 重复候选一律拒绝导入。",
+    "surfaced_in": [
+      "import freeze.candidate_completeness",
+      "report.candidate_completeness",
+      "report.excluded_from_metrics"
+    ],
+    "flags_withheld_rule": "human_review_complete=true 需：全部校准题均有判定 + reviewer_kind 全 human + accept/rewrite 候选覆盖率 100%。",
+    "verified_on_real_development_packet": {
+      "complete_accepts": "7 题 accept，候选覆盖 7/7（coverage 1.0）→ import exit 0",
+      "rejects_excluded": "13 题 reject 计入 excluded_from_metrics，n_queries_measured=7",
+      "partial_accept_removed_one_candidate": "import exit 1（DEV-C05 缺 DEV-C05#c020）"
+    }
   }
 }
