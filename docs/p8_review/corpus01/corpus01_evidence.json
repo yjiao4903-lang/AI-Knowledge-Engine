@@ -1,0 +1,632 @@
+{
+  "experiment": "P8-CORPUS-01 foreign-research metadata/title recovery shadow experiment",
+  "executor": "LOCAL-DEV-A",
+  "date": "2026-09-12",
+  "isolation": {
+    "worktree": "D:/AIKE-local-a-corpus01",
+    "branch": "local-dev/43-corpus-shadow",
+    "sqlite": [
+      "catalog_a43_base.db",
+      "catalog_a43_sha.db",
+      "catalog_a43_sha_r2.db"
+    ],
+    "qdrant_collections": [
+      "a43_base_chunks_v1",
+      "a43_base_sections_v1",
+      "a43_sha_chunks_v1",
+      "a43_sha_sections_v1",
+      "a43_sha_r2_chunks_v1",
+      "a43_sha_r2_sections_v1"
+    ],
+    "production_untouched": true
+  },
+  "A_audit_foreign_research": {
+    "docs": 2097,
+    "chunks": 220635,
+    "meta_chunks": 220635,
+    "docs_with_meaningful_headings": 2097,
+    "meaningful_headings_total": 2325,
+    "meta_ratio_gt_99": 2097,
+    "ocr_docs": 0,
+    "source_types": [
+      [
+        "research_pdf",
+        2092
+      ],
+      [
+        "daily_longimg",
+        5
+      ]
+    ],
+    "authors_top": [
+      [
+        "Leada",
+        1274
+      ],
+      [
+        "小莫晕乎乎",
+        502
+      ],
+      [
+        "小助手",
+        230
+      ],
+      [
+        "Hillwood R*",
+        67
+      ],
+      [
+        "180K",
+        24
+      ]
+    ],
+    "collision_docs": 1652,
+    "completed_range": [
+      "2025-04-30",
+      "2026-09-04"
+    ],
+    "chunks_p50_p95": [
+      84,
+      245
+    ],
+    "size_p50_p95": [
+      110669,
+      346877
+    ]
+  },
+  "B_subset": {
+    "seed": "p8-corpus01-shadow-20260912",
+    "counts": {
+      "fr_repair_total": 80,
+      "forced_dev": 23,
+      "stratified_fr": 57,
+      "legacy_carrier": 9,
+      "subset_total_docs": 89
+    },
+    "selection_rule": {
+      "forced_dev_targets_in_fr": "all Dev20 human-gold target docs ∩ 外资研报 (repair arm)",
+      "forced_legacy_targets": "all Legacy 50 target docs (baseline carrier, unrepaired)",
+      "stratified_fr": "round-robin over sorted (author family × file_size quartile[p50=110669,p95=346877]) strata, random.Random(seed) unused order (deterministic round-robin), fill FR total to 80"
+    },
+    "manifest_sha256": "e95677ca96eb45e72d91b7eb43c40a506fdd5a1e1ffc4d6cecbe41c912d4e152",
+    "fr_sha256_frozen": {
+      "18003279": "0687c136e962436043f548d8710ae0784757143e72e3ac8c05500905798ae16e",
+      "18003325__0222e73f": "0222e73f893191544b3e4a538c41bcdb686d0b487b40e919f79a59ef827207e3",
+      "18003314__219df0b2": "219df0b22dcf73c7c243591f515b815ffc57c876114ab592973916a3a147ce53",
+      "18003314__7bd13b85": "7bd13b85978db8d1a9ece2c789b6f8b045574f0f7ab480f5f4c80c5f36f9ce76",
+      "18003315__2c7cbd8e": "2c7cbd8e5aa4e9afdee9493098fab446c99dad664e181638beb9b33a24259579",
+      "18003315__79e7ee26": "79e7ee2655bd676fab8d08fbb2398cee88b3cbfaaab2799d2b3967a86ffcc5a7",
+      "18003298": "22b3fd0101971dd4dd018f014b99d38157300152a9418f2eab7150246b748e36",
+      "18003298__4e700a14": "4e700a140871d751c093520a12c381feaac0bb6ff22f6dccf4e450c78e4a1b32",
+      "18003298__e9cc69d9": "e9cc69d943e56f82330d51b95d4d6a43dd5dbc531fa0154e4e4e30c67f6f8100",
+      "18003159__12a5fe48": "12a5fe48199ef869b0fdbe79f7135203ba8311ae77c1b6a63e7c10e293978717",
+      "18003130__9ce3d494": "9ce3d4944ff3b86a78631cc9a280a2ba4dd3dec17412439373cefde86a5b76e9",
+      "18003130": "bfaf1cf4540e530eb4e143aff430e1a9385e6244db0f15752fea5d353b44717a",
+      "18003154__c8f1939a": "c8f1939a46bb6160931bcb773941a21280b8e0c14e25af37e4fcfb3cc66eae2d",
+      "18003257__c4686b52": "c4686b524f281db19e510377b66a96bb58372237d49c0471ac1af79dc9296e42",
+      "18003266__f0e96c40": "f0e96c40c1e1f409c962c357d9c2180cda5278f629a58b497815fba21de3e7d4",
+      "18003242": "1f45b1caf69f7744e2ade9ae565174eaa62e194b6a18ea573b6f3a616a6c65ad",
+      "18003409": "244d17224d87bfe2f6677ef8642499566975343da4c38dcaec030bc891785832",
+      "18002467": "a1d00ff88b1d6c4f95b1fe9d2b896bd37d18a3700924ef06aadca2d7e32aed17",
+      "18002497__1490349d": "1490349d5046d0247db13321a9e224572dc5b0739cd4fcea9162b35a79bcdec7",
+      "18002694": "583865407f5c5d94f6a4af3b3d2ce82a602067f56084a11fa1d124d72156460b",
+      "18002220": "79f75f1092e35dd1f3acc299ba90d85c60e9388da7f1a07bc5bc1d49cc91f0c6",
+      "18002360": "e849e1924157aa48daa53ec049fe4f8bb157c0cbeb8a1276c1f23ff6d4ab1a06",
+      "18002369": "e197e887853eabb7aa6dcab08b586b7d615304a928c648f51d533890e48cf1e4",
+      "18002268__c131c5f6": "c131c5f6e56e2201946cb5b8450ef84f32bf405001d67f65595ae90cd5ac0bad",
+      "18002293__4b863105": "4b863105036f9c901869b86742119427e2ac2773709f5ac6d97eb3722058fa64",
+      "18001935": "6d70a1d86ab38f7be2e9f013317756dfef30d01f3dbb23f2952c8263cc8e993a",
+      "18001560__40f27e5c": "40f27e5c11408cf035fc25aa038e47b778878e2c43c6ba7263d7df72df369d9f",
+      "18001629": "c8c91421b4bf089df901ac27054dcf31e476a464e082354cd18e56c68869dfa1",
+      "18002953": "b3c1b8c2abb5684d278f0430cace623ff45b291c7a28883a4d190982ad8f5d66",
+      "18002753__c064d5c2": "c064d5c22d3fbf7d3d186f17230d730d23f4b492fe1dab5e7523bf2990548043",
+      "18002753__66b440c7": "66b440c74eb6c6c98ce7bc9c88d3d8b566a983670d5f0ca2425676d8f45f4f1a",
+      "18002710": "745b0736b4425123f21d565cc2529d513bb28b5284e7783dad587c576dca4da3",
+      "18001561__f8778c45": "f8778c45ec33e3184093976aa5399c77da37ae19da1cc2214666f45d6e4133b3",
+      "18003037__eef64947": "eef649473023dfcf4887bc744f8752a5ba28371a4a53517530ec3fa5b826cf87",
+      "18002701": "5dec40142e31c487f3ae00324b79f50a8c697d398ed580149726503483acc0f4",
+      "18002135__cd635737": "cd635737f7759d697471a3e4ced8b5210b84cbc5c30f6c6148b1fdaa96c48415",
+      "18003215": "c39db3e2155c1ef40bd1cef9bc158868a1082890cebca63dcd34bcfe6719fa64",
+      "18002403__4b6736bf": "4b6736bfff2a0a5b89ab261441e6027e778ada21211e294eec807615c91c24aa",
+      "18001396": "010b51d23f2c19acf1597b31e6ad973b9060094e76aa1bf23d50d40fe420935f",
+      "18003257": "487ca764194a2ba11d025a0c971745f069bc943276145c5e13e248f22af4138d",
+      "18003185": "5389c7a8aee83b1a5dab38d5a7d3fc91e16e6114828c48bfc33175043978da87",
+      "18002336__a4910b64": "a4910b64e8cb3859bf19d71f610598c8848937013a300990a559da67ecb2a52f",
+      "1800513": "6d8d066ff5a88444f3309f4a482ecb48e63b292745c712e34a183d0ee6865480",
+      "1800634": "f7cf64e5b976fc7c842402e411d70889b99872cf5af7f389f8df0bab3324e539",
+      "1800634__93f65de7": "93f65de7a34d5cddfaa638d57f5c9d9aa5cfdec0dc65d386b905001f6c399a3d",
+      "1524881822852112": "387fef8f6a17dc1fe3da949b96c787f76e5a3f499d597ef14ef1efe369ec2b56",
+      "18002356": "cbc776e9e137caeebae38ea089c002e236d54cb40a39cc727a4d03e613ea9988",
+      "1800569": "5a065dcf1d42eed7f1800eb8828e36b4bcd230b3463308f45bedd02068769fa7",
+      "1800825": "9f1a6188e4120c1f7028eff4555ca23417c1a646577ab3f0a943d34f479bbd2b",
+      "1800965": "226163efac1eb96af5c087a06efe6e6adee7f029a9e491ad41307e7d487e398a",
+      "18001970": "7142d82e991d9b16198e7582694fe20141015217173c79765b7a710b666de1e0",
+      "18001724": "963153adfb977785d737edb1d68240a44d03c8779c3beae1d1ee6eb07d9d0acd",
+      "1800826": "74fbac5277c652c82ff01ca9a2de3f50799954bfa284097aeac113d211b68fb3",
+      "1800573": "cbde09e04f3060892eb3671ead60d069d4bc09bf42d88a7d72bc2001b63f940f",
+      "1800576": "429a2cf23e1a0f46068aa7b11ca5c5eeb6d07ad7ab47103061c4506befa2329c",
+      "1800574": "062dbcd0861cb4bd4f40f0a2744ad88e15f2cbd14051be2660eba47ac6a6975e",
+      "18001650": "0a7ffd6b8659901f9c39079deffbd43befc7f4e86b39777c68a06483e2337803",
+      "18003386": "44ea34188ebd1defa2483ab07510bd9cecbbaed14b63b04a46fea1f25bf05cf8",
+      "18002765__c01ae530": "c01ae530e0cc656b7c0586d9cbb73d984ad5456e42ff82ff43b65e863278af8c",
+      "18002055__2f0c762c": "2f0c762c9fc10dc3e1d60bdcf51ce2543bea65cdb99b94cb26cff0d15874be49",
+      "18001135__69309de5": "69309de5f9ac9be69c8f8122fedb31366cbdb61c9f4e41949d88bdf2a64f8bbf",
+      "18001621__4f2d2a2d": "4f2d2a2d36d0c904e18655c0ae0486bd6fa6c49fd73087c0e513b3d4db06ef2e",
+      "1800732__95f764d8": "95f764d8b87213a20504cdd119d4a0bce4baebd670a7e3031c9fa932841d86c3",
+      "1800463": "b30c88c766a7f80b83438c06502ed59fa31423a2631f1b4589e057e5b7c9f183",
+      "1800463__4cf3cc99": "4cf3cc9951951a29811212382fa648d79e274e847feef934ab8ce89993a9c24d",
+      "1800463__c42c9a20": "c42c9a206f880691f720305b87cdb197883f37322e4871ef84e179d1ad1fe447",
+      "1800255__ef8b5945": "ef8b594574555e3c05c447e4fdfb226087830562661e53ce12c9af42cb576810",
+      "18002392__3985f075": "3985f07501efdd58e6eafdb804b9aae8714b50ed5eb5f30824702f43459df57b",
+      "1800238__48d442e7": "48d442e7f5cdb294e1cedc0321a807f59574503d99743a3369b8b172d96e5f9c",
+      "1800238": "903eacecbc7d12c12a2c1f82abc35c54cbc9461965dfaa8a879d20c5146b6973",
+      "1800288": "9b85eed6f8c6224a7c50d778346d83981af450836ddc13637ebf526626fab08d",
+      "1800330": "ee41f67f7a1937ab6cbed5b9a8fc83ec7a16e5bd946bdf9e68924bc4e8613cf5",
+      "1800315": "dcc6edbcc52974a490c5e8bf34753fbcfbd55dbb56b3aad85bc0513cbc4136b9",
+      "1800569__11bb80e6": "18621b7dfd7e9d0e38adfacdfa0edd0d53813888af923adfb380515cc78eaa82",
+      "1800453": "fba9a8a0e701021761189d60c1c6e8e1d54e026dbad3107c2b13b1ab92ee9f53",
+      "1800458": "7ae0ea60dc2624513f67d1803bed038b3126bec077654c35e9ff51aa9c8b3ecb",
+      "1800448": "b79306b7f106f10c3131bbab80041bbaf013ecd3fd39df016319749b245a0c1b",
+      "1800245__7fea5645": "7fea5645803791633bbe9ffca32882167362363a08dbd3d11d8dc60b1a510209",
+      "1800213": "f66c69cf83d746eb1727bb2a1efc5f2201d3bb76215e3c5012ca434abd793271",
+      "1800411__5a491351": "30dcd58cd8861cf728fe10659fdd3304e5d47226bfd27b8b2c90ba3fb5ad0a84"
+    },
+    "legacy_carrier_sha256": {
+      "M04": "e103928f9bc8bd943ff7e7ace8d27f63cc30e913c2d52d9ae779ae010c03b8e1",
+      "M05": "252d3d4cdd6c65f3a47fda24c1c9cd2d41903b99b9c236a0e8dc7dd0fe799e8f",
+      "M06": "920f623090cc43b8d011910bb4fa7924a472d28b1c6c8955e72c0fa72dbc3884",
+      "M07": "aae295e2cdfbc61f7bb48b70d5664ddfe55e8824a50e40843948737911374814",
+      "M09": "32699076b98e72152e802c9167046f37d4f45d19b3f76d92776e48d98821d86d",
+      "M10": "bcd79960e56edab950fbc38adc83c540284b6bb1abfd8fa1e5c34419ea3c7683",
+      "M16": "71bed512bf5c4c3322a486ab9a46ab07b39f20729cf8d60bf866d42b1d41c15a",
+      "M18": "b48096b00ffa38443ce81d048d800fa5ecf7fd021db40faccd6aee033134491e",
+      "M22": "d246cc89969cd07684a08220a0af6c831f725019dc62344d2daf616272761109"
+    }
+  },
+  "C_repair": {
+    "rule": "PDF font-based heading recovery: single-line blocks, size>=body+1.0, <=80 chars, bullet-geometry exclusion, repeat-header suppression, md-line match required; ## for size>=body+3 or top size else ###; body text and front matter byte-unchanged",
+    "docs_ok": 77,
+    "docs_skipped": [
+      "1524881822852112",
+      "1800569",
+      "1800826"
+    ],
+    "injected_headings": 2902
+  },
+  "D_determinism": {
+    "rounds": "shadow full rebuild x2 (r1=a43_sha, r2=a43_sha_r2), same immutable input",
+    "docs": 89,
+    "sections": 3896,
+    "chunks": 17504,
+    "chunk_id_content_hash_set_sha256_r1": "89b1cbe6deb9e216cb7a6b184ed70b2f45fc2dd7d0db9b2a1efe6da603d1608b",
+    "chunk_id_content_hash_set_sha256_r2": "89b1cbe6deb9e216cb7a6b184ed70b2f45fc2dd7d0db9b2a1efe6da603d1608b",
+    "identical": true,
+    "fts_terms_equal": true,
+    "baseline_vs_production": "shared chunk_ids (12459) content_hash mismatches = 0"
+  },
+  "E_corpus_quality_before_after": [
+    {
+      "label": "baseline",
+      "docs": 89,
+      "sections": 994,
+      "chunks": 15659,
+      "meta_chunks": 15044,
+      "meta_ratio_all": 0.9607,
+      "fr_docs": 80,
+      "fr_chunks": 15044,
+      "fr_meta_ratio": 1.0,
+      "meaningful_body_headings": 563,
+      "fr_meaningful_headings": 109,
+      "mean_fr_headings_per_doc": 1.36,
+      "sections_per_doc": 11.17,
+      "chunks_per_doc": 175.94,
+      "dup_groups": 485,
+      "dup_extra_chunks": 1156
+    },
+    {
+      "label": "shadow",
+      "docs": 89,
+      "sections": 3896,
+      "chunks": 17504,
+      "meta_chunks": 847,
+      "meta_ratio_all": 0.0484,
+      "fr_docs": 80,
+      "fr_chunks": 16889,
+      "fr_meta_ratio": 0.0502,
+      "meaningful_body_headings": 3465,
+      "fr_meaningful_headings": 3011,
+      "mean_fr_headings_per_doc": 37.64,
+      "sections_per_doc": 43.78,
+      "chunks_per_doc": 196.67,
+      "dup_groups": 563,
+      "dup_extra_chunks": 1467
+    }
+  ],
+  "F_retrieval_textlevel": {
+    "note": "granularity-normalized paired eval: retrieved chunk matches gold by text containment; identical frozen retrieval params; subset index = 139 docs (80 FR repaired in shadow arm + 59 unchanged carrier docs incl. Legacy 9 targets)",
+    "dev_human_gold": {
+      "before": {
+        "n": 20,
+        "summary": {
+          "terms": {
+            "hit1": 0.7,
+            "hit3": 0.8,
+            "hit5": 0.8,
+            "hit10": 0.9,
+            "mrr": 0.7556,
+            "ndcg": 0.4035,
+            "fr_share_top10": 0.12,
+            "first_fr_rank": 3.125,
+            "first_fr_rank_n": 8
+          },
+          "trigram": {
+            "hit1": 0.65,
+            "hit3": 0.75,
+            "hit5": 0.8,
+            "hit10": 0.85,
+            "mrr": 0.7088,
+            "ndcg": 0.3834,
+            "fr_share_top10": 0.25,
+            "first_fr_rank": 4.3571,
+            "first_fr_rank_n": 14
+          },
+          "lexical": {
+            "hit1": 0.85,
+            "hit3": 0.85,
+            "hit5": 0.9,
+            "hit10": 0.9,
+            "mrr": 0.86,
+            "ndcg": 0.4098,
+            "fr_share_top10": 0.15,
+            "first_fr_rank": 4.875,
+            "first_fr_rank_n": 8
+          },
+          "dense": {
+            "hit1": 0.9,
+            "hit3": 0.95,
+            "hit5": 0.95,
+            "hit10": 1.0,
+            "mrr": 0.9321,
+            "ndcg": 0.5558,
+            "fr_share_top10": 0.425,
+            "first_fr_rank": 2.5,
+            "first_fr_rank_n": 14
+          },
+          "hybrid": {
+            "hit1": 0.75,
+            "hit3": 0.9,
+            "hit5": 1.0,
+            "hit10": 1.0,
+            "mrr": 0.8392,
+            "ndcg": 0.5081,
+            "fr_share_top10": 0.225,
+            "first_fr_rank": 4.4,
+            "first_fr_rank_n": 10
+          },
+          "hybrid_boost": {
+            "hit1": 0.75,
+            "hit3": 0.9,
+            "hit5": 1.0,
+            "hit10": 1.0,
+            "mrr": 0.8392,
+            "ndcg": 0.5071,
+            "fr_share_top10": 0.23,
+            "first_fr_rank": 4.7,
+            "first_fr_rank_n": 10
+          },
+          "hybrid_rerank": {
+            "hit1": 0.9,
+            "hit3": 0.9,
+            "hit5": 0.95,
+            "hit10": 1.0,
+            "mrr": 0.9183,
+            "ndcg": 0.5636,
+            "fr_share_top10": 0.325,
+            "first_fr_rank": 2.5385,
+            "first_fr_rank_n": 13
+          }
+        }
+      },
+      "after": {
+        "n": 20,
+        "summary": {
+          "terms": {
+            "hit1": 0.7,
+            "hit3": 0.8,
+            "hit5": 0.8,
+            "hit10": 0.85,
+            "mrr": 0.75,
+            "ndcg": 0.3925,
+            "fr_share_top10": 0.145,
+            "first_fr_rank": 3.5556,
+            "first_fr_rank_n": 9
+          },
+          "trigram": {
+            "hit1": 0.65,
+            "hit3": 0.75,
+            "hit5": 0.75,
+            "hit10": 0.85,
+            "mrr": 0.706,
+            "ndcg": 0.3764,
+            "fr_share_top10": 0.24,
+            "first_fr_rank": 3.6923,
+            "first_fr_rank_n": 13
+          },
+          "lexical": {
+            "hit1": 0.8,
+            "hit3": 0.85,
+            "hit5": 0.9,
+            "hit10": 0.9,
+            "mrr": 0.8292,
+            "ndcg": 0.4061,
+            "fr_share_top10": 0.155,
+            "first_fr_rank": 4.875,
+            "first_fr_rank_n": 8
+          },
+          "dense": {
+            "hit1": 0.9,
+            "hit3": 0.95,
+            "hit5": 0.95,
+            "hit10": 1.0,
+            "mrr": 0.9321,
+            "ndcg": 0.5248,
+            "fr_share_top10": 0.43,
+            "first_fr_rank": 3.2667,
+            "first_fr_rank_n": 15
+          },
+          "hybrid": {
+            "hit1": 0.7,
+            "hit3": 0.9,
+            "hit5": 1.0,
+            "hit10": 1.0,
+            "mrr": 0.8142,
+            "ndcg": 0.5005,
+            "fr_share_top10": 0.245,
+            "first_fr_rank": 4.1,
+            "first_fr_rank_n": 10
+          },
+          "hybrid_boost": {
+            "hit1": 0.7,
+            "hit3": 0.9,
+            "hit5": 1.0,
+            "hit10": 1.0,
+            "mrr": 0.8058,
+            "ndcg": 0.4909,
+            "fr_share_top10": 0.245,
+            "first_fr_rank": 4.3,
+            "first_fr_rank_n": 10
+          },
+          "hybrid_rerank": {
+            "hit1": 0.9,
+            "hit3": 0.9,
+            "hit5": 0.95,
+            "hit10": 1.0,
+            "mrr": 0.9196,
+            "ndcg": 0.5369,
+            "fr_share_top10": 0.375,
+            "first_fr_rank": 3.5,
+            "first_fr_rank_n": 14
+          }
+        }
+      }
+    },
+    "legacy50_canary_subset": {
+      "before": {
+        "n": 50,
+        "summary": {
+          "terms": {
+            "hit1": 0.36,
+            "hit3": 0.68,
+            "hit5": 0.72,
+            "hit10": 0.84,
+            "mrr": 0.536,
+            "ndcg": 1.1248,
+            "fr_share_top10": 0.102,
+            "first_fr_rank": 5.6842,
+            "first_fr_rank_n": 19
+          },
+          "trigram": {
+            "hit1": 0.24,
+            "hit3": 0.38,
+            "hit5": 0.44,
+            "hit10": 0.48,
+            "mrr": 0.3283,
+            "ndcg": 0.8429,
+            "fr_share_top10": 0.088,
+            "first_fr_rank": 3.8,
+            "first_fr_rank_n": 10
+          },
+          "lexical": {
+            "hit1": 0.38,
+            "hit3": 0.7,
+            "hit5": 0.74,
+            "hit10": 0.84,
+            "mrr": 0.5527,
+            "ndcg": 1.1941,
+            "fr_share_top10": 0.132,
+            "first_fr_rank": 5.3182,
+            "first_fr_rank_n": 22
+          },
+          "dense": {
+            "hit1": 0.6,
+            "hit3": 0.78,
+            "hit5": 0.9,
+            "hit10": 0.92,
+            "mrr": 0.7005,
+            "ndcg": 1.643,
+            "fr_share_top10": 0.152,
+            "first_fr_rank": 4.1818,
+            "first_fr_rank_n": 22
+          },
+          "hybrid": {
+            "hit1": 0.54,
+            "hit3": 0.8,
+            "hit5": 0.9,
+            "hit10": 0.96,
+            "mrr": 0.6904,
+            "ndcg": 1.552,
+            "fr_share_top10": 0.082,
+            "first_fr_rank": 5.8667,
+            "first_fr_rank_n": 15
+          },
+          "hybrid_boost": {
+            "hit1": 0.52,
+            "hit3": 0.88,
+            "hit5": 0.92,
+            "hit10": 0.96,
+            "mrr": 0.69,
+            "ndcg": 1.6079,
+            "fr_share_top10": 0.072,
+            "first_fr_rank": 6.5,
+            "first_fr_rank_n": 14
+          },
+          "hybrid_rerank": {
+            "hit1": 0.72,
+            "hit3": 0.9,
+            "hit5": 0.94,
+            "hit10": 0.96,
+            "mrr": 0.8215,
+            "ndcg": 2.1082,
+            "fr_share_top10": 0.104,
+            "first_fr_rank": 4.7778,
+            "first_fr_rank_n": 18
+          }
+        }
+      },
+      "after": {
+        "n": 50,
+        "summary": {
+          "terms": {
+            "hit1": 0.34,
+            "hit3": 0.68,
+            "hit5": 0.72,
+            "hit10": 0.82,
+            "mrr": 0.5209,
+            "ndcg": 1.0973,
+            "fr_share_top10": 0.118,
+            "first_fr_rank": 5.5217,
+            "first_fr_rank_n": 23
+          },
+          "trigram": {
+            "hit1": 0.22,
+            "hit3": 0.38,
+            "hit5": 0.42,
+            "hit10": 0.48,
+            "mrr": 0.3177,
+            "ndcg": 0.8382,
+            "fr_share_top10": 0.092,
+            "first_fr_rank": 3.6,
+            "first_fr_rank_n": 10
+          },
+          "lexical": {
+            "hit1": 0.36,
+            "hit3": 0.7,
+            "hit5": 0.74,
+            "hit10": 0.84,
+            "mrr": 0.5429,
+            "ndcg": 1.1829,
+            "fr_share_top10": 0.138,
+            "first_fr_rank": 5.1739,
+            "first_fr_rank_n": 23
+          },
+          "dense": {
+            "hit1": 0.6,
+            "hit3": 0.78,
+            "hit5": 0.9,
+            "hit10": 0.92,
+            "mrr": 0.7009,
+            "ndcg": 1.6517,
+            "fr_share_top10": 0.166,
+            "first_fr_rank": 4.2609,
+            "first_fr_rank_n": 23
+          },
+          "hybrid": {
+            "hit1": 0.56,
+            "hit3": 0.8,
+            "hit5": 0.88,
+            "hit10": 0.98,
+            "mrr": 0.7018,
+            "ndcg": 1.5801,
+            "fr_share_top10": 0.088,
+            "first_fr_rank": 5.8125,
+            "first_fr_rank_n": 16
+          },
+          "hybrid_boost": {
+            "hit1": 0.52,
+            "hit3": 0.86,
+            "hit5": 0.92,
+            "hit10": 0.96,
+            "mrr": 0.6922,
+            "ndcg": 1.6308,
+            "fr_share_top10": 0.082,
+            "first_fr_rank": 6.5,
+            "first_fr_rank_n": 16
+          },
+          "hybrid_rerank": {
+            "hit1": 0.76,
+            "hit3": 0.92,
+            "hit5": 0.96,
+            "hit10": 0.98,
+            "mrr": 0.8515,
+            "ndcg": 2.1152,
+            "fr_share_top10": 0.12,
+            "first_fr_rank": 5.3,
+            "first_fr_rank_n": 20
+          }
+        }
+      }
+    },
+    "chunk_level_eval": {
+      "note": "raw chunk-level p8_trace runs also executed; Dev all arms degraded & Legacy hybrid_rerank improved — attributable to chunk re-packing granularity, hence text-level eval is the primary paired comparison"
+    },
+    "sealed_holdout": "not evaluable on shadow subset (holdout v2 target docs not in subset); sealed aggregate from Issue #39 stands unchanged"
+  },
+  "G_decomposition": {
+    "lexical_FTS": "terms/trigram hits identical on Dev (body text unchanged by design; lexical_text excludes headings)",
+    "dense": "Dev dense arm hit/MRR identical; heading_path enters embedding_text but top-level dense exposure unchanged",
+    "corpus_competition": "FR share of top-10 rose (Dev rerank 0.325→0.375; Legacy 0.104→0.12): repaired docs compete more effectively",
+    "reranker": "Legacy hybrid_rerank hit1 0.72→0.76, MRR 0.8215→0.8515: reranker benefits from heading_path signal; Dev rerank flat (MRR +0.001, NDCG -0.027 diagnostic)",
+    "duplicate_suppression": "dup content groups 485→563 (slight increase from finer section split)"
+  },
+  "H_cost": {
+    "scan_seconds_89docs": {
+      "baseline": 1200.7,
+      "shadow": 1288.6,
+      "shadow_r2": 1290.9
+    },
+    "incremental_50docs_seconds": {
+      "baseline": 233.1,
+      "shadow": 237.3
+    },
+    "repair_77docs_seconds": 118,
+    "sqlite_mb": {
+      "a43_base": 227,
+      "a43_sha": 236
+    },
+    "qdrant_points": {
+      "a43_base_chunks": 18999,
+      "a43_sha_chunks": 20844
+    },
+    "full_migration_estimate": {
+      "fr_docs": 2097,
+      "per_doc_seconds": 14.5,
+      "extraction_and_reindex_hours": 8.5,
+      "note": "embedding-bound (ROCm GPU); rollback = drop a43_* collections + delete shadow DBs; production untouched"
+    },
+    "latency": {
+      "dev_rerank_p50_ms": {
+        "base": null
+      }
+    }
+  },
+  "I_verdict": "LIMITED_REPAIR",
+  "verdict_reasons": [
+    "corpus-quality defect confirmed at full scale: 100% FR chunks under 元信息, 1.36 meaningful headings/doc",
+    "repair is deterministic, idempotent, isolated; no production/benchmark/retrieval-param changes",
+    "paired retrieval: Dev human-gold text-level flat (hit equal, MRR +0.001), Legacy canary modestly positive (hit1 +4pp, MRR +0.03)",
+    "not FULL_MIGRATION_CANDIDATE: gains modest; repair necessarily re-packs sections (chunk-boundary policy = control decision); eval power limited (20 Dev / 50 Legacy on 139-doc subset); Dev rerank NDCG slightly down"
+  ],
+  "legacy_freeze": {
+    "golden_queries_sha256": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea"
+  }
+}
