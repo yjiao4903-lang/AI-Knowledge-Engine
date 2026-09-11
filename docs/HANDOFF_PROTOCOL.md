@@ -1,5 +1,19 @@
 # 窗口交接机制（Handoff Protocol）
 
+## 2026-09-12 最高效率补充原则（优先于一般交接流程）
+
+交接机制的目的，是降低上下文损耗，不是制造额外流程。
+
+所有窗口必须遵循：
+- 已授权 Scope 内的低风险、可逆事项，当前窗口直接完成，不因“角色分工”把小问题来回转交；
+- 能一次批量完成的开发、检查、测试、证据收集，禁止拆成多轮微交接；
+- 已存在且仍有效的测试/证据/人工判断直接复用，不为形式完整重复执行；
+- 小型文档修正、确定性测试修正、明显 bug、命名/格式修正、可逆工具调整，默认在当前窗口收口；
+- 只有架构/Schema/Public Contract/benchmark semantics、重大 Scope 扩张、持久或密封数据修改、production/formal write、merge/release/cutover 等高风险边界才必须升级到 WEB-CONTROL；
+- 不得把重大项目的全套 Gate 机械套用到普通细节。Gate 强度必须与实际风险和不可逆性匹配。
+
+**评价标准：在不突破安全和权限边界的前提下，以最少的人类交互、最少的角色切换、最少的重复劳动完成任务。**
+
 ## 2026-09-05 当前交接入口
 
 **新开发窗口优先阅读：[个人深度学习平台需求](DEEP_LEARNING_PLATFORM_REQUIREMENTS.md) → [任务计划](DEEP_LEARNING_PLATFORM_DEVELOPMENT_PLAN.md) → [当前状态](CURRENT_STATE.md) → [现行集成契约](INTEGRATION_CONTRACT_V2.md)。默认从 DL-00 开始。**
@@ -51,13 +65,15 @@
    ```
 4. 检查 `git log --oneline -5` 与 `IMPLEMENTATION_STATUS.md` 记录的 commit 是否一致。
 
+对于当前治理体系，若以上旧流程与 `AGENTS.md` / `PROJECT_CONTROL.md` 冲突，以后者为准；且不得为低风险任务机械执行与风险无关的全量检查。
+
 ## 3. 窗口结束流程（交回时）
 
-1. 运行全部测试并记录结果；
-2. 更新 `IMPLEMENTATION_STATUS.md`（完成项、测试数、新 Known Issues、ADR、本窗口最后 commit hash）；
+1. 运行与改动风险面匹配的必要测试并记录结果；
+2. 更新实际需要维护的状态/交接文件；
 3. `git commit`（每个里程碑至少一个 checkpoint）；
-4. 若任务未完成：在任务契约文件末尾追加「当前状态与剩余工作」小节，让下一窗口无缝接手；
-5. 若任务完成：把 `HANDOFF_M11.md` 重命名为 `HANDOFF_M11_DONE.md`（或归档到 docs/archive/），并编写下一窗口的任务契约。
+4. 若任务未完成：记录真正阻塞下一窗口的信息，不为形式追加冗余交接；
+5. 若任务完成：一次性返回 exact head、测试、风险与剩余工作。
 
 ## 4. 硬约束（所有窗口必须遵守）
 
@@ -66,4 +82,4 @@
 - 检索质量以 Golden Set 为准，任何调参必须 A/B；
 - 所有 Python 执行使用 `.venv`；不重装环境、不改全局配置；
 - GPU 推理必须经 worker/`get_inference_device()`，禁止裸写 `"cuda"`；
-- 后端 API 变更必须同步更新 `docs/HANDOFF_M11.md` 中的 API 契约（若前端窗口已接手，需在其 Known Issues 中通知）。
+- 后端 API 变更必须同步更新当前有效 API 契约，并通知受影响执行窗口。
