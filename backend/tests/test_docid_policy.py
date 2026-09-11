@@ -132,6 +132,74 @@ def test_plan_dedupes_against_existing_catalog(tmp_path):
     assert plan.exclusions[0]["reason"] == "EXCLUDED_DUPLICATE"
 
 
+# ---- P8-ENG-01：跨批次身份冲突（catalog 既有文档 vs 新候选） ----
+
+def test_plan_disambiguates_against_existing_catalog_different_content(tmp_path):
+    """库内已有同 id 不同内容文档时，新候选必须 sha8 消歧，禁止占用裸 id。
+
+    否则 index_file 会 DELETE+替换既有文档（P8 中 M09 45↔77 chunk 抖动）。
+    """
+    conn = _conn()
+    conn.execute(
+        "INSERT INTO documents (id, title, file_name, sha256, source_path) "
+        "VALUES ('M09', 'M09 Transformer', 'old.md', 'oldsha', 'D:/old/M09_old.md')")
+    p = _md_file(tmp_path, "02_主题研究报告/M09_男女身体构造差异/M09_男女身体构造差异_最终报告.md",
+                 code="M09")
+    plan = build_index_plan(_scan([(p, "NEW", "newsha1234")]), conn)
+    assert plan.assignments == {p: "M09__newsha12"}
+    assert "M09" not in plan.assignments.values()
+    assert plan.disambiguated == 1
+
+
+def test_plan_modified_same_source_keeps_id(tmp_path):
+    """MODIFIED 的是库内文档自身路径 -> 沿用原 id，不做消歧。"""
+    conn = _conn()
+    p = _md_file(tmp_path, "02_主题研究报告/M04_专题/M04_专题_最终报告.md", code="M04")
+    conn.execute(
+        "INSERT INTO documents (id, title, file_name, sha256, source_path) "
+        "VALUES ('M04', 'M04', 'x.md', 'oldsha', ?)", (p,))
+    plan = build_index_plan(_scan([(p, "MODIFIED", "newsha")]), conn)
+    assert plan.assignments == {p: "M04"}
+    assert plan.disambiguated == 0
+
+
+def test_plan_excludes_all_copies_when_canonical_matches_existing(tmp_path):
+    """canonical 与库内同 sha 时，整组拷贝都必须排除，不得留下未分配候选。
+
+    否则 apply_scan 会对未分配路径回退到默认 doc_id 再次写入（manifest 路径抖动）。
+    """
+    conn = _conn()
+    keep = _md_file(tmp_path, "02_主题研究报告/A/M04_专题/M04_专题_最终报告.md", code="M04")
+    other = _md_file(
+        tmp_path, "旗舰战略专题报告_完整备份_M01-M24/M04_专题/M04_专题_最终报告.md", code="M04")
+    conn.execute(
+        "INSERT INTO documents (id, title, file_name, sha256, source_path) "
+        "VALUES ('M04', 'M04', 'old.md', 'same', 'D:/old/M04.md')")
+    plan = build_index_plan(_scan([(keep, "NEW", "same"), (other, "NEW", "same")]), conn)
+    assert plan.assignments == {}
+    assert keep in plan.excluded_paths and other in plan.excluded_paths
+    reasons = {e["path"]: e["reason"] for e in plan.exclusions}
+    assert reasons[keep] == "EXCLUDED_DUPLICATE"
+    assert reasons[other] == "EXCLUDED_DUPLICATE"
+
+
+def test_plan_accounts_for_every_included_candidate(tmp_path):
+    """每个通过排除规则的候选都必须落到 assignments 或 excluded_paths。"""
+    conn = _conn()
+    conn.execute(
+        "INSERT INTO documents (id, title, file_name, sha256, source_path) "
+        "VALUES ('M09', 'M09', 'old.md', 'oldsha', 'D:/old/M09.md')")
+    p_new = _md_file(tmp_path, "02_主题研究报告/M09_A/M09_A_最终报告.md", code="M09")
+    p_upd = _md_file(tmp_path, "02_主题研究报告/M04_B/M04_B_最终报告.md", code="M04")
+    conn.execute(
+        "INSERT INTO documents (id, title, file_name, sha256, source_path) "
+        "VALUES ('M04', 'M04', 'm04.md', 'm04old', ?)", (p_upd,))
+    plan = build_index_plan(
+        _scan([(p_new, "NEW", "newsha"), (p_upd, "MODIFIED", "m04new")]), conn)
+    for p in (p_new, p_upd):
+        assert p in plan.assignments or p in plan.excluded_paths
+
+
 def test_plan_excludes_dirs_and_process(tmp_path):
     conn = _conn()
     p_draft = _md_file(tmp_path, "02_主题研究报告/A/M04_专题/03_报告草稿_v1.md", code="M04")
