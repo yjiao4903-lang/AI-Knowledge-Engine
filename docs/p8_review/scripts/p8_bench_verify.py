@@ -29,7 +29,9 @@ CATALOG = REPO / "data" / "catalog_full.db"
 LEGACY_TARGETS = {"M04", "M05", "M06", "M07", "M09", "M10", "M16", "M18", "M22"}
 LEGACY_FROZEN_SHA = "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea"
 QUERY_TYPES = {"exact_entity", "exact_number", "semantic_thesis", "causal", "temporal",
-               "long_tail", "cross_doc"}
+               "long_tail", "cross_doc",
+               # P8-BENCH-02 pilot families
+               "numeric", "comparison", "mechanism", "entity_context", "multi_evidence"}
 SOURCE_TYPES = {"flagship", "formal_report", "daily", "discussion", "image_material", "other"}
 REQUIRED = ("id", "query", "query_type", "source_type", "split", "gold")
 ANCHOR_RE = re.compile(r"anchor_term=(?:'([^']*)'|\"([^\"]*)\")")
@@ -84,6 +86,10 @@ def verify_split(conn, items, split, report):
             errs.append(f"{qid}: heading anchoring forbidden")
             continue
         term = anchor_of(it)
+        rubric = (it.get("judging") or {}).get("rubric")
+        req = [t for t in (rubric or {}).get("req", []) if t]
+        broad2 = [t for t in (rubric or {}).get("broad2", []) if t]
+        pats = [re.compile(p, re.I) for p in (rubric or {}).get("requires_any", [])]
         rel = 0
         for g in gold.get("chunks", []) or []:
             cid = g.get("chunk_id")
@@ -97,11 +103,17 @@ def verify_split(conn, items, split, report):
                 rel += 1
             docs.add(row["document_id"])
             per_doc[row["document_id"]] += 1
-            if term:
-                blob = ((row["plain_text"] or "") + "\n" + (row["heading_path"] or "")
-                        + "\n" + (row["raw_markdown"] or "")).lower()
-                if term.lower() not in blob:
-                    errs.append(f"{qid}: anchor_term {term!r} not found in gold chunk {cid}")
+            blob = ((row["plain_text"] or "") + "\n" + (row["heading_path"] or "")
+                    + "\n" + (row["raw_markdown"] or "")).lower()
+            if rubric:
+                if g.get("grade", 0) >= 3 and req and not all(t.lower() in blob for t in req):
+                    errs.append(f"{qid}: gold grade3 fails rubric req: {cid}")
+                if g.get("grade", 0) >= 3 and pats and not all(p.search(blob) for p in pats):
+                    errs.append(f"{qid}: gold grade3 fails rubric predicate: {cid}")
+                if g.get("grade", 0) == 2 and broad2 and not all(t.lower() in blob for t in broad2):
+                    errs.append(f"{qid}: gold grade2 fails rubric broad2: {cid}")
+            elif term and term.lower() not in blob:
+                errs.append(f"{qid}: anchor_term {term!r} not found in gold chunk {cid}")
         if rel == 0:
             errs.append(f"{qid}: no grade>=2 gold")
         for sh in it.get("source_hashes", []) or []:

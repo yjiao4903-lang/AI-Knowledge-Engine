@@ -1,0 +1,112 @@
+{
+  "benchmark": "p8-bench-02-pilot",
+  "version": "1.0",
+  "seed": "p8-bench-02-pilot-20260911",
+  "generator": "docs/p8_review/scripts/p8_bench_pilot_build.py",
+  "pooling": "docs/p8_review/scripts/p8_bench_pool.py (4 frozen views top-50, split-scoped, FN audit)",
+  "status": "machine-generated pilot __NOT_gate_quality__ (see report)",
+  "formal_benchmark_published": false,
+  "holdout_sealed_published": false,
+  "legacy_targets_excluded": [
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M09",
+    "M10",
+    "M16",
+    "M18",
+    "M22"
+  ],
+  "limiting_factor": "even with bounded multi-chunk rubric gold, the enumerated positives are not surfaced by any of the 4 frozen retrieval views within top-50 for 43/60 dev and 24/40 holdout queries; dev pilot hybrid_rerank Hit@5=0.25 vs Legacy canary 0.82 (engine healthy). Automated claim/value extraction does not align gold with a retrievable information need.",
+  "splits": {
+    "development": {
+      "file": "docs/p8_review/benchmark/development_v1/pilot_v1_machine_not_gate.jsonl",
+      "sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+      "composition": {
+        "n": 60,
+        "by_tier": {
+          "broker_report": 6,
+          "daily_report": 7,
+          "discussion": 6,
+          "flagship": 11,
+          "research_media": 9,
+          "trading_desk": 21
+        },
+        "by_family": {
+          "comparison": 7,
+          "entity_context": 2,
+          "mechanism": 17,
+          "multi_evidence": 7,
+          "numeric": 10,
+          "temporal": 17
+        },
+        "ocr_derived": 11,
+        "ocr_share": 0.1833,
+        "max_tier_share": 0.35,
+        "min_tier_share": 0.1,
+        "max_family_share": 0.2833,
+        "positives_median": 2,
+        "positives_max": 9,
+        "grade3_median": 2,
+        "grade3_max": 6,
+        "distinct_gold_docs": 60
+      },
+      "pool_audit_summary": {
+        "n": 60,
+        "elapsed_s": 100.7,
+        "pool_size_median": 101,
+        "pool_size_max": 102,
+        "pooled_relevant_median": 0,
+        "pooled_grade3_median": 0,
+        "queries_with_no_pooled_grade3": 43,
+        "queries_with_gold_grade3_after_split_scope": 60,
+        "fn_corrections": 2
+      }
+    },
+    "holdout": {
+      "file": "<sealed local, not in repo>",
+      "sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+      "composition": {
+        "n": 40,
+        "by_tier": {
+          "broker_report": 4,
+          "daily_report": 6,
+          "discussion": 5,
+          "flagship": 7,
+          "research_media": 14,
+          "trading_desk": 4
+        },
+        "by_family": {
+          "comparison": 7,
+          "entity_context": 2,
+          "mechanism": 14,
+          "multi_evidence": 4,
+          "numeric": 4,
+          "temporal": 9
+        },
+        "ocr_derived": 7,
+        "ocr_share": 0.175,
+        "max_tier_share": 0.35,
+        "min_tier_share": 0.1,
+        "max_family_share": 0.35,
+        "positives_median": 2,
+        "positives_max": 10,
+        "grade3_median": 2,
+        "grade3_max": 5,
+        "distinct_gold_docs": 40
+      },
+      "pool_audit_summary": {
+        "n": 40,
+        "elapsed_s": 57.4,
+        "pool_size_median": 101,
+        "pool_size_max": 102,
+        "pooled_relevant_median": 0,
+        "pooled_grade3_median": 0,
+        "queries_with_no_pooled_grade3": 24,
+        "queries_with_gold_grade3_after_split_scope": 40,
+        "fn_corrections": 3
+      }
+    }
+  }
+}

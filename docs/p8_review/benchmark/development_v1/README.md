@@ -1,5 +1,10 @@
 # Development Benchmark v1（结构与规范；题集待出）
 
+> **2026-09-11 P8-BENCH-02 试点状态**：本目录 `pilot_v1_machine_not_gate.jsonl` 是 #39 的
+> 60 题 claim/context-specific 试点（多 chunk 分级金标 + 池化判定 + FN 审计），结构校验全过，
+> 但**评测证明其金标仍不可作为门线**（4 视图 top-50 池内 43/60 题无 grade-3；Dev Hit@5 0.167
+> vs Legacy 0.82）。**仅供复核，非门线**。详见 `../reports/P8_BENCH02_STATUS_20260911.md`。
+
 > **2026-09-11 P8-BENCH-01 状态（重要）**：本目录的
 > `candidates_v0_machine_review_only.jsonl` 是**机器生成的候选集，仅供复核，不是正式门线题集**。
 > 它 150 题、schema 校验通过、`unresolved=0`、无 Dev/Holdout 泄漏，但**金标不可辩护**：

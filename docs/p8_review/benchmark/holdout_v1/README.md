@@ -1,5 +1,10 @@
 # Holdout Benchmark v1（结构与规范；题集待出）
 
+> **2026-09-11 P8-BENCH-02 试点**：已生成 40 题 sealed Holdout（本地密封，仓库外），并完成池化判定
+> 与 FN 审计；但同样因金标效度不足（24/40 题池内无 grade-3）**未作为正式 sealed Holdout 发布**。
+> 仓库仅保留其 SHA256/组成/聚合指标于 `../pilot_manifest_v1.json`。详见
+> `../reports/P8_BENCH02_STATUS_20260911.md`。
+
 > **2026-09-11 P8-BENCH-01 状态**：**尚未建立正式 sealed Holdout 题集**。P8-BENCH-01 的
 > 机器自动出题方法经基线评测判定金标不可辩护（见 `../reports/P8_BENCH01_STATUS_20260911.md`），
 > 因此按 Issue #36 的止损条款不发布 150 题 Holdout，以免以低质量金标充当验收门线。
