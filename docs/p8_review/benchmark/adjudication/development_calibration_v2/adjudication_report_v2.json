@@ -1,0 +1,408 @@
+{
+  "split": "development",
+  "n_queries_in_packet": 20,
+  "n_queries_judged": 20,
+  "n_queries_measured": 20,
+  "reviewer_kinds": [
+    "human"
+  ],
+  "dispositions": {
+    "accept": 20
+  },
+  "candidate_completeness": {
+    "accepted_or_rewritten": 20,
+    "fully_graded": 20,
+    "coverage": 1.0,
+    "incomplete_queries": [],
+    "per_query": {
+      "DEV2-01": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-02": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-03": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-04": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-05": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-06": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-07": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-08": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-09": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-10": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-11": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-12": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-13": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-14": {
+        "graded": 15,
+        "packet": 15,
+        "complete": true
+      },
+      "DEV2-15": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-16": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-17": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-18": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-19": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      },
+      "DEV2-20": {
+        "graded": 20,
+        "packet": 20,
+        "complete": true
+      }
+    }
+  },
+  "human_review_complete": true,
+  "human_review_blocker": null,
+  "warnings": [],
+  "excluded_from_metrics": {
+    "statuses": [
+      "reject",
+      "ambiguous"
+    ],
+    "n": 0,
+    "queries": [],
+    "note": "reject/ambiguous 是题目级处置，已排除出 gold 与全部指标计算。"
+  },
+  "coverage": {
+    "candidates_total": 395,
+    "candidates_judged": 395,
+    "judged_share": 1.0
+  },
+  "auto_prelabel_vs_human": {
+    "candidate_pairs": 395,
+    "exact_grade_agreement": 0.4759,
+    "within_one_grade": 0.7063,
+    "binary_relevance_ge2": {
+      "tp": 26,
+      "fp": 4,
+      "fn": 112,
+      "tn": 253,
+      "precision": 0.8667,
+      "recall": 0.1884,
+      "f1": 0.3095
+    },
+    "grade3_jaccard_mean": 0.4605,
+    "human_grade3_total": 59,
+    "auto_prelabel_grade3_total": 40,
+    "human_relevant_missing_from_prelabel_gold": 112
+  },
+  "pooled_recall_benchmark_side": {
+    "k": 20,
+    "per_view_mean": {
+      "dense": 0.5695,
+      "hybrid": 0.6481,
+      "hybrid_rerank": 0.7199,
+      "lexical": 0.4122,
+      "union": 0.5695
+    },
+    "note": "benchmark-side 计算，不改变检索行为；只覆盖人审判定过的候选（有界池）。"
+  },
+  "per_query": [
+    {
+      "qid": "DEV2-01",
+      "status": "accept",
+      "query": "NOAA CPC 在 2026 年 8 月预测 2026-27 年出现「历史级」厄尔尼诺的概率是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 1,
+      "auto_g3": 4,
+      "human_rel": 5,
+      "auto_rel": 4,
+      "fn_missed_by_prelabel": 2
+    },
+    {
+      "qid": "DEV2-02",
+      "status": "accept",
+      "query": "HBM 占 DRAM 营收的比例在 2024 年与 2025E 分别是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 9,
+      "auto_g3": 3,
+      "human_rel": 17,
+      "auto_rel": 3,
+      "fn_missed_by_prelabel": 14
+    },
+    {
+      "qid": "DEV2-03",
+      "status": "accept",
+      "query": "在 AI capex 信用传导框架里，「Spread fatigue」的含义是什么？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 5,
+      "auto_g3": 1,
+      "human_rel": 8,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 7
+    },
+    {
+      "qid": "DEV2-04",
+      "status": "accept",
+      "query": "英国 1700–1870 年的人均 GDP 年均增速是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 2,
+      "auto_g3": 3,
+      "human_rel": 6,
+      "auto_rel": 3,
+      "fn_missed_by_prelabel": 4
+    },
+    {
+      "qid": "DEV2-05",
+      "status": "accept",
+      "query": "PRIMA 视网膜下芯片的 PRIMAvera 试验纳入了多少名干性 AMD 晚期患者，主要视力改善结果是什么？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 1,
+      "auto_g3": 1,
+      "human_rel": 2,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 1
+    },
+    {
+      "qid": "DEV2-06",
+      "status": "accept",
+      "query": "ASML 报告的季度销售额（欧元）与毛利率分别是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 6,
+      "auto_g3": 7,
+      "human_rel": 11,
+      "auto_rel": 7,
+      "fn_missed_by_prelabel": 10
+    },
+    {
+      "qid": "DEV2-07",
+      "status": "accept",
+      "query": "2025 年第一季度 Microsoft Azure 的 AI 收入占比是多少？同期中国主要云服务商的 AI 收入占比大致区间是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 2,
+      "auto_g3": 1,
+      "human_rel": 9,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 8
+    },
+    {
+      "qid": "DEV2-08",
+      "status": "accept",
+      "query": "为什么 AVC 被认为将受益于 2026 年 ASIC 液冷需求的增长？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 3,
+      "auto_g3": 2,
+      "human_rel": 7,
+      "auto_rel": 2,
+      "fn_missed_by_prelabel": 6
+    },
+    {
+      "qid": "DEV2-09",
+      "status": "accept",
+      "query": "2025 年中国固定资产投资（FAI）同比增速的预测值是多少，与 1-5 月实际值相比如何？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 3,
+      "auto_g3": 1,
+      "human_rel": 7,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 6
+    },
+    {
+      "qid": "DEV2-10",
+      "status": "accept",
+      "query": "Morgan Stanley 对 Meta FY27 的 EPS 预测是多少美元？10% 的裁员预计带来多少年化节省？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 4,
+      "auto_g3": 1,
+      "human_rel": 7,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 6
+    },
+    {
+      "qid": "DEV2-11",
+      "status": "accept",
+      "query": "韩国股市当日下跌 2% 的政策原因是什么？三星与 SK 海力士分别下跌多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 1,
+      "auto_g3": 1,
+      "human_rel": 7,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 6
+    },
+    {
+      "qid": "DEV2-12",
+      "status": "accept",
+      "query": "Anthropic 的年度经常性收入（ARR）被报道为多少美元？与 2025 年底的水平相比增加了多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 4,
+      "auto_g3": 2,
+      "human_rel": 6,
+      "auto_rel": 2,
+      "fn_missed_by_prelabel": 5
+    },
+    {
+      "qid": "DEV2-13",
+      "status": "accept",
+      "query": "2026 年以来美国上市杠杆 ETF 的日均成交量约为多少亿美元，占复杂型产品 AUM 的比例是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 2,
+      "auto_g3": 1,
+      "human_rel": 6,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 5
+    },
+    {
+      "qid": "DEV2-14",
+      "status": "accept",
+      "query": "GIR 指出 1948 年以来标普 500 滚动四季度盈利在衰退前后的峰谷中位跌幅是多少？",
+      "judged": 15,
+      "packet": 15,
+      "human_g3": 1,
+      "auto_g3": 2,
+      "human_rel": 2,
+      "auto_rel": 2,
+      "fn_missed_by_prelabel": 1
+    },
+    {
+      "qid": "DEV2-15",
+      "status": "accept",
+      "query": "为什么 AI 板块短期（T+1）EPS 波动可能较大，而中期更可能得到支撑？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 2,
+      "auto_g3": 3,
+      "human_rel": 4,
+      "auto_rel": 3,
+      "fn_missed_by_prelabel": 2
+    },
+    {
+      "qid": "DEV2-16",
+      "status": "accept",
+      "query": "为什么中国会在国产芯片供应短缺时大量采购 NVIDIA H20？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 6,
+      "auto_g3": 2,
+      "human_rel": 10,
+      "auto_rel": 2,
+      "fn_missed_by_prelabel": 9
+    },
+    {
+      "qid": "DEV2-17",
+      "status": "accept",
+      "query": "在内存资本开支预期上调之后，AMAT、LAM 与 KLA 的评级分别被调整为什么？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 1,
+      "auto_g3": 1,
+      "human_rel": 9,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 8
+    },
+    {
+      "qid": "DEV2-18",
+      "status": "accept",
+      "query": "Rubin CPX GPU 的制造成本约为完整版 R200 GPU 的多少，其算力占比是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 3,
+      "auto_g3": 2,
+      "human_rel": 8,
+      "auto_rel": 2,
+      "fn_missed_by_prelabel": 7
+    },
+    {
+      "qid": "DEV2-19",
+      "status": "accept",
+      "query": "Groq 的融资规模与估值分别是多少？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 1,
+      "auto_g3": 1,
+      "human_rel": 2,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 1
+    },
+    {
+      "qid": "DEV2-20",
+      "status": "accept",
+      "query": "在 Hot Chips 2025 大会上，META 对 GPU/XPU 集群规模未来十年的扩容预期是什么？",
+      "judged": 20,
+      "packet": 20,
+      "human_g3": 2,
+      "auto_g3": 1,
+      "human_rel": 5,
+      "auto_rel": 1,
+      "fn_missed_by_prelabel": 4
+    }
+  ]
+}

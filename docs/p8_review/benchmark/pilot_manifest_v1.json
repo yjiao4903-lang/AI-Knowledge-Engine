@@ -1,0 +1,154 @@
+{
+  "benchmark": "p8-bench-02-pilot",
+  "version": "1.0",
+  "seed": "p8-bench-02-pilot-20260911",
+  "generator": "docs/p8_review/scripts/p8_bench_pilot_build.py",
+  "pooling": "docs/p8_review/scripts/p8_bench_pool.py (auto_prelabel: 4 frozen views top-50, split-scoped, FN audit) — 判定为机器预标注，非人工",
+  "status": "auto_prelabel pilot — __NOT_gate_quality__；人工校准门线未完成（见 adjudication）",
+  "formal_benchmark_published": false,
+  "holdout_sealed_published": false,
+  "legacy_targets_excluded": [
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M09",
+    "M10",
+    "M16",
+    "M18",
+    "M22"
+  ],
+  "splits": {
+    "development": {
+      "file": "docs/p8_review/benchmark/development_v1/pilot_v1_auto_prelabel.jsonl",
+      "sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+      "composition": {
+        "n": 60,
+        "by_tier": {
+          "broker_report": 6,
+          "daily_report": 7,
+          "discussion": 6,
+          "flagship": 11,
+          "research_media": 9,
+          "trading_desk": 21
+        },
+        "by_family": {
+          "comparison": 7,
+          "entity_context": 2,
+          "mechanism": 17,
+          "multi_evidence": 7,
+          "numeric": 10,
+          "temporal": 17
+        },
+        "ocr_derived": 11,
+        "ocr_share": 0.1833,
+        "max_tier_share": 0.35,
+        "min_tier_share": 0.1,
+        "max_family_share": 0.2833,
+        "positives_median": 2,
+        "positives_max": 9,
+        "grade3_median": 2,
+        "grade3_max": 6,
+        "distinct_gold_docs": 60
+      },
+      "pool_audit_summary": {
+        "n": 60,
+        "elapsed_s": 100.7,
+        "pool_size_median": 101,
+        "pool_size_max": 102,
+        "pooled_relevant_median": 0,
+        "pooled_grade3_median": 0,
+        "queries_with_no_pooled_grade3": 43,
+        "queries_with_gold_grade3_after_split_scope": 60,
+        "fn_corrections": 2
+      },
+      "evidence_class": "auto_prelabel",
+      "former_file": "docs/p8_review/benchmark/development_v1/pilot_v1_machine_not_gate.jsonl"
+    },
+    "holdout": {
+      "file": "<sealed local, not in repo>",
+      "sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+      "composition": {
+        "n": 40,
+        "by_tier": {
+          "broker_report": 4,
+          "daily_report": 6,
+          "discussion": 5,
+          "flagship": 7,
+          "research_media": 14,
+          "trading_desk": 4
+        },
+        "by_family": {
+          "comparison": 7,
+          "entity_context": 2,
+          "mechanism": 14,
+          "multi_evidence": 4,
+          "numeric": 4,
+          "temporal": 9
+        },
+        "ocr_derived": 7,
+        "ocr_share": 0.175,
+        "max_tier_share": 0.35,
+        "min_tier_share": 0.1,
+        "max_family_share": 0.35,
+        "positives_median": 2,
+        "positives_max": 10,
+        "grade3_median": 2,
+        "grade3_max": 5,
+        "distinct_gold_docs": 40
+      },
+      "pool_audit_summary": {
+        "n": 40,
+        "elapsed_s": 57.4,
+        "pool_size_median": 101,
+        "pool_size_max": 102,
+        "pooled_relevant_median": 0,
+        "pooled_grade3_median": 0,
+        "queries_with_no_pooled_grade3": 24,
+        "queries_with_gold_grade3_after_split_scope": 40,
+        "fn_corrections": 3
+      },
+      "evidence_class": "auto_prelabel"
+    }
+  },
+  "evidence_class": "auto_prelabel",
+  "evidence_class_note": "本 manifest 中所有相关度 grade 均为 p8_bench_pool.py::grade_chunk() 的**机器预标注**（token 包含 + 正则谓词），不是人工相关性判定。2026-09-11 WEB-CONTROL 更正：预标注结果不得用于推断检索质量或判定 benchmark 无效；人工判定见 adjudication 区块。",
+  "auto_prelabel_observations_NOT_validity_evidence": "此前据预标注得出的 43/60、24/40 '池内无 grade-3' 与 Dev Hit@5 0.167 只能说明自动 rubric 与检索池不相交，**不能**作为 benchmark 无效或检索质量结论。保留原始数字仅作可复现记录。",
+  "adjudication": {
+    "workflow": "docs/p8_review/scripts/p8_bench_adjudicate.py (export → 人工判定 → import → report)",
+    "schema": "docs/p8_review/benchmark/adjudication/adjudication_schema_v1.json",
+    "blinding": "包内隐藏检索视图归属/名次/分数与 auto_prelabel grade；key 单独存放",
+    "calibration_gate": {
+      "target": "Dev 20 + sealed Holdout 10",
+      "by_tier_and_family": true
+    },
+    "development_packet": {
+      "packet": "docs/p8_review/benchmark/adjudication/development_calibration_v2/packet_development_calibration_v2.jsonl",
+      "manifest": "docs/p8_review/benchmark/adjudication/development_calibration_v2/packet_development_calibration_v2.manifest.json",
+      "review_form": "docs/p8_review/benchmark/adjudication/development_calibration_v2/review_form_development_calibration_v2.md",
+      "key": "docs/p8_review/benchmark/adjudication/_keys/key_development_calibration_v2.json",
+      "packet_sha256": "889d6ee04bb0403f...",
+      "gate": "20/20 valid"
+    },
+    "holdout_packet": {
+      "location": "<sealed outside repo: E:/研报提取资料库/_golden/p8_bench02_adjudication/v2/holdout_calibration_v2>",
+      "in_repo": false,
+      "packet_sha256": "ddd819968ea5a23c...",
+      "gate": "10/10 valid"
+    },
+    "human_review_complete": false,
+    "blocker": "v2 批次已过 Query Validity Gate 并生成盲化包；20 Dev + 10 sealed Holdout 的人工领域判定尚未录入，human_review_complete=false。未自动/模型替代生成任何人工 grade。",
+    "query_validity_gate": "docs/p8_review/benchmark/adjudication/query_validity_audit_v2.json (Dev 20/20, sealed Holdout 10/10)",
+    "active_batch": "v2",
+    "withdrawn_batches": [
+      {
+        "batch": "v1 (Dev 20 + sealed Holdout 10)",
+        "status": "withdrawn_by_web_control",
+        "reason": "多条 query 不自足（依赖隐藏源报告上下文：报告中/相关指标/数量上的差异/作用），审阅者无法冷读判定；见 adjudication/superseded/README.md",
+        "counts_toward_human_review_complete": false,
+        "guard": "p8_bench_adjudicate.py import 遇到 key.withdrawn 直接拒绝（除非 --allow-withdrawn）",
+        "dev_packet_sha256": "56357c375e1c5fd10387284a24a783214c9c48616b97d39fed0afd691eb2aa8b"
+      }
+    ]
+  }
+}

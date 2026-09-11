@@ -1,5 +1,16 @@
 # Development Benchmark v1（结构与规范；题集待出）
 
+> **2026-09-11 P8-BENCH-02 证据分级更正（WEB-CONTROL / PR #41）**：本目录
+> `pilot_v1_auto_prelabel.jsonl`（原名 `pilot_v1_machine_not_gate.jsonl`，内容未变，
+> sha256 `8f0ce5d5…`）是 #39 的 60 题 claim/context-specific 试点，其 gold 全部由
+> `p8_bench_pool.py::grade_chunk()` 的 **token 包含 / 正则谓词机械预标注**生成
+> （`evidence_class = auto_prelabel`），**不是人工相关性判定**。
+>
+> 因此此前据它得出的"4 视图 top-50 池内 43/60 题无 grade-3、Dev Hit@5 0.167"只能说明
+> **自动 rubric 与检索池不相交**，**不能**用来推断检索质量或判定 benchmark 无效。
+> 人工判定走 `../adjudication/`（盲化人审包 + `p8_bench_adjudicate.py`）；
+> 当前人工校准门线**未完成**。详见 `../reports/P8_BENCH02_STATUS_20260911.md`。
+
 > **2026-09-11 P8-BENCH-01 状态（重要）**：本目录的
 > `candidates_v0_machine_review_only.jsonl` 是**机器生成的候选集，仅供复核，不是正式门线题集**。
 > 它 150 题、schema 校验通过、`unresolved=0`、无 Dev/Holdout 泄漏，但**金标不可辩护**：
