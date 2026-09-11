@@ -234,13 +234,14 @@ class IndexPipeline:
                 if st.status == "UNCHANGED":
                     stats["unchanged"] += 1
                 elif st.status in ("NEW", "MODIFIED") and reindex_modified:
-                    assigned = plan.assignments.get(st.path)
                     if st.path in plan.excluded_paths:
                         continue
+                    assigned = plan.assignments.get(st.path)
                     if assigned is None:
-                        r = self.index_file(st.path, state=st)
-                    else:
-                        r = self.index_file(st.path, state=st, doc_id=assigned)
+                        # 计划未分配身份的候选禁止回退到默认 doc_id：
+                        # 该 doc_id 可能已被既有文档占用，写入即静默覆盖。
+                        raise IndexInconsistencyError(f"索引计划未分配 doc_id: {st.path}")
+                    r = self.index_file(st.path, state=st, doc_id=assigned)
                     stats["indexed"] += 1
                     stats.setdefault("details", []).append(r)
                 elif st.status == "RENAMED":
