@@ -1,0 +1,75 @@
+{
+  "adjudication_schema_version": "1.0.0",
+  "name": "P8-BENCH-02 盲化人工相关性判定 schema",
+  "why": "2026-09-11 WEB-CONTROL 更正：p8_bench_pool.py 的 rubric 判定是机器预标注 auto_prelabel，不能替代人工相关性判定。本 schema 规定人工判定记录必须携带的可审计信息，并强制人工 grade 与自动预标注分开持久化。",
+  "evidence_classes": {
+    "auto_prelabel": "机器预标注：p8_bench_pool.py::grade_chunk() 的 token 包含 + 正则谓词结果。不得用于推断检索质量或 benchmark 效度。",
+    "agent_assisted": "非人类（含模型）辅助判定。可作流水线验证/参考，**不构成人工校准门线**。",
+    "human": "人类领域审阅者给出的判定。只有全部校准题均为 human 且无缺题时，human_review_complete 才为 true。",
+    "selftest": "自动化 plumbing 自检用的合成判定，仅用于验证工具链，严禁作为证据引用。"
+  },
+  "record": {
+    "required_fields": [
+      "adjudication_version",
+      "qid",
+      "reviewer",
+      "reviewer_kind",
+      "reviewer_version",
+      "reviewed_at",
+      "status",
+      "grades"
+    ],
+    "fields": {
+      "adjudication_version": "必须等于 1.0",
+      "qid": "被判定题号，必须出现在同一 split 的人审包 key 中",
+      "reviewer": "审阅人标识（姓名或稳定 ID），不可为空",
+      "reviewer_kind": "human | agent_assisted | selftest",
+      "reviewer_version": "审阅口径/指引版本，例如 p8-bench-02-adj-v1",
+      "reviewed_at": "ISO8601 时间戳（UTC 建议带 Z）",
+      "status": "accept | rewrite | reject | ambiguous",
+      "final_query": "status=rewrite 时必填；其余情况可省略",
+      "grades": "[{cand_id, grade, rationale}]，cand_id 必须来自该题的人审包",
+      "notes": "可选：拒绝/存疑理由、歧义说明、来源依据"
+    },
+    "grade_scale": {
+      "3": "直接回答该信息需求",
+      "2": "实质性支撑答案 / 有效的替代证据",
+      "1": "主题相关但不足以回答",
+      "0": "不相关"
+    },
+    "status_meaning": {
+      "accept": "query 可辩护，且已给出完整相关度判定",
+      "rewrite": "query 需要改写；改写后 query 填入 final_query（必须在判定前冻结）",
+      "reject": "query 不可辩护（不可检索/有歧义/信息需求不成立），排除出 gold",
+      "ambiguous": "无法判定，需复查；排除出 gold"
+    }
+  },
+  "validation_rules": [
+    "grades[].cand_id 必须存在于同一 qid 的人审包 key 中，否则整份判定拒绝导入",
+    "grade 必须为 0/1/2/3 之一",
+    "同一 qid 内 cand_id 不得重复",
+    "status=accept|rewrite 时 grades 非空且至少含 1 个 grade-3",
+    "status=rewrite 时必须提供 final_query",
+    "reviewer / reviewer_kind / reviewer_version / reviewed_at 必填且合法",
+    "reviewed_at 必须可解析为 ISO8601",
+    "每个 qid 只能有一条判定记录；重复记录拒绝导入",
+    "gold 只由人工 grade（>=2）重算；auto_prelabel grade 只用于事后分歧统计"
+  ],
+  "pooling_and_blinding": {
+    "blinding": "人审包不包含检索视图归属、视图内名次、融合分数与 auto_prelabel grade；候选顺序按 seed 确定性打散，cand_id 为打散后位置，不携带名次信息。",
+    "key": "盲化映射（cand_id → chunk_id / 视图名次 / 预标注 grade）单独存放；sealed Holdout 的 key 必须留在公开仓库之外。",
+    "pooling_assumption": "包内候选未判定的块按不相关计（标准 pooling 假设）。候选集为 4 个冻结视图 top-N 的有界抽样，不是全语料穷举——该限制必须在引用指标时一并披露。",
+    "fn_audit": "导入时对人工判为 grade>=2 但预标注 gold 未收录的块做 false-negative 审计，并在 freeze 中记录 fn_added_after_human_audit。"
+  },
+  "sealing_rules": [
+    "Holdout 的题目、金标、逐题判定与 key 不得写入公开仓库",
+    "import 的 --adjudication-out / --gold-out / --freeze-out 在 split=holdout 时若位于仓库内将直接拒绝执行",
+    "仓库中只允许出现 Holdout 的 schema、抽样 manifest、聚合组成、freeze 哈希与最终聚合指标",
+    "Legacy 50 永久冻结，不得因任何系统得分而修改"
+  ],
+  "freeze_outputs": {
+    "adjudication_record": "审阅人原始判定（逐题），Holdout 版本留在仓库外",
+    "gold": "只由人工 grade 重算的题集（gold.chunks = grade>=2），evidence_class=human_adjudicated",
+    "freeze": "judgments/key/questions/gold 的 SHA256、status 分布、reviewer 列表、human_review_complete 标志"
+  }
+}

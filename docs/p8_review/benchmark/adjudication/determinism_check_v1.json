@@ -1,0 +1,100 @@
+{
+  "check": "P8-BENCH-02 确定性/可复现校验（2026-09-11）",
+  "note": "p8_bench_pool.py 改为共用 p8_bench_views.py::FrozenViews 后重新执行；除耗时 elapsed_s 外，全部产物与已提交冻结件一致。",
+  "builder_regeneration": {
+    "command": "p8_bench_pilot_build.py --split both",
+    "development_raw_sha256": "80be7fc8cc8d264d34cef1e8a7ef9b01b2aa0111a7f753b4f9bb3158e4c2bd30",
+    "holdout_raw_sha256": "fa5040d07e072632827a373b49eb1eaaec117e601b21a8acf127e5a3e4e4d46b"
+  },
+  "pool_rerun_development": {
+    "command": "p8_bench_pool.py --questions <regen dev> --split development --topn 50",
+    "reproduced_sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+    "committed_sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
+    "byte_identical_to_committed": true,
+    "audit_summary_reproduced": {
+      "n": 60,
+      "elapsed_s": 81.3,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 43,
+      "queries_with_gold_grade3_after_split_scope": 60,
+      "fn_corrections": 2
+    },
+    "audit_summary_committed": {
+      "n": 60,
+      "elapsed_s": 100.7,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 43,
+      "queries_with_gold_grade3_after_split_scope": 60,
+      "fn_corrections": 2
+    },
+    "audit_summary_identical_except_elapsed": true
+  },
+  "pool_rerun_holdout": {
+    "command": "p8_bench_pool.py --questions <regen holdout> --split holdout --topn 50",
+    "recovered_frozen_sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+    "manifest_recorded_sha256": "7a61cc0734f114d287db7c0122f06ad2e878a70b4636e2e72a3cd034145eb266",
+    "matches_manifest_record": true,
+    "audit_summary_reproduced": {
+      "n": 40,
+      "elapsed_s": 47.3,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 24,
+      "queries_with_gold_grade3_after_split_scope": 40,
+      "fn_corrections": 3
+    },
+    "audit_summary_manifest": {
+      "n": 40,
+      "elapsed_s": 57.4,
+      "pool_size_median": 101,
+      "pool_size_max": 102,
+      "pooled_relevant_median": 0,
+      "pooled_grade3_median": 0,
+      "queries_with_no_pooled_grade3": 24,
+      "queries_with_gold_grade3_after_split_scope": 40,
+      "fn_corrections": 3
+    },
+    "audit_summary_identical_except_elapsed": true
+  },
+  "adjudication_self_test": {
+    "n_checks": 14,
+    "pass": true,
+    "failed": []
+  },
+  "structural_verification_pass": true,
+  "leakage": {
+    "dev_target_docs": 122,
+    "holdout_target_docs": 77,
+    "overlap": [],
+    "pass": true
+  },
+  "sealing": {
+    "holdout_in_repo": false
+  },
+  "legacy_frozen_sha256": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea",
+  "adjudication_plumbing_dry_run": {
+    "what": "在真实 Dev 人审包上跑通 import → report（判定用 reviewer_kind=selftest 的合成 grade，**不是证据**，未入库）。",
+    "import_exit": 0,
+    "report_exit": 0,
+    "records": 20,
+    "accepted": 7,
+    "rejected": 13,
+    "human_review_complete": false,
+    "candidates_judged": 399,
+    "report_metrics_smoke": {
+      "exact_grade_agreement": 1.0,
+      "binary_relevance_f1": 1.0,
+      "grade3_jaccard_mean": 0.1867
+    },
+    "note": "合成 grade 直接取自预标注，故一致率为 1.0 —— 该数字仅证明指标链路可运行，不构成任何效度证据。",
+    "artifacts_published": false
+  }
+}

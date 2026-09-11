@@ -10,6 +10,10 @@
 3. **可复核**：每题记录 rubric（判别 token、答案 token、谓词）与 rejected 原因；
    检索 4 视图只用于**候选池/FN 审计**（见 p8_bench_pool.py），不用于调参。
 
+> 证据分级（2026-09-11 WEB-CONTROL 更正）：本脚本产出的 gold 是 **`auto_prelabel`**
+> （由 rubric 的 token 机械枚举），**不是人工相关性判定**，不得用于推断检索质量或
+> benchmark 效度。人工判定见 `p8_bench_adjudicate.py` 与 `benchmark/adjudication/`。
+
 家族：numeric / comparison / mechanism / temporal / entity_context / multi_evidence。
 """
 from __future__ import annotations

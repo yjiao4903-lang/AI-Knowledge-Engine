@@ -1,118 +1,131 @@
-# P8-BENCH-02 状态报告 · human-in-the-loop 试点（60 Dev + 40 sealed Holdout，2026-09-11）
+# P8-BENCH-02 状态报告 · 盲化人工判定工具链 + auto_prelabel 更正（2026-09-11）
 
-**Issue**：LOCAL-DEV #39（父控制 #30）
+**Issue**：LOCAL-DEV #39（父控制 #30） ｜ **PR**：#41
 **分支**：`local-dev/39-p8-benchmark-pilot`（基于权威 `main` `035ecccc`）
 **执行者**：LOCAL-DEV
 
 ## 0. 结论（先行）
 
-已按 #39 规范实现并跑通 **claim/context-specific 出题 + 多 chunk 分级金标 + 4 视图 pooled judging +
-false-negative 审计**的完整工具链，并产出结构上合格的 60 + 40 试点题集（全部护栏通过）。
-但**评测证明该自动出题的金标仍不可作为检索门线**，故按 #39 的止损条款
-（"or a smaller defensible set with an explicit limiting-factor report"）**不将其发布为正式 benchmark**。
+1. **撤回**上一版本报告"自动出题金标不可作为门线 / 检索质量无问题"的表述。2026-09-11
+   WEB-CONTROL 更正（PR #41 REQUEST_CHANGES）指出：`p8_bench_pool.py::grade_chunk()` 用
+   token 包含 + 正则谓词**机械**判定相关度，其产物是**机器预标注 `auto_prelabel`**，
+   **不能**用来推断检索质量，也**不能**用来判定 benchmark 无效。上一版的
+   "43/60、24/40 池内无 grade-3" 与 "Dev Hit@5 0.167" 因此只是"自动 rubric 与检索池不相交"
+   的观察，不是效度结论。
+2. 已按该更正重建证据链：新增**盲化人工相关性判定工具链**（`p8_bench_adjudicate.py`：
+   export / import / report + `adjudication_schema_v1.json`），并把全部自动产物显式重分类为
+   `auto_prelabel`。
+3. **校准门线尚未完成**：`human_review_complete = false`。Dev 20 + sealed Holdout 10 的
+   盲化人审包**已生成**，但**人工领域判定尚未录入**，因此
+   "auto_prelabel vs 人工分歧" 与"人工 gold 重算指标"**暂无有效数字**。
+4. Legacy 50 保持冻结（sha256 `aa0412a2…`），未改检索/权重/routing/reranker，未改语料与索引。
 
-**限定因素**：即使金标已改为"同实体+同数值"的有界多 chunk 集合，**4 个冻结检索视图 top-50 的并集**中，
-dev 有 **43/60**、holdout 有 **24/40** 的题**完全不含任何 grade-3 相关块**；语料中确实存在这些正例，
-但系统（以及任何真实查询）没有任何信号把它们排上来。即：自动抽取的"实体+数值共现"金标与
-**可检索的信息需求**不对齐。Dev 试点 Hit@5 0.167、Holdout 0.200，而 Legacy canary 0.82
-（`self_check_pass=true`）——引擎健康，差距来自基准效度，不是检索质量。
+## 1. 证据分级（本报告所有数字的引用前提）
 
-## 1. 与 #36 的改进（本次实际做到的）
-
-| 维度 | #36 | #39 本试点 |
+| 证据类别 | 来源 | 可否用于效度/检索质量结论 |
 |---|---|---|
-| 查询 | 宽泛实体提示（"报告中 X 怎么样"） | claim/context-specific，≥2 判别项（实体+指标/期间/第二实体+因果谓词） |
-| 金标 | 单一任意 chunk | 有界多 chunk，grade 3/2，rubric 显式（req/broad2/谓词），中位 2 个正例、max 10 |
-| 判定 | 无 | 4 冻结视图（lexical/dense/hybrid/hybrid+rerank）top-50 建池 + rubric 判定 + FN 审计 |
-| 泄漏 | 未涉及 | 金标限定在本 split 文档集内，Dev∩Holdout 目标文档 overlap = 0 |
+| `auto_prelabel` | `p8_bench_pool.py::grade_chunk()`（token 包含 + 正则谓词） | **否** |
+| `agent_assisted` | 模型/工具辅助判定 | 否（仅流水线验证/参考） |
+| `selftest` | 工具链 plumbing 自检的合成判定 | 否（严禁引用） |
+| `human` | 人类领域审阅者判定 | 是，且必须覆盖全部校准题 |
 
-结构性指标显著改善（#36 金标中位 1018 chunk → 本试点中位 2 个正例），但**效度**仍不过关。
+`import` 的 freeze 文件中 `human_review_complete` 只有在**全部校准题均为 `human` 且无缺题**时才为 `true`。
 
-## 2. 交付物
+## 2. 本次交付物
 
 | 产物 | 说明 |
 |---|---|
-| `docs/p8_review/scripts/p8_bench_pilot_build.py` | 确定性出题：claim/context-specific 家族（numeric/comparison/mechanism/temporal/entity_context/multi_evidence），rubric 化多 chunk 金标，tier/family 配额与护栏。 |
-| `docs/p8_review/scripts/p8_bench_pool.py` | 4 冻结视图 top-50 建池 → rubric 判定 → FN 审计 → split 限域金标 → 生成冻结题集。不修改任何检索参数。 |
-| `docs/p8_review/scripts/p8_bench_verify.py` | 扩展支持 rubric 金标：grade3 必须满足 req/谓词、grade2 满足 broad2；source hash 冻结、泄漏、密封、Legacy 冻结校验。 |
-| `docs/p8_review/benchmark/pilot_manifest_v1.json` | 试点 freeze manifest（seed、配额、组成、SHA256、pool 审计摘要、限定因素）。 |
-| `docs/p8_review/benchmark/development_v1/pilot_v1_machine_not_gate.jsonl` | Development 60（**明确标注非门线**）。 |
-| `docs/p8_review/benchmark/development_v1/pool_audit_v1.json` | Dev pooled judging 审计（逐题池大小/相关数/FN）。 |
-| `docs/p8_review/benchmark/pilot_verification_v1.json` / `pilot_coverage_v1.md` | 结构校验与覆盖表。 |
-| sealed Holdout 40 | 本地密封（仓库外），仅 manifest 中落 SHA256 与聚合组成/指标。 |
+| `docs/p8_review/scripts/p8_bench_adjudicate.py` | 盲化人审包 export / 判定 import / 分歧 report + 无 GPU `self-test`（14 项检查）。 |
+| `docs/p8_review/scripts/p8_bench_views.py` | 四个冻结检索视图的**单一实现**，pool 与人审包共用，避免两者候选集漂移。 |
+| `docs/p8_review/benchmark/adjudication/adjudication_schema_v1.json` | 判定记录 schema：grade 0–3、accept/rewrite/reject/ambiguous、审阅人/版本/时间戳、证据分级与密封规则。 |
+| `docs/p8_review/benchmark/adjudication/README.md` | 工作流、盲化保证、命令、已披露限制。 |
+| `.../adjudication/development_calibration_v1/` | Dev 20 题盲化人审包（packet / manifest / review_form / judgments 模板）。 |
+| `.../adjudication/_keys/key_development_calibration_v1.json` | Dev 盲化映射（cand_id → chunk_id / 视图名次 / 预标注 grade）。 |
+| `.../adjudication/determinism_check_v1.json` | 可复现性证据（见 §4）。 |
+| sealed Holdout 10 题人审包 + key | **仓库外密封**（`E:\研报提取资料库\_golden\p8_bench02_adjudication\`）。 |
+| `pilot_manifest_v1.json` | 标注 `evidence_class = auto_prelabel` + adjudication 区块与阻塞项。 |
+| `development_v1/pilot_v1_auto_prelabel.jsonl` | 原 `pilot_v1_machine_not_gate.jsonl` **改名**（内容未变，sha256 `8f0ce5d5…`）。 |
 
-## 3. 结构校验（全部通过）
+## 3. 校准门线状态（Issue #39 要求：Dev 20 + sealed Holdout 10）
 
-- Dev = 60，sealed Holdout = 40；schema/枚举/唯一 id 通过，**每题 ≥1 grade-3**；
-- 分层护栏：dev max tier 35% / min 10%；holdout max 35% / min 10%；family max dev 28.3% / holdout 35%；
-- OCR-derived：dev 18.3% / holdout 17.5%（≥10%）；
-- 泛化实体提示：0%（全部为 claim/context-specific，scoped 诊断子集 0 ≤ 20%）；
-- Dev∩Holdout 目标文档 overlap = 0；九个 Legacy target 文档未用作 gold；
-- source hash 与当前 catalog 一致（源未漂移）；Holdout 在仓库外（密封）；
-- Legacy 50 sha256 `aa0412a2…` 未变；
-- 相关度分布：正例中位 2（max 10），grade-3 中位 2（max 6）。
+| 项 | 状态 |
+|---|---|
+| 盲化人审包生成（20 Dev / 10 sealed Holdout） | ✅ 完成，按 tier 轮转 + family 覆盖确定性抽样 |
+| 盲化（隐藏视图/名次/分数/预标注 grade） | ✅ 包内不含；映射单存 key；Holdout key 在仓库外 |
+| 判定 import schema 校验 | ✅ 完成（自检 14/14） |
+| 人工判定录入 | ❌ **未完成** —— 需人类领域审阅者填写 |
+| 只由人工 grade 重算 gold | ⏸ 待人工判定后执行 |
+| 人工判定后的 FN 审计 | ⏸ 同上（机制已就绪：`judging.fn_added_after_human_audit`） |
+| auto_prelabel vs 人工分歧 | ⏸ 暂无有效数字 |
+| 由人工 gold 重算指标 | ⏸ 命令已就绪（`p8_trace.py --questions <gold.jsonl>`） |
 
-## 4. 试点评测（检索代码/权重/routing/reranker 未改）
+**阻塞原因**：LOCAL-DEV 是本地自动化执行者，不能替代人类领域判定。人审包、schema、导入器与
+分歧报告器均已就绪；录入判定后 `import` → `report` 即可产出人工 gold、分歧指标与 freeze 哈希。
 
-| 题集 | n | Hit@1 | Hit@3 | Hit@5 | MRR | NDCG | p95(ms) |
-|---|---|---|---|---|---|---|---|
-| Legacy 50 canary（冻结） | 50 | 0.520 | 0.720 | **0.820** | 0.640 | 0.678 | 1295 |
-| Development 60（本试点） | 60 | 0.100 | 0.133 | **0.167** | 0.133 | 0.161 | 1003 |
-| sealed Holdout 40（仅聚合） | 40 | 0.125 | 0.175 | **0.200** | 0.156 | 0.166 | 1082 |
+## 4. 可复现性与确定性证据（`determinism_check_v1.json`）
 
-Wilson 95% CI（hit 率）：Dev Hit@5 [0.093, 0.280]；Holdout Hit@5 [0.105, 0.348]；Legacy Hit@5 [0.692, 0.902]。
-Holdout 逐题 trace 仅存本地密封路径，未进入仓库。
+`p8_bench_pool.py` 已重构为共用 `p8_bench_views.py::FrozenViews`（行为等价），重新执行验证：
 
-## 5. 关键证据：pooled 候选池几乎不含金标
+| 检查 | 结果 |
+|---|---|
+| 出题器重跑（Dev/Holdout） | 原始 sha256 `80be7fc8…` / `fa5040d0…`，与既有构建一致 |
+| Dev 池化重跑 vs 已提交冻结件 | **逐字节一致**（`4a5e50b5…`） |
+| Dev 池化审计摘要 | 除耗时外完全一致（fn 2、无 grade-3 43/60、池中位 101） |
+| Holdout 池化重跑 | 冻结件 sha256 = `7a61cc07…`，**与 manifest 记录一致**（恢复密封件） |
+| 结构校验 `p8_bench_verify.py` | pass（Dev 60 / Holdout 40、tier 护栏、泄漏 0、密封、Legacy 冻结） |
+| 判定工具链 `self-test` | **14/14 通过** |
+| plumbing dry-run（真实 Dev 包 import→report） | exit 0；产物未入库，合成 grade 不作为证据 |
 
-- 每池 = 4 视图（lexical / dense / hybrid / hybrid+rerank）各 top-50 的并集，池大小中位 **101**；
-- 池中 rubric 相关（grade≥2）块数中位 **0**；
-- **无任何池内 grade-3 的题**：Dev **43/60**、Holdout **24/40**；
-- FN 审计：仅 2（dev）/ 3（holdout）处池内相关但未标注，已在 freeze 前补入——即池内几乎没有"漏标"，
-  问题是**相关块根本不在池里**；
-- 逐题诊断（`pool_audit_v1.json`）显示 `pooled_relevant=0` 是常态。
+## 5. 保留的 auto_prelabel 观察（仅作可复现记录，**不可**引用为效度结论）
 
-这说明：以"实体+数值共现"定义的金标，其正例在 296k chunk 全库中广泛存在，但检索视图无法把它们
-排在 top-50——因为查询本身（"X 的 revenue 是多少"）没有指向该数值片段的信号。该基准的
-**信息需求—金标对齐**不成立，低分不能被解释为"检索质量差"。
+池 = 4 冻结视图（lexical / dense / hybrid / hybrid+rerank）各 top-50 的并集，池大小中位 101：
 
-## 6. 为什么自动出题仍达不到门线质量
+- 预标注相关的池内块数中位 **0**；池内无 grade-3：Dev **43/60**、Holdout **24/40**；
+- FN 审计（预标注口径）：Dev 2 / Holdout 3；
+- 冻结预标注 gold 上的指标：Dev Hit@5 **0.167**、Holdout **0.200**、Legacy canary **0.820**
+  （`self_check_pass=true`）。
 
-要构成可辩护的检索题，需要领域判断同时做到：
-1. 查询指向**一个具体、可检索**的信息需求（具体主张/结论，而非"实体+数值"共现）；
-2. 金标为该需求下**系统可能返回**的相关集合，并明确穷尽边界。
+> 上述数字**只能**说明 `grade_chunk()` 的机械规则与检索池几乎不相交，属于**预标注质量问题**；
+> 在人工判定完成前，**不得**据此断言 benchmark 无效或检索质量差。
 
-自动管线只能保证"金标确实含有答案 token"，无法保证"该信息需求会被任何排序器视为目标"。
-本任务名为 human-in-the-loop，但 LOCAL-DEV 是本地自动执行者；**缺失的正是人类领域出题/判定这一环**。
+## 6. PR #41 审查清单逐条状态
 
-## 7. 建议下一步（需 WEB-CONTROL / 用户决策）
+| # | WEB-CONTROL 要求 | 状态 |
+|---|---|---|
+| 1 | 把自动产物重分类为 `auto_prelabel` / candidate bootstrap | ✅ manifest + 文件改名 + README + 报告 |
+| 2 | 确定性盲化判定包 export（隐藏视图/名次/分数） | ✅ `export` + 双 split 包 |
+| 3 | 判定 import/schema（grade 0–3、状态、审阅人、时间戳、freeze 哈希；Holdout 不入库） | ✅ `import` + schema + 密封护栏 |
+| 4 | 先做 20 Dev + 10 sealed Holdout 人工校准门线 | ✅ 包已生成（跨 tier/family） |
+| 5 | 对 30 题做人工领域判定；只用人工 grade 重算 gold；人审 FN 审计；报告 auto vs 人工分歧 | ❌ **阻塞：需人类判定**（机制全部就绪） |
+| 6 | 不据自动 rubric 推断检索质量/benchmark 无效；Legacy 冻结；不改检索 | ✅ 报告已撤回相关结论；Legacy `aa0412a2…` 未变 |
+| 7 | 新 head SHA + CI 证据 + 校准产物/聚合 + 报告分离两类证据 | ✅ 见 PR 说明（第 5 项的聚合待人工判定） |
 
-1. **人工出题 + 工具辅助判定**：由领域出题人写 60/40 题（每条指定报告/主题与具体主张），
-   工具执行池构建、rubric 判定、FN 审计、冻结与校验（本 PR 已交付该工具链）。
-2. 或**改为"指定报告范围的检索"**基准：query 显式命名报告/主题，金标为该范围内的相关块，
-   使信息需求可检索——属题集设计变更，需 #30 决策。
-3. 不建议在本试点上继续调检索参数：金标未达门线效度。
-
-## 8. 边界与未做
+## 7. 边界与未做
 
 - 未发布 150+150；未把本试点作为门线；未改检索权重/routing/reranker；未改 Legacy 金标；
-- 未做语料重写/重抽取/重索引；Holdout 逐题 trace 未入库；
+- 未做语料重写/重抽取/重索引；Holdout 题目/金标/逐题判定/key 均未入库；
 - `配图资料` 仍为 `（未 OCR）` 占位，未伪造 OCR 金标（记为语料质量限制）；
-- 本地无关改动 `config/config.yaml`、`docker-compose.yml` 未纳入提交。
+- 未将任何 `agent_assisted` / `selftest` 判定当作人工证据；本地无关改动
+  `config/config.yaml`、`docker-compose.yml` 未纳入提交。
 
-## 9. 复现
+## 8. 复现命令
 
 ```bat
-:: 出题
-D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_pilot_build.py ^
-  --split development --outdir <dir> --manifest <manifest.json>
-:: 池化判定 + FN 审计（需 GPU / Qdrant 16333）
-D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_pool.py ^
-  --questions <questions.jsonl> --split development --topn 50 --out <audit.json> --corrected <frozen.jsonl>
 :: 结构校验
-D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_verify.py ^
-  --development <dev.jsonl> --holdout <sealed.jsonl> --out <verify.json>
-:: 评测（E 盘工作区）
-D:\AI-Knowledge-Engine\.venv\Scripts\python.exe pipeline\p8_trace.py --exp p8_bench02_dev ^
-  --questions <dev.jsonl> --split development
+.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_verify.py ^
+  --development docs\p8_review\benchmark\development_v1\pilot_v1_auto_prelabel.jsonl ^
+  --holdout "E:\研报提取资料库\_golden\p8_bench02_adjudication\holdout_frozen_v1.jsonl" ^
+  --out docs\p8_review\benchmark\pilot_verification_v1.json ^
+  --md docs\p8_review\benchmark\pilot_coverage_v1.md
+
+:: 判定工具链自检（无 GPU）
+.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py self-test
+
+:: 重新生成人审包（Dev）
+.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py export ^
+  --questions docs\p8_review\benchmark\development_v1\pilot_v1_auto_prelabel.jsonl ^
+  --split development --n 20 ^
+  --outdir docs\p8_review\benchmark\adjudication\development_calibration_v1 ^
+  --keydir docs\p8_review\benchmark\adjudication\_keys ^
+  --pool-audit docs\p8_review\benchmark\development_v1\pool_audit_v1.json
 ```

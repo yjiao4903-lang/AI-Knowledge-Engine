@@ -1,0 +1,77 @@
+{
+  "packet_version": "1.0",
+  "seed": "p8-bench-02-adjudication-20260911",
+  "split": "development",
+  "source_questions": "docs/p8_review/benchmark/development_v1/pilot_v1_auto_prelabel.jsonl",
+  "source_questions_sha256": "4a5e50b597748269d24d2ebb54e59becc23c0312114c58d9235f8b92fb454468",
+  "n_questions_available": 60,
+  "n_sampled": 20,
+  "sampling": "family 覆盖优先 + tier 轮转（seed 确定性）",
+  "blinding": {
+    "hidden_from_reviewer": [
+      "view 归属",
+      "视图内名次",
+      "融合/RRF 分数",
+      "auto_prelabel grade"
+    ],
+    "shuffle": "random.Random('p8-bench-02-adjudication-20260911|<qid>|shuffle')",
+    "cand_id": "<qid>#c<index>，index 为打散后位置，不携带名次信息",
+    "key_file": "docs\\p8_review\\benchmark\\adjudication\\_keys\\key_development_calibration_v1.json",
+    "key_file_in_repo": true
+  },
+  "selection": {
+    "view_topn": 50,
+    "per_view_k": 6,
+    "max_candidates": 20,
+    "always_included": "auto_prelabel gold + 池内 FN 候选",
+    "cross_split_candidates_excluded": 950
+  },
+  "candidate_count": {
+    "min": 19,
+    "max": 20,
+    "median": 20
+  },
+  "coverage": {
+    "by_tier": {
+      "broker_report": 3,
+      "daily_report": 4,
+      "discussion": 2,
+      "flagship": 4,
+      "research_media": 3,
+      "trading_desk": 4
+    },
+    "by_family": {
+      "comparison": 1,
+      "entity_context": 1,
+      "mechanism": 5,
+      "multi_evidence": 1,
+      "numeric": 6,
+      "temporal": 6
+    }
+  },
+  "pooling_assumption": "包内候选未判定的块按不相关计（标准 pooling 假设）；候选集为有界抽样，非全语料穷举。",
+  "packet_sha256": "56357c375e1c5fd10387284a24a783214c9c48616b97d39fed0afd691eb2aa8b",
+  "key_sha256": "c461035209ff970f203ea5d1bacea6b0b851e902bc3be28b98bc73a6f1246264",
+  "queries": [
+    "DEV-C05",
+    "DEV-E01",
+    "DEV-M01",
+    "DEV-M02",
+    "DEV-M04",
+    "DEV-M05",
+    "DEV-M10",
+    "DEV-N02",
+    "DEV-N03",
+    "DEV-N04",
+    "DEV-N06",
+    "DEV-N07",
+    "DEV-N09",
+    "DEV-T02",
+    "DEV-T04",
+    "DEV-T08",
+    "DEV-T09",
+    "DEV-T11",
+    "DEV-T12",
+    "DEV-X03"
+  ]
+}

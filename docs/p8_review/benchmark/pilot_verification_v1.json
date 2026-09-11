@@ -288,7 +288,7 @@
     "pass": true
   },
   "sealing": {
-    "holdout_path": "E:\\研报提取资料库\\_golden\\benchmark\\holdout_v1\\pilot_v1.jsonl",
+    "holdout_path": "E:\\研报提取资料库\\_golden\\p8_bench02_adjudication\\holdout_frozen_v1.jsonl",
     "holdout_in_repo": false,
     "pass": true,
     "sha256": "0ebce6cca878ba33cba9ed72aa77e13708908e39e479e3e077c43164054a0b43",

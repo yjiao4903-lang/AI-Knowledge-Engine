@@ -3,8 +3,8 @@
   "version": "1.0",
   "seed": "p8-bench-02-pilot-20260911",
   "generator": "docs/p8_review/scripts/p8_bench_pilot_build.py",
-  "pooling": "docs/p8_review/scripts/p8_bench_pool.py (4 frozen views top-50, split-scoped, FN audit)",
-  "status": "machine-generated pilot __NOT_gate_quality__ (see report)",
+  "pooling": "docs/p8_review/scripts/p8_bench_pool.py (auto_prelabel: 4 frozen views top-50, split-scoped, FN audit) — 判定为机器预标注，非人工",
+  "status": "auto_prelabel pilot — __NOT_gate_quality__；人工校准门线未完成（见 adjudication）",
   "formal_benchmark_published": false,
   "holdout_sealed_published": false,
   "legacy_targets_excluded": [
@@ -18,10 +18,9 @@
     "M18",
     "M22"
   ],
-  "limiting_factor": "even with bounded multi-chunk rubric gold, the enumerated positives are not surfaced by any of the 4 frozen retrieval views within top-50 for 43/60 dev and 24/40 holdout queries; dev pilot hybrid_rerank Hit@5=0.25 vs Legacy canary 0.82 (engine healthy). Automated claim/value extraction does not align gold with a retrievable information need.",
   "splits": {
     "development": {
-      "file": "docs/p8_review/benchmark/development_v1/pilot_v1_machine_not_gate.jsonl",
+      "file": "docs/p8_review/benchmark/development_v1/pilot_v1_auto_prelabel.jsonl",
       "sha256": "8f0ce5d5d3332e1f34a565cfe7f9da4e5b327bbb9f8e79f7899008f8e474aa68",
       "composition": {
         "n": 60,
@@ -62,7 +61,9 @@
         "queries_with_no_pooled_grade3": 43,
         "queries_with_gold_grade3_after_split_scope": 60,
         "fn_corrections": 2
-      }
+      },
+      "evidence_class": "auto_prelabel",
+      "former_file": "docs/p8_review/benchmark/development_v1/pilot_v1_machine_not_gate.jsonl"
     },
     "holdout": {
       "file": "<sealed local, not in repo>",
@@ -106,7 +107,33 @@
         "queries_with_no_pooled_grade3": 24,
         "queries_with_gold_grade3_after_split_scope": 40,
         "fn_corrections": 3
-      }
+      },
+      "evidence_class": "auto_prelabel"
     }
+  },
+  "evidence_class": "auto_prelabel",
+  "evidence_class_note": "本 manifest 中所有相关度 grade 均为 p8_bench_pool.py::grade_chunk() 的**机器预标注**（token 包含 + 正则谓词），不是人工相关性判定。2026-09-11 WEB-CONTROL 更正：预标注结果不得用于推断检索质量或判定 benchmark 无效；人工判定见 adjudication 区块。",
+  "auto_prelabel_observations_NOT_validity_evidence": "此前据预标注得出的 43/60、24/40 '池内无 grade-3' 与 Dev Hit@5 0.167 只能说明自动 rubric 与检索池不相交，**不能**作为 benchmark 无效或检索质量结论。保留原始数字仅作可复现记录。",
+  "adjudication": {
+    "workflow": "docs/p8_review/scripts/p8_bench_adjudicate.py (export → 人工判定 → import → report)",
+    "schema": "docs/p8_review/benchmark/adjudication/adjudication_schema_v1.json",
+    "blinding": "包内隐藏检索视图归属/名次/分数与 auto_prelabel grade；key 单独存放",
+    "calibration_gate": {
+      "target": "Dev 20 + sealed Holdout 10",
+      "by_tier_and_family": true
+    },
+    "development_packet": {
+      "packet": "docs/p8_review/benchmark/adjudication/development_calibration_v1/packet_development_calibration_v1.jsonl",
+      "manifest": "docs/p8_review/benchmark/adjudication/development_calibration_v1/packet_development_calibration_v1.manifest.json",
+      "review_form": "docs/p8_review/benchmark/adjudication/development_calibration_v1/review_form_development_calibration_v1.md",
+      "key": "docs/p8_review/benchmark/adjudication/_keys/key_development_calibration_v1.json",
+      "packet_sha256": "56357c375e1c5fd1..."
+    },
+    "holdout_packet": {
+      "location": "<sealed outside repo>",
+      "in_repo": false
+    },
+    "human_review_complete": false,
+    "blocker": "20 Dev + 10 sealed Holdout 的人工领域判定尚未录入；人工 gold 与分歧指标需 import/report 后生成。"
   }
 }
