@@ -7,6 +7,20 @@
 
 > 本文件是 2026-09-11 起的新窗口接手入口。任何后续 WEB-CONTROL / WEB-DEV / LOCAL-DEV 窗口在继续开发前，先核对 `main`、Issue #30、相关 Issue/PR 的实时状态；不要只依赖旧 `CURRENT_STATE.md` / `HANDOFF_PROTOCOL.md` 中的历史路线。
 
+## 0. 最高效率原则（所有角色优先执行）
+
+**治理强度必须与风险、不可逆性和影响面匹配。默认选择“最快的安全路径”，不得把重大项目的全套治理仪式机械套用到低风险细节。**
+
+统一要求：
+- 已授权 Scope 内的低风险、可逆细节，由当前执行角色直接判断并完成，不因小问题在 WEB-CONTROL / WEB-DEV / LOCAL-DEV 之间来回交接；
+- 能一次批量完成的检查、修复、测试、证据收集，不拆成多轮微任务；
+- 已有证据仍有效时直接复用，不为形式完整重复跑相同工作；
+- 小型文档修正、确定性测试修正、格式/命名修正、明显 bug、可逆工具调整默认当前窗口直接推进并在最终回报中说明；
+- 只有架构/Schema/Public Contract/benchmark semantics、重大 Scope 扩张、持久/密封数据变更、production/formal write、merge/release/cutover 等高风险边界才必须升级 WEB-CONTROL；
+- 人工注意力是稀缺资源。非必要不得要求用户或其他窗口重复确认已经可以由执行角色安全决定的细节。
+
+若其他流程文本与本原则发生张力：安全边界和权限边界保持不变，但必须选择满足边界的**最少流程**实现。
+
 ## 1. 必读顺序
 
 1. `AGENTS.md`
@@ -21,11 +35,13 @@
 ### WEB-CONTROL
 唯一负责：路线、优先级、Issue scope/owner、架构/Schema/Contract、Gate、最终 PR review、`MERGE_APPROVED <sha>`、Merge/Release/Cutover/production-write 授权。
 
+WEB-CONTROL 不应成为已授权 Scope 内普通实现细节的强制中转站；低风险、可逆且不跨越权限边界的细节应由执行角色自行收口。
+
 ### WEB-DEV
-只执行已分配线上开发任务：分支、代码、测试、PR、exact-head evidence。不得自行扩 Scope、改架构/Schema/Contract、Merge/Release/production write。
+只执行已分配线上开发任务：分支、代码、测试、PR、exact-head evidence。不得自行扩 Scope、改架构/Schema/Contract、Merge/Release/production write。在已授权 Scope 内，应自主完成普通实现选择并一次性回报，不对低风险细节逐项请示。
 
 ### LOCAL-DEV
-执行本地文件、真实 corpus/Qdrant/模型/ROCm/Cognition App/Worker/integration test。必须基于已分配 Issue/branch，保留无关本地改动，不得自行 Merge。
+执行本地文件、真实 corpus/Qdrant/模型/ROCm/Cognition App/Worker/integration test。必须基于已分配 Issue/branch，保留无关本地改动，不得自行 Merge。在授权边界内应批量完成修复、测试与证据，不因细节反复交接。
 
 任何新窗口都不能因为 GitHub 技术权限而自动获得 WEB-CONTROL 项目权限；须以用户分配身份和 Issue #30 为准。
 
@@ -135,16 +151,18 @@ Owner 需完成：
 
 ### 新 WEB-CONTROL
 
-> 读取 `AI-Knowledge-Engine` 的 `main`：`AGENTS.md`、`docs/PROJECT_CONTROL.md`、`docs/WEB_CONTROL_HANDOFF.md`，再核对 Issue #30、#39、#33、PR #41、PR #24 的实时状态。先恢复控制面，不要直接开发或合并；所有决策基于最新 exact head / CI / local evidence。
+> 读取 `AI-Knowledge-Engine` 的 `main`：`AGENTS.md`、`docs/PROJECT_CONTROL.md`、`docs/WEB_CONTROL_HANDOFF.md`，再核对 Issue #30、#39、#33、PR #41、PR #24 的实时状态。先恢复控制面；低风险细节直接收口，高风险边界才升级。所有决策基于最新 exact head / CI / local evidence。
 
 ### LOCAL-DEV
 
-> 请重新读取 `AI-Knowledge-Engine` 仓库 `main` 分支的 `docs/LOCAL_DEV_START.md`，再读取 `docs/WEB_CONTROL_HANDOFF.md` 和当前分配 Issue 的最新评论，严格按当前 Gate 执行。
+> 请重新读取 `AI-Knowledge-Engine` 仓库 `main` 分支的 `docs/LOCAL_DEV_START.md`，再读取 `docs/WEB_CONTROL_HANDOFF.md` 和当前分配 Issue 的最新评论。严格守住高风险 Gate，但已授权 Scope 内低风险细节直接批量完成，不逐项请示。
 
 ### WEB-DEV
 
-> 读取 `main` 的 `AGENTS.md`、`docs/PROJECT_CONTROL.md`、`docs/WEB_CONTROL_HANDOFF.md`，只执行 WEB-CONTROL 明确分配的 open Issue；不要从历史 PR/README 自行推导新 Scope。
+> 读取 `main` 的 `AGENTS.md`、`docs/PROJECT_CONTROL.md`、`docs/WEB_CONTROL_HANDOFF.md`，只执行 WEB-CONTROL 明确分配的 open Issue；不要从历史 PR/README 自行推导新 Scope。已授权 Scope 内普通细节直接完成并一次性返回证据。
 
 ## 10. 交接原则
 
 如果本文件与更晚的 Issue #30 WEB-CONTROL 评论、目标 Issue/PR exact-head review 冲突，以**时间更晚、范围更具体、且来自 WEB-CONTROL 的 GitHub 记录**为准。接手窗口必须先重新读取 GitHub 当前事实，不能把本文件中的 SHA 当成永远不变的事实。
+
+同时，除非触发高风险升级边界，不得因为交接机制本身制造额外工作；能在当前角色安全完成的事项就在当前角色完成。
