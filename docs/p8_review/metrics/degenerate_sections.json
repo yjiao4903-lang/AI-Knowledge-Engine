@@ -1,0 +1,627 @@
+{
+  "description": "按 domain / corpus_tier 的章节与 chunk 质量分布；占位标题 = 元信息 / 配图N / 图表（pN OCR）/ 空标题",
+  "placeholder_patterns": [
+    "^元信息$",
+    "^配图\\d*$",
+    "^图表（p\\d+ OCR）$",
+    "^配图资料[:：]",
+    "^\\s*$"
+  ],
+  "by_domain": {
+    "科技日报": {
+      "n_sections": 39197,
+      "n_placeholder_sections": 744,
+      "placeholder_ratio": 0.019,
+      "placeholder_kinds": {
+        "meta": 724,
+        "chart_ocr": 20
+      },
+      "chunks": {
+        "n": 40227,
+        "avg_chars": 453.7,
+        "p50": 367,
+        "p90": 801,
+        "p99": 2145,
+        "lt_100": 432,
+        "lt_200": 6746
+      }
+    },
+    "外资研报": {
+      "n_sections": 7688,
+      "n_placeholder_sections": 5363,
+      "placeholder_ratio": 0.698,
+      "placeholder_kinds": {
+        "meta": 2097,
+        "chart_ocr": 3266
+      },
+      "chunks": {
+        "n": 220635,
+        "avg_chars": 1212.5,
+        "p50": 1261,
+        "p90": 2198,
+        "p99": 2679,
+        "lt_100": 17377,
+        "lt_200": 21798
+      }
+    },
+    "(empty)": {
+      "n_sections": 7658,
+      "n_placeholder_sections": 2,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {
+        "empty": 1,
+        "meta": 1
+      },
+      "chunks": {
+        "n": 8304,
+        "avg_chars": 414.3,
+        "p50": 309,
+        "p90": 897,
+        "p99": 1763,
+        "lt_100": 989,
+        "lt_200": 2625
+      }
+    },
+    "SemiAnalysis": {
+      "n_sections": 2919,
+      "n_placeholder_sections": 2765,
+      "placeholder_ratio": 0.947,
+      "placeholder_kinds": {
+        "meta": 86,
+        "chart_ocr": 2679
+      },
+      "chunks": {
+        "n": 7907,
+        "avg_chars": 1029.6,
+        "p50": 1138,
+        "p90": 1393,
+        "p99": 2196,
+        "lt_100": 18,
+        "lt_200": 408
+      }
+    },
+    "即时讨论": {
+      "n_sections": 2126,
+      "n_placeholder_sections": 451,
+      "placeholder_ratio": 0.212,
+      "placeholder_kinds": {
+        "meta": 175,
+        "chart_ocr": 276
+      },
+      "chunks": {
+        "n": 4554,
+        "avg_chars": 838.9,
+        "p50": 755,
+        "p90": 1426,
+        "p99": 2348,
+        "lt_100": 330,
+        "lt_200": 696
+      }
+    },
+    "公众号": {
+      "n_sections": 622,
+      "n_placeholder_sections": 379,
+      "placeholder_ratio": 0.609,
+      "placeholder_kinds": {
+        "meta": 93,
+        "chart_ocr": 286
+      },
+      "chunks": {
+        "n": 11145,
+        "avg_chars": 1155.6,
+        "p50": 1213,
+        "p90": 2194,
+        "p99": 2523,
+        "lt_100": 846,
+        "lt_200": 1141
+      }
+    },
+    "北美交易台": {
+      "n_sections": 481,
+      "n_placeholder_sections": 194,
+      "placeholder_ratio": 0.403,
+      "placeholder_kinds": {
+        "meta": 70,
+        "chart_ocr": 124
+      },
+      "chunks": {
+        "n": 1542,
+        "avg_chars": 953.1,
+        "p50": 993,
+        "p90": 1785,
+        "p99": 2533,
+        "lt_100": 167,
+        "lt_200": 226
+      }
+    },
+    "配图资料": {
+      "n_sections": 408,
+      "n_placeholder_sections": 408,
+      "placeholder_ratio": 1.0,
+      "placeholder_kinds": {
+        "image_prefix": 109,
+        "meta": 109,
+        "image_n": 190
+      },
+      "chunks": {
+        "n": 299,
+        "avg_chars": 39.2,
+        "p50": 41,
+        "p90": 42,
+        "p99": 42,
+        "lt_100": 299,
+        "lt_200": 299
+      }
+    },
+    "Domain II · 计算物理底座、半导体与能源基础设施": {
+      "n_sections": 276,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 362,
+        "avg_chars": 469.6,
+        "p50": 390,
+        "p90": 923,
+        "p99": 1756,
+        "lt_100": 60,
+        "lt_200": 106
+      }
+    },
+    "Domain III · 大模型算法架构、前沿智能机制与认知科学": {
+      "n_sections": 181,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 242,
+        "avg_chars": 495.4,
+        "p50": 473,
+        "p90": 951,
+        "p99": 1849,
+        "lt_100": 42,
+        "lt_200": 78
+      }
+    },
+    "Domain IV · 宏观经济长波、债务周期与金融资本配置": {
+      "n_sections": 170,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 230,
+        "avg_chars": 470.2,
+        "p50": 371,
+        "p90": 981,
+        "p99": 1965,
+        "lt_100": 31,
+        "lt_200": 62
+      }
+    },
+    "Domain V · 生物计算、代谢内分泌与神经精神病理": {
+      "n_sections": 109,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 145,
+        "avg_chars": 452.7,
+        "p50": 350,
+        "p90": 884,
+        "p99": 1599,
+        "lt_100": 15,
+        "lt_200": 37
+      }
+    },
+    "中港交易台": {
+      "n_sections": 95,
+      "n_placeholder_sections": 25,
+      "placeholder_ratio": 0.263,
+      "placeholder_kinds": {
+        "meta": 25
+      },
+      "chunks": {
+        "n": 396,
+        "avg_chars": 988.6,
+        "p50": 978,
+        "p90": 2114,
+        "p99": 2467,
+        "lt_100": 40,
+        "lt_200": 66
+      }
+    },
+    "Domain VI · 文明兴衰、帝国治理与地缘政治经济学": {
+      "n_sections": 84,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 113,
+        "avg_chars": 487.3,
+        "p50": 364,
+        "p90": 1065,
+        "p99": 1936,
+        "lt_100": 17,
+        "lt_200": 32
+      }
+    },
+    "Domain I · 产业革命与技术经济演进史 / 战略反脆弱智库": {
+      "n_sections": 61,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 77,
+        "avg_chars": 547.7,
+        "p50": 480,
+        "p90": 938,
+        "p99": 4457,
+        "lt_100": 7,
+        "lt_200": 15
+      }
+    },
+    "Domain I · 产业革命与技术经济演进史 / 技术经济学元模型": {
+      "n_sections": 59,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 79,
+        "avg_chars": 423.7,
+        "p50": 381,
+        "p90": 864,
+        "p99": 2096,
+        "lt_100": 18,
+        "lt_200": 21
+      }
+    },
+    "Domain I · 产业革命与技术经济演进史 / 地缘政治经济学": {
+      "n_sections": 46,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 83,
+        "avg_chars": 432.2,
+        "p50": 345,
+        "p90": 1049,
+        "p99": 2079,
+        "lt_100": 17,
+        "lt_200": 27
+      }
+    },
+    "生物医学 · 性别二态性（Sexual Dimorphism）": {
+      "n_sections": 34,
+      "n_placeholder_sections": 0,
+      "placeholder_ratio": 0.0,
+      "placeholder_kinds": {},
+      "chunks": {
+        "n": 45,
+        "avg_chars": 327.9,
+        "p50": 213,
+        "p90": 746,
+        "p99": 2134,
+        "lt_100": 6,
+        "lt_200": 18
+      }
+    }
+  },
+  "by_corpus_tier": {
+    "formal_report": {
+      "n_chunks": 220635,
+      "n_sections": 7688,
+      "chunks_per_section": 28.7,
+      "distinct_headings": 1968,
+      "top_headings": [
+        [
+          "元信息",
+          2097
+        ],
+        [
+          "图表（p6 OCR）",
+          143
+        ],
+        [
+          "图表（p8 OCR）",
+          143
+        ],
+        [
+          "图表（p7 OCR）",
+          141
+        ],
+        [
+          "图表（p5 OCR）",
+          131
+        ]
+      ],
+      "placeholder_chunks": 220389,
+      "placeholder_chunk_ratio": 0.999,
+      "chunk_len": {
+        "n": 220635,
+        "avg_chars": 1212.5,
+        "p50": 1261,
+        "p90": 2198,
+        "p99": 2679,
+        "lt_100": 17377,
+        "lt_200": 21798
+      }
+    },
+    "daily": {
+      "n_chunks": 50072,
+      "n_sections": 42692,
+      "chunks_per_section": 1.2,
+      "distinct_headings": 35017,
+      "top_headings": [
+        [
+          "元信息",
+          905
+        ],
+        [
+          "table_class__table_table-borde",
+          413
+        ],
+        [
+          "table_border__1___tr__td_colsp",
+          329
+        ],
+        [
+          "开头",
+          171
+        ],
+        [
+          "table__thead__tr__th_colspan__",
+          136
+        ]
+      ],
+      "placeholder_chunks": 11534,
+      "placeholder_chunk_ratio": 0.23,
+      "chunk_len": {
+        "n": 50072,
+        "avg_chars": 564.3,
+        "p50": 413,
+        "p90": 1265,
+        "p99": 2200,
+        "lt_100": 657,
+        "lt_200": 7446
+      }
+    },
+    "other": {
+      "n_chunks": 11145,
+      "n_sections": 622,
+      "chunks_per_section": 17.9,
+      "distinct_headings": 323,
+      "top_headings": [
+        [
+          "元信息",
+          93
+        ],
+        [
+          "图表（p7 OCR）",
+          15
+        ],
+        [
+          "图表（p6 OCR）",
+          14
+        ],
+        [
+          "图表（p16 OCR）",
+          11
+        ],
+        [
+          "图表（p5 OCR）",
+          10
+        ]
+      ],
+      "placeholder_chunks": 10995,
+      "placeholder_chunk_ratio": 0.987,
+      "chunk_len": {
+        "n": 11145,
+        "avg_chars": 1155.6,
+        "p50": 1213,
+        "p90": 2194,
+        "p99": 2523,
+        "lt_100": 846,
+        "lt_200": 1141
+      }
+    },
+    "flagship": {
+      "n_chunks": 9680,
+      "n_sections": 8678,
+      "chunks_per_section": 1.1,
+      "distinct_headings": 7600,
+      "top_headings": [
+        [
+          "执行摘要",
+          114
+        ],
+        [
+          "目录",
+          94
+        ],
+        [
+          "附录",
+          62
+        ],
+        [
+          "本章结论",
+          48
+        ],
+        [
+          "主要参考文献",
+          40
+        ]
+      ],
+      "placeholder_chunks": 2,
+      "placeholder_chunk_ratio": 0.0,
+      "chunk_len": {
+        "n": 9680,
+        "avg_chars": 422.1,
+        "p50": 318,
+        "p90": 901,
+        "p99": 1806,
+        "lt_100": 1202,
+        "lt_200": 3021
+      }
+    },
+    "discussion": {
+      "n_chunks": 4554,
+      "n_sections": 2126,
+      "chunks_per_section": 2.1,
+      "distinct_headings": 1598,
+      "top_headings": [
+        [
+          "元信息",
+          175
+        ],
+        [
+          "正文",
+          118
+        ],
+        [
+          "开头",
+          18
+        ],
+        [
+          "图表（p3 OCR）",
+          10
+        ],
+        [
+          "图表（p1 OCR）",
+          8
+        ]
+      ],
+      "placeholder_chunks": 3042,
+      "placeholder_chunk_ratio": 0.668,
+      "chunk_len": {
+        "n": 4554,
+        "avg_chars": 838.9,
+        "p50": 755,
+        "p90": 1426,
+        "p99": 2348,
+        "lt_100": 330,
+        "lt_200": 696
+      }
+    },
+    "image_material": {
+      "n_chunks": 299,
+      "n_sections": 408,
+      "chunks_per_section": 0.7,
+      "distinct_headings": 72,
+      "top_headings": [
+        [
+          "元信息",
+          109
+        ],
+        [
+          "配图1",
+          109
+        ],
+        [
+          "配图2",
+          65
+        ],
+        [
+          "配图资料：北美交易台____编号_18",
+          30
+        ],
+        [
+          "配图资料：中港交易台____编号_18",
+          17
+        ]
+      ],
+      "placeholder_chunks": 299,
+      "placeholder_chunk_ratio": 1.0,
+      "chunk_len": {
+        "n": 299,
+        "avg_chars": 39.2,
+        "p50": 41,
+        "p90": 42,
+        "p99": 42,
+        "lt_100": 299,
+        "lt_200": 299
+      }
+    }
+  },
+  "top_placeholder_headings": [
+    [
+      "元信息",
+      3380
+    ],
+    [
+      "图表（p8 OCR）",
+      217
+    ],
+    [
+      "图表（p7 OCR）",
+      216
+    ],
+    [
+      "图表（p6 OCR）",
+      212
+    ],
+    [
+      "图表（p13 OCR）",
+      199
+    ],
+    [
+      "图表（p12 OCR）",
+      197
+    ],
+    [
+      "图表（p5 OCR）",
+      196
+    ],
+    [
+      "图表（p9 OCR）",
+      191
+    ],
+    [
+      "图表（p11 OCR）",
+      188
+    ],
+    [
+      "图表（p10 OCR）",
+      184
+    ],
+    [
+      "图表（p14 OCR）",
+      174
+    ],
+    [
+      "图表（p15 OCR）",
+      170
+    ],
+    [
+      "图表（p4 OCR）",
+      163
+    ],
+    [
+      "图表（p16 OCR）",
+      148
+    ],
+    [
+      "图表（p17 OCR）",
+      132
+    ],
+    [
+      "图表（p3 OCR）",
+      130
+    ],
+    [
+      "图表（p18 OCR）",
+      128
+    ],
+    [
+      "图表（p20 OCR）",
+      125
+    ],
+    [
+      "图表（p2 OCR）",
+      124
+    ],
+    [
+      "图表（p21 OCR）",
+      123
+    ]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "benchmark_schema_version": "1.0.0",
+  "description": "P8 Benchmark 单题 schema。Legacy 50 题为历史冻结格式（heading_contains）；Development/Holdout 必须使用 chunk_id / 正文片段锚定（见 P8 交接说明 §8.1）。",
+  "required_fields": ["id", "query", "query_type", "source_type", "split", "gold"],
+  "fields": {
+    "id": "唯一题号，建议前缀：FB=flagship / DB=daily / DS=discussion / IM=image_ocr / XD=cross_doc / BL=bilingual",
+    "query": "查询原文（中文/英文/混合）",
+    "query_type": "exact_entity | exact_number | semantic_thesis | causal | temporal | long_tail | cross_doc",
+    "source_type": "flagship | formal_report | daily | discussion | image_material | other",
+    "difficulty": "easy | medium | hard",
+    "temporal": "bool，是否为时间敏感问题",
+    "split": "legacy | development | holdout",
+    "gold": {
+      "mode": "heading_contains（仅 legacy） | chunk_ids | content_anchors",
+      "sections": "[{document_id, heading_contains, grade}] 仅 legacy",
+      "chunks": "[{chunk_id, grade}] 新题集首选（可解析、稳定）",
+      "content_anchors": "[{document_id, anchor_contains, grade}] 次选：正文片段必须唯一命中，且解析为 chunk 集合",
+      "grades": "3=直接回答；2=相关支持；1=弱相关；0=无关。Hit/Recall 以 grade>=2 为相关。"
+    },
+    "acceptable_docs": "[doc_id] 允许的替代答案文档（避免把合理结果误判失败）",
+    "acceptable_sections": "[section_id] 允许的替代答案章节",
+    "graded_relevance": "{target: grade} 多文档分级相关（可选）",
+    "notes": "出题依据/易混淆点/为何是该 gold",
+    "version": "题集版本号（development 修订须递增）"
+  },
+  "validation_rules": [
+    "chunk_ids / content_anchors 必须能在 catalog_full.db 中解析到 grade>=2 的 chunk，unresolved 必须为 0",
+    "同一 query 不得同时使用 heading_contains 与 chunk_ids",
+    "Holdout 题在调参阶段不得查看逐题结果",
+    "Legacy 50 题永久冻结、不得修改"
+  ]
+}

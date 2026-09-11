@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-09-11T13:03:52",
+  "source": "api:/api/index/status",
+  "response": {
+    "counts": {
+      "documents": 3566,
+      "sections": 62248,
+      "chunks": 296385,
+      "fts_terms": 296385,
+      "fts_trigram": 296385,
+      "qdrant_points": 296385
+    },
+    "consistent": true,
+    "last_full_scan": "2026-09-11T13:01:14",
+    "inference_worker": {
+      "alive": true,
+      "device": "cuda:1",
+      "device_kind": "rocm",
+      "fallback_to_cpu": false,
+      "total_restarts": 0,
+      "detail": {
+        "device": "cuda:1",
+        "device_kind": "rocm",
+        "embedding": {
+          "device": "cuda:1",
+          "model_path": "D:/AI-Models/Qwen3-Embedding-0.6B",
+          "dtype": "torch.float16"
+        },
+        "reranker": {
+          "device": "cuda:1",
+          "model_path": "D:/AI-Models/Qwen3-Reranker-0.6B",
+          "dtype": "torch.float16"
+        },
+        "pid": 12128
+      }
+    }
+  }
+}
