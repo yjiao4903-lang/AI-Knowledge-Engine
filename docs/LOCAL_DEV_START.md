@@ -5,6 +5,19 @@ Project: `yjiao4903-lang/AI-Knowledge-Engine`
 Control: Issue #30  
 Current task: Issue #39
 
+## 0. Execution-efficiency rule
+
+LOCAL-DEV must optimize for the **fastest safe completion path**.
+
+Within an already approved Issue scope:
+- resolve low-risk, reversible implementation details directly;
+- batch fixes, tests and evidence instead of returning for repeated micro-approval;
+- reuse valid prior evidence and artifacts;
+- do not apply full-project ceremony to small code/doc/test details;
+- escalate only for architecture/schema/public-contract/benchmark-semantic changes, material scope expansion, durable/sealed data mutation, production/formal writes, or merge/release/cutover boundaries.
+
+Do not spend user or WEB-CONTROL attention on details that LOCAL-DEV can safely decide and verify itself.
+
 ## Required reading order
 
 1. `/AGENTS.md`
@@ -34,4 +47,4 @@ Do not scale to 150+150 yet. Do not implement Corpus Routing, tune retrieval wei
 
 The full Holdout question/gold content must remain sealed outside the public repository. Return one PR/evidence package linked to Issue #39 with exact-head SHA and all required quality evidence. Do not merge.
 
-If Issue #39 conflicts with this file, **Issue #39 is authoritative for task scope**; `AGENTS.md` is authoritative for role and process boundaries.
+If Issue #39 conflicts with this file, **Issue #39 is authoritative for task scope**; `AGENTS.md` is authoritative for role and process boundaries. Within that authorized scope, prefer one complete execution/evidence pass over repeated handoffs.
