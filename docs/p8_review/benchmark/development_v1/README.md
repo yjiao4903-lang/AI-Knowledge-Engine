@@ -1,5 +1,13 @@
 # Development Benchmark v1（结构与规范；题集待出）
 
+> **2026-09-11 P8-BENCH-01 状态（重要）**：本目录的
+> `candidates_v0_machine_review_only.jsonl` 是**机器生成的候选集，仅供复核，不是正式门线题集**。
+> 它 150 题、schema 校验通过、`unresolved=0`、无 Dev/Holdout 泄漏，但**金标不可辩护**：
+> 锚点词在语料中位出现于 ~290 篇文档 / ~1018 chunks，单 chunk 金标对宽泛实体查询不是公平
+> 相关性目标；同引擎 Legacy canary 复现 Hit@5 0.82，而本候选集 Hit@5 仅 0.10。
+> 详见 `../reports/P8_BENCH01_STATUS_20260911.md`。**正式 Development 150 仍需人工领域出题**
+> （本目录规范与工具可直接复用）。
+
 **用途**（规范 §5.2）：参数实验、失败归因、routing 设计。允许随 P8 早期发现有限修订，**每次修订必须有版本号**（`version` 字段，文件另存 `questions_v1.jsonl` → `questions_v2.jsonl`）。
 
 **规模建议**：100–150 题（规范）；交接建议**先出 30–50 题即可支撑后续实验**（P8-1 是关键路径上最长的杆）。
