@@ -247,8 +247,8 @@ def preflight_return_candidate(task_id: str, candidate_id: str, request: Request
         "has_version_conflict": candidate.has_version_conflict,
         "version_check_incomplete": candidate.version_check_incomplete,
         "ke_preflight_only": True,
-        "formal_preview_supported": True,
-        "formal_apply_supported": bool(request.app.state.cfg.cognition.formal_apply_enabled),
+        "formal_preview_supported": False,
+        "formal_apply_supported": False,
         "auto_apply": False,
         "formal_write_performed": False,
     }
