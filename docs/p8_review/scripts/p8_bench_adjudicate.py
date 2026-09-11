@@ -356,13 +356,19 @@ def write_review_form(path: str | Path, packet: list[dict], manifest: dict) -> N
     ]
     for p in packet:
         L += [f"## {p['qid']} · {p['query_type']} / {p['corpus_tier']}", "",
-              f"**query**：{p['query']}", "", "| cand_id | grade | document | heading | 文本 |",
-              "|---|---|---|---|---|"]
-        for c in p["candidates"]:
-            txt = c["text"].replace("|", "\\|")
-            head = (c["heading_path"] or "").replace("|", "\\|")
-            L.append(f"| `{c['cand_id']}` | | `{c['document_id']}` | {head} | {txt} |")
-        L += ["", "`status`：______ ｜ `final_query`：______ ｜ `notes`：______", "", "---", ""]
+              f"**query**：{p['query']}", "",
+              f"**候选 {len(p['candidates'])} 个**（顺序已打散；未显示检索视图 / 名次 / 分数 / 预标注 grade）", ""]
+        for i, c in enumerate(p["candidates"], 1):
+            L += [f"#### {i}. `{c['cand_id']}`", "",
+                  f"- document：`{c['document_id']}`",
+                  f"- heading：{c['heading_path'] or '（无）'}",
+                  "- 文本：", ""]
+            for ln in c["text"].splitlines() or [""]:
+                L.append(f"> {ln}")
+            L += ["", "`grade（0/1/2/3）`：______", ""]
+        L += ["**status**：______（accept / rewrite / reject / ambiguous）",
+              "**final_query**（status=rewrite 时必填）：______",
+              "**notes**：______", "", "---", ""]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
 
