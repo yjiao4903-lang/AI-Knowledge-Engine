@@ -108,6 +108,30 @@ Dev20 人工审阅已录入（19 accept / DEV2-19 reject，`judgments_developmen
   未进入 sealed Holdout 人审。
 
 
+## 0d. Dev20 人工校准完成（2026-09-12）
+
+WEB-CONTROL 已对重生成 packet（r2）上仅变化的两题（DEV2-17、DEV2-19）完成人工确认
+（其余 18 题按 `migration_report_v2r2.json` 原样复用）。执行 `import --require-complete`：
+
+- **pass**；20 条判定全部 accept；`candidate_completeness` coverage **1.0**；
+  **`human_review_complete = true`**；
+- 人审后 FN 审计：20 题均新增了人审判为相关而预标注金标未收录的块，共 **112** 个 chunk 补入 gold；
+  每题 grade≥2 相关数中位 **7**。
+
+### Development human-gold 检索指标（hybrid_rerank 生产臂，检索行为未改）
+
+| Hit@1 | Hit@3 | Hit@5 | MRR | NDCG | Recall@5 | Recall@10 |
+|---|---|---|---|---|---|---|
+| 0.800 | 0.950 | **1.000** | 0.877 | 0.857 | 0.440 | 0.552 |
+
+buckets：OK = 20/20。auto-vs-human 分歧与人审池 recall 见
+`adjudication/adjudication_report_v2.json` / `.md`；trace 在密封工作区
+`E:/研报提取资料库/_golden/p8_experiments/p8_bench02_dev_human_v2/`。
+
+> 口径提示：gold 为人审后的有界池分级相关集（标准 pooling 假设），非全语料穷举；
+> 与 Legacy 50 / v1 auto_prelabel 数字不可直接互比。本轮**不据此调整任何检索参数**。
+
+
 ## 1. 证据分级（本报告所有数字的引用前提）
 
 | 证据类别 | 来源 | 可否用于效度/检索质量结论 |

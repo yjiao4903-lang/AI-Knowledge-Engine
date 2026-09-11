@@ -237,5 +237,52 @@
     },
     "migration": "p8_bench_adjudicate.py migrate：18 题候选集完全不变可复用原人审；DEV2-17 / DEV2-19 需人工重审（不模型补判）。",
     "import_fail_fast": "v2 judgments + v1 questions 已实测被拒绝（20 条『不在 frozen questions 中』错误）；v2 judgments + v2 questions 通过校验。"
+  },
+  "dev20_human_calibration_final": {
+    "date": "2026-09-12",
+    "authority": "WEB-CONTROL one-shot directive（PR #41 comment，2026-09-11T17:08Z）",
+    "human_review_complete": true,
+    "import": {
+      "command": "p8_bench_adjudicate.py import --require-complete --questions adjudication/authored_v2/development_v2_frozen.jsonl",
+      "pass": true,
+      "n_records": 20,
+      "n_gold": 20,
+      "n_rejected": 0,
+      "status_dist": {
+        "accept": 20
+      },
+      "candidate_completeness": {
+        "accepted_or_rewritten": 20,
+        "fully_graded": 20,
+        "coverage": 1.0,
+        "incomplete_queries": []
+      }
+    },
+    "hashes": {
+      "judgments": "f682023a45c64dbfe1aba5fa0517b94f884d3030fba2cd3da2d19516d5d9c0bf",
+      "adjudication_record": "f682023a45c64dbfe1aba5fa0517b94f884d3030fba2cd3da2d19516d5d9c0bf",
+      "human_gold": "16bacc023ada54d27588aeb406bc3d60975b5e6ed7a0aad0b1a2688c0b060243",
+      "freeze": "8fdafa7b5e3c0d2b42b9ec0d7fb2e11c56626e0b0783e6a8a25f673ae6038dbb",
+      "report": "2c2c55b675a2c5fdd4489ab89a86e5f481fb45fce77ab6a9c47749f4e2a55561"
+    },
+    "human_gold_metrics_hybrid_rerank": {
+      "exp": "p8_bench02_dev_human_v2",
+      "hit1": 0.8,
+      "hit3": 0.95,
+      "hit5": 1.0,
+      "recall5": 0.44,
+      "recall10": 0.552,
+      "mrr": 0.877,
+      "ndcg": 0.857,
+      "buckets": {
+        "OK": 20
+      },
+      "note": "检索代码/权重/routing/reranker 未改；trace 位于密封工作区 E:/研报提取资料库/_golden/p8_experiments/p8_bench02_dev_human_v2/。"
+    },
+    "fn_audit_after_human": {
+      "queries_with_fn_additions": 20,
+      "fn_chunks_added": 112,
+      "human_rel_median_per_query": 7
+    }
   }
 }
