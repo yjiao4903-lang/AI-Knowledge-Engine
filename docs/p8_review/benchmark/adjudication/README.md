@@ -1,11 +1,12 @@
 # P8-BENCH-02 盲化人工相关性判定（blinded human adjudication）
 
-> **状态（2026-09-11，批次 v2）**：工具链已交付并通过无 GPU 自检（24/24）。
+> **状态（2026-09-12，批次 v2 收尾）**：工具链已交付并通过无 GPU 自检（32/32）。
 > **v1 校准包已由 WEB-CONTROL 作废**（query 不自足，见 `superseded/README.md`），并由
-> **v2 替代批次**取代：Dev 20 在 `development_calibration_v2/`，sealed Holdout 10 在仓库外。
+> **v2 替代批次**取代：Dev 20 在 `development_calibration_v2/`（PR #41 已合并验收），
+> sealed Holdout 10 在仓库外，人工判定**已完成并冻结**——聚合证据见
+> `holdout_calibration_v2/README.md` 与 `holdout_calibration_v2/holdout_aggregate_v2.json`
+> （`human_review_complete = true`，coverage 1.0；逐题内容按密封条款不入库）。
 > v2 批次先通过 **Query Validity Gate**（`query_validity_audit_v2.json`：Dev 20/20、Holdout 10/10）。
-> **人工领域判定尚未录入**，因此 `human_review_complete = false`，校准门线**未完成**。
-> 本目录内的包与 key 只是待判材料，不是证据。
 
 ## 为什么需要这一层
 
