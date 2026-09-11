@@ -3,36 +3,35 @@
 Role: **LOCAL-DEV**  
 Project: `yjiao4903-lang/AI-Knowledge-Engine`  
 Control: Issue #30  
-Current task: Issue #36
+Current task: Issue #39
 
 ## Required reading order
 
 1. `/AGENTS.md`
 2. `/docs/PROJECT_CONTROL.md`
 3. GitHub Issue #30
-4. GitHub Issue #36
+4. GitHub Issue #39
 5. `/docs/CURRENT_STATE.md`
 6. `/docs/HANDOFF_PROTOCOL.md`
 7. `/docs/P8_RETRIEVAL_QUALITY_REVIEW_20260911.md`
-8. `/docs/p8_review/reports/P8_中期报告_WP1_WP2_20260911.md`
-9. `/docs/p8_review/reports/P8_ENG01_RECONCILE_DETERMINISM_20260911.md`
+8. `/docs/p8_review/reports/P8_BENCH01_STATUS_20260911.md`
+9. `/docs/p8_review/scripts/p8_bench_build.py`
+10. `/docs/p8_review/scripts/p8_bench_verify.py`
 
 ## Current assignment
 
-Execute **Issue #36 — P8-BENCH-01: build mixed Development / sealed Holdout benchmark**.
+Execute **Issue #39 — P8-BENCH-02: human-in-the-loop benchmark pilot with pooled relevance judging**.
 
-P8-ENG-01 is complete: PR #35 fixed the doc_id/reconcile determinism defect and is merged into authoritative `main`.
+P8-BENCH-01 is closed as a valid limiting-factor diagnosis: PR #38 established reusable benchmark tooling but proved that broad machine-authored entity prompts plus single-chunk gold are not gate-quality.
 
 Work from current authoritative `main`. Preserve unrelated local changes. Use branch:
 
-`local-dev/36-p8-mixed-benchmark`
+`local-dev/39-p8-benchmark-pilot`
 
-The goal is measurement quality, not retrieval optimization. Build a representative **Development 150 + sealed Holdout 150** benchmark spanning the real corpus and realistic query types. Legacy 50 remains byte-for-byte frozen as a canary.
+Build only the **60 Development + 40 sealed Holdout pilot** defined in Issue #39. Use claim/context-specific questions and pooled graded relevance judging; every accepted query must have a defensible relevance set and false-negative audit before metrics are frozen.
 
-Do not implement Corpus Routing, tune retrieval weights, upgrade the reranker, mutate Legacy Golden, or perform destructive full-corpus rewrite/re-extraction/rechunk/reindex under this task.
+Do not scale to 150+150 yet. Do not implement Corpus Routing, tune retrieval weights, upgrade the reranker, mutate Legacy Golden, or perform destructive corpus/reindex operations.
 
-The public repository may contain Development gold and Holdout freeze/hash/composition metadata, but the full Holdout question/gold content must remain sealed locally until WEB-CONTROL authorizes final evaluation disclosure.
+The full Holdout question/gold content must remain sealed outside the public repository. Return one PR/evidence package linked to Issue #39 with exact-head SHA and all required quality evidence. Do not merge.
 
-Return work through one PR/evidence package linked to Issue #36 with exact-head SHA, deterministic generation/validation evidence, split/leakage checks, Development baseline metrics, Holdout aggregate metrics/confidence intervals, and proof that Legacy 50 is unchanged. Do not merge.
-
-If Issue #36 conflicts with this file, **Issue #36 is authoritative for task scope**; `AGENTS.md` is authoritative for role and process boundaries.
+If Issue #39 conflicts with this file, **Issue #39 is authoritative for task scope**; `AGENTS.md` is authoritative for role and process boundaries.
