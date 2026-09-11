@@ -1,0 +1,77 @@
+{
+  "packet_version": "1.0",
+  "seed": "p8-bench-02-adjudication-20260911",
+  "split": "development",
+  "source_questions": ".p8_local_dev/v2/development_v2_frozen.jsonl",
+  "source_questions_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+  "n_questions_available": 20,
+  "n_sampled": 20,
+  "sampling": "family 覆盖优先 + tier 轮转（seed 确定性）",
+  "blinding": {
+    "hidden_from_reviewer": [
+      "view 归属",
+      "视图内名次",
+      "融合/RRF 分数",
+      "auto_prelabel grade"
+    ],
+    "shuffle": "random.Random('p8-bench-02-adjudication-20260911|<qid>|shuffle')",
+    "cand_id": "<qid>#c<index>，index 为打散后位置，不携带名次信息",
+    "key_file": "docs\\p8_review\\benchmark\\adjudication\\_keys\\key_development_calibration_v2.json",
+    "key_file_in_repo": true
+  },
+  "selection": {
+    "view_topn": 50,
+    "per_view_k": 6,
+    "max_candidates": 20,
+    "always_included": "auto_prelabel gold + 池内 FN 候选",
+    "cross_split_candidates_excluded": 920
+  },
+  "candidate_count": {
+    "min": 15,
+    "max": 20,
+    "median": 20
+  },
+  "coverage": {
+    "by_tier": {
+      "broker_report": 4,
+      "daily_report": 3,
+      "discussion": 2,
+      "flagship": 5,
+      "research_media": 3,
+      "trading_desk": 3
+    },
+    "by_family": {
+      "comparison": 3,
+      "entity_context": 2,
+      "mechanism": 4,
+      "multi_evidence": 3,
+      "numeric": 5,
+      "temporal": 3
+    }
+  },
+  "pooling_assumption": "包内候选未判定的块按不相关计（标准 pooling 假设）；候选集为有界抽样，非全语料穷举。",
+  "packet_sha256": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+  "key_sha256": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+  "queries": [
+    "DEV2-01",
+    "DEV2-02",
+    "DEV2-03",
+    "DEV2-04",
+    "DEV2-05",
+    "DEV2-06",
+    "DEV2-07",
+    "DEV2-08",
+    "DEV2-09",
+    "DEV2-10",
+    "DEV2-11",
+    "DEV2-12",
+    "DEV2-13",
+    "DEV2-14",
+    "DEV2-15",
+    "DEV2-16",
+    "DEV2-17",
+    "DEV2-18",
+    "DEV2-19",
+    "DEV2-20"
+  ]
+}

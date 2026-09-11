@@ -8852,5 +8852,11 @@
         }
       }
     }
+  },
+  "withdrawn": {
+    "reason": "Issue #39 · 2026-09-11 WEB-CONTROL 控制决定：本批 20 Dev + 10 sealed Holdout 校准包作废。领域审阅者未读源报告即无法判定——多条 query 不自足（未定义的『报告中 / 相关指标 / 数量上的差异 / 作用』等依赖隐藏源报告上下文）。",
+    "superseded_by": "docs/p8_review/benchmark/adjudication/development_calibration_v2/ (sealed: E:/研报提取资料库/_golden/p8_bench02_adjudication/v2/)",
+    "withdrawn_at": "2026-09-11",
+    "counts_toward_human_review_complete": false
   }
 }

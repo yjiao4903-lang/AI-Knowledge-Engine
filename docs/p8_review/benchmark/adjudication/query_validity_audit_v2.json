@@ -1,0 +1,220 @@
+{
+  "audit": "P8-BENCH-02 Query Validity Gate 审计（替代批次 v2）",
+  "date": "2026-09-11",
+  "gate_version": "1.0",
+  "why": "2026-09-11 WEB-CONTROL 控制决定：v1 校准包作废（多条 query 不自足，依赖隐藏源报告上下文）。替代批次必须先过 Query Validity Gate：无未解析指代、显式命名实体与具体化维度、冷读可判定。",
+  "gate_rules": {
+    "deictic_banned": "报告中/文中/该报告/该机构/上述/本文/前文…（`论文中` 等词内匹配已排除）",
+    "generic_banned": "相关指标/数量上的差异/有什么变化/起了什么作用/怎么样/情况如何…",
+    "required": "≥1 具名实体（latin 专名或中文专名词表）+ ≥1 具体化维度（营收/毛利率/价格/产能/capex/概率/机制/份额/风险…）+ 疑问标记",
+    "note": "确定性预过滤器，不是语义裁判；权威判定为 WEB-CONTROL 对 Dev query 清单的 sanity review。"
+  },
+  "development": {
+    "n": 20,
+    "n_valid": 20,
+    "pass": true,
+    "gate_audit": "docs/p8_review/benchmark/adjudication/authored_v2/development_gate_v2.json",
+    "authored_spec": "docs/p8_review/benchmark/adjudication/authored_v2/development_authored_v2.jsonl",
+    "packet_sha256": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+    "key_sha256": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+    "coverage": {
+      "by_tier": {
+        "broker_report": 4,
+        "daily_report": 3,
+        "discussion": 2,
+        "flagship": 5,
+        "research_media": 3,
+        "trading_desk": 3
+      },
+      "by_family": {
+        "comparison": 3,
+        "entity_context": 2,
+        "mechanism": 4,
+        "multi_evidence": 3,
+        "numeric": 5,
+        "temporal": 3
+      }
+    },
+    "queries": [
+      {
+        "id": "DEV2-01",
+        "tier": "flagship",
+        "family": "numeric",
+        "query": "NOAA CPC 在 2026 年 8 月预测 2026-27 年出现「历史级」厄尔尼诺的概率是多少？"
+      },
+      {
+        "id": "DEV2-02",
+        "tier": "flagship",
+        "family": "comparison",
+        "query": "HBM 占 DRAM 营收的比例在 2024 年与 2025E 分别是多少？"
+      },
+      {
+        "id": "DEV2-03",
+        "tier": "flagship",
+        "family": "entity_context",
+        "query": "在 AI capex 信用传导框架里，「Spread fatigue」的含义是什么？"
+      },
+      {
+        "id": "DEV2-04",
+        "tier": "flagship",
+        "family": "temporal",
+        "query": "英国 1700–1870 年的人均 GDP 年均增速是多少？"
+      },
+      {
+        "id": "DEV2-05",
+        "tier": "flagship",
+        "family": "multi_evidence",
+        "query": "PRIMA 视网膜下芯片的 PRIMAvera 试验纳入了多少名干性 AMD 晚期患者，主要视力改善结果是什么？"
+      },
+      {
+        "id": "DEV2-06",
+        "tier": "broker_report",
+        "family": "numeric",
+        "query": "ASML 报告的季度销售额（欧元）与毛利率分别是多少？"
+      },
+      {
+        "id": "DEV2-07",
+        "tier": "broker_report",
+        "family": "comparison",
+        "query": "2025 年第一季度 Microsoft Azure 的 AI 收入占比是多少？同期中国主要云服务商的 AI 收入占比大致区间是多少？"
+      },
+      {
+        "id": "DEV2-08",
+        "tier": "broker_report",
+        "family": "mechanism",
+        "query": "为什么 AVC 被认为将受益于 2026 年 ASIC 液冷需求的增长？"
+      },
+      {
+        "id": "DEV2-09",
+        "tier": "broker_report",
+        "family": "temporal",
+        "query": "2025 年中国固定资产投资（FAI）同比增速的预测值是多少，与 1-5 月实际值相比如何？"
+      },
+      {
+        "id": "DEV2-10",
+        "tier": "daily_report",
+        "family": "numeric",
+        "query": "Morgan Stanley 对 Meta FY27 的 EPS 预测是多少美元？10% 的裁员预计带来多少年化节省？"
+      },
+      {
+        "id": "DEV2-11",
+        "tier": "daily_report",
+        "family": "mechanism",
+        "query": "韩国股市当日下跌 2% 的政策原因是什么？三星与 SK 海力士分别下跌多少？"
+      },
+      {
+        "id": "DEV2-12",
+        "tier": "daily_report",
+        "family": "multi_evidence",
+        "query": "Anthropic 的年度经常性收入（ARR）被报道为多少美元？与 2025 年底的水平相比增加了多少？"
+      },
+      {
+        "id": "DEV2-13",
+        "tier": "trading_desk",
+        "family": "numeric",
+        "query": "2026 年以来美国上市杠杆 ETF 的日均成交量约为多少亿美元，占复杂型产品 AUM 的比例是多少？"
+      },
+      {
+        "id": "DEV2-14",
+        "tier": "trading_desk",
+        "family": "entity_context",
+        "query": "GIR 指出 1948 年以来标普 500 滚动四季度盈利在衰退前后的峰谷中位跌幅是多少？"
+      },
+      {
+        "id": "DEV2-15",
+        "tier": "trading_desk",
+        "family": "mechanism",
+        "query": "为什么 AI 板块短期（T+1）EPS 波动可能较大，而中期更可能得到支撑？"
+      },
+      {
+        "id": "DEV2-16",
+        "tier": "research_media",
+        "family": "mechanism",
+        "query": "为什么中国会在国产芯片供应短缺时大量采购 NVIDIA H20？"
+      },
+      {
+        "id": "DEV2-17",
+        "tier": "research_media",
+        "family": "comparison",
+        "query": "在内存资本开支预期上调之后，AMAT、LAM 与 KLA 的评级分别被调整为什么？"
+      },
+      {
+        "id": "DEV2-18",
+        "tier": "research_media",
+        "family": "multi_evidence",
+        "query": "Rubin CPX GPU 的制造成本约为完整版 R200 GPU 的多少，其算力占比是多少？"
+      },
+      {
+        "id": "DEV2-19",
+        "tier": "discussion",
+        "family": "numeric",
+        "query": "Groq 的融资规模与估值分别是多少？"
+      },
+      {
+        "id": "DEV2-20",
+        "tier": "discussion",
+        "family": "temporal",
+        "query": "在 Hot Chips 2025 大会上，META 对 GPU/XPU 集群规模未来十年的扩容预期是什么？"
+      }
+    ]
+  },
+  "holdout": {
+    "n": 10,
+    "n_valid": 10,
+    "pass": true,
+    "gate_audit_sealed": "E:/研报提取资料库/_golden/p8_bench02_adjudication/authored_v2/holdout_gate_v2.json",
+    "gate_audit_sha256": "0a667ad5c2a2573ed3af442b9cdfd94ead2b3fa2bdb036bcc12aaf771df41db6",
+    "packet_sha256": "ddd819968ea5a23cf50a8d790e39629a549814bd67e2f4c48f5ca1cdf2000b45",
+    "coverage": {
+      "by_tier": {
+        "broker_report": 2,
+        "daily_report": 2,
+        "discussion": 1,
+        "flagship": 2,
+        "research_media": 2,
+        "trading_desk": 1
+      },
+      "by_family": {
+        "comparison": 2,
+        "entity_context": 1,
+        "mechanism": 2,
+        "multi_evidence": 1,
+        "numeric": 3,
+        "temporal": 1
+      }
+    },
+    "note": "sealed：query 文本与逐题 trace 不入库；仅落聚合组成、SHA256 与 validity 计数。"
+  },
+  "combined_pass": true,
+  "pooled_coverage_diagnostic_NOT_a_tuning_signal": {
+    "development": {
+      "n": 20,
+      "elapsed_s": 42.7,
+      "pool_size_median": 97,
+      "pool_size_max": 101,
+      "pooled_relevant_median": 1,
+      "pooled_grade3_median": 1,
+      "queries_with_no_pooled_grade3": 2,
+      "queries_with_gold_grade3_after_split_scope": 20,
+      "fn_corrections": 0
+    },
+    "holdout": {
+      "n": 10,
+      "elapsed_s": 27.6,
+      "pool_size_median": 98,
+      "pool_size_max": 101,
+      "pooled_relevant_median": 1,
+      "pooled_grade3_median": 1,
+      "queries_with_no_pooled_grade3": 0,
+      "queries_with_gold_grade3_after_split_scope": 10,
+      "fn_corrections": 0
+    },
+    "note": "仅作诊断记录。Issue #39 禁止用检索名次/分数调 query 措辞或检索参数；该数字不用于改题。"
+  },
+  "previous_batch": {
+    "status": "withdrawn",
+    "reason": "见 superseded/README.md",
+    "counts_toward_human_review_complete": false,
+    "dev_packet_sha256_v1": "56357c375e1c5fd10387284a24a783214c9c48616b97d39fed0afd691eb2aa8b"
+  }
+}

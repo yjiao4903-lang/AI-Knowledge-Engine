@@ -117,5 +117,67 @@
       "rejects_excluded": "13 题 reject 计入 excluded_from_metrics，n_queries_measured=7",
       "partial_accept_removed_one_candidate": "import exit 1（DEV-C05 缺 DEV-C05#c020）"
     }
+  },
+  "batch_v2_replacement": {
+    "why": "v1 校准包由 WEB-CONTROL 作废（query 不自足）；v2 为替代批次，须先过 Query Validity Gate。",
+    "query_validity_gate": {
+      "gate_version": "1.0",
+      "development": "20/20",
+      "holdout": "10/10",
+      "pass": true,
+      "audit": "docs/p8_review/benchmark/adjudication/query_validity_audit_v2.json"
+    },
+    "pooled_coverage_diagnostic_NOT_tuning_signal": {
+      "development": {
+        "n": 20,
+        "elapsed_s": 42.7,
+        "pool_size_median": 97,
+        "pool_size_max": 101,
+        "pooled_relevant_median": 1,
+        "pooled_grade3_median": 1,
+        "queries_with_no_pooled_grade3": 2,
+        "queries_with_gold_grade3_after_split_scope": 20,
+        "fn_corrections": 0
+      },
+      "holdout": {
+        "n": 10,
+        "elapsed_s": 27.6,
+        "pool_size_median": 98,
+        "pool_size_max": 101,
+        "pooled_relevant_median": 1,
+        "pooled_grade3_median": 1,
+        "queries_with_no_pooled_grade3": 0,
+        "queries_with_gold_grade3_after_split_scope": 10,
+        "fn_corrections": 0
+      },
+      "note": "对比 v1：Dev『池内无 grade-3』由 43/60 降到 2/20；仅供诊断，未据此改题。"
+    },
+    "structural_verification": {
+      "pass": true,
+      "dev": {
+        "n": 20,
+        "max_tier_share": 0.25,
+        "min_tier_share": 0.1,
+        "ocr_share": 0.3
+      },
+      "holdout": {
+        "n": 10,
+        "max_tier_share": 0.2,
+        "min_tier_share": 0.1,
+        "ocr_share": 0.3
+      },
+      "leakage_overlap": [],
+      "sealing": false
+    },
+    "packets": {
+      "development_packet_sha256": "889d6ee04bb0403f570719dd0d31f23d5ac42340c24aee0e6151fdec27fc74d0",
+      "development_key_sha256": "ed82bf35cc199da13f4b9b9f19dda92b89dbfb03115d7d5ff62a2a9dd31815b7",
+      "development_source_questions_sha256": "5b311e4aee3cf6a563668ad9b228439425e154a3b1e115e5935d959890739976",
+      "holdout_packet_sha256": "ddd819968ea5a23cf50a8d790e39629a549814bd67e2f4c48f5ca1cdf2000b45",
+      "holdout_key_sha256": "54d461c3480e0fdcab6c5cf618c9762823f2aadc74fb80a4dd47f7f5247ccc97",
+      "holdout_source_questions_sha256": "02f2fef24d133fd2fe205173280d29932fa919e22794a9c49663b69f7ddee8a2",
+      "note": "Holdout 包与 key 在仓库外密封；此处仅落 SHA256。"
+    },
+    "withdrawal_guard": "p8_bench_adjudicate.py import 对带 key.withdrawn 的批次直接拒绝（除非 --allow-withdrawn）"
   }
 }

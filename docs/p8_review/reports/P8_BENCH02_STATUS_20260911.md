@@ -20,6 +20,50 @@
    "auto_prelabel vs 人工分歧" 与"人工 gold 重算指标"**暂无有效数字**。
 4. Legacy 50 保持冻结（sha256 `aa0412a2…`），未改检索/权重/routing/reranker，未改语料与索引。
 
+## 0b. 批次替换（2026-09-11 WEB-CONTROL 控制决定）
+
+**v1 校准包已作废并从人工校准门线撤回。** 领域审阅者反馈：在未读过源报告时，多条 v1 query
+无法被可复现地理解与判定 —— 它们依赖隐藏的源报告上下文（未定义的「报告中」「相关指标」
+「数量上的差异」「作用」等）。因此审阅者只能猜测作者意图，该批次不是有效的人工判定输入。
+
+**处置**：
+
+- v1 Dev/Holdout 包迁入 `benchmark/adjudication/superseded/`（仓库外密封件同样迁入 `superseded/`）；
+- 两个 v1 key 写入 `withdrawn` 标记；`p8_bench_adjudicate.py import` 对带该标记的批次**直接拒绝**
+  （除非 `--allow-withdrawn`），因此 v1 **不可能**被计入 `human_review_complete`；
+- 生成 **v2 替代批次**，且必须先过新增的 **Query Validity Gate**。
+
+### Query Validity Gate（人审前置门，确定性预过滤）
+
+一条 query 合格需同时满足：无未解析指代；显式命名 ≥1 实体（latin 专名或中文专名词表）与
+≥1 具体化维度（营收/毛利率/价格/产能/capex/概率/机制/份额/风险…）；无泛化占位维度；含疑问标记。
+仅作预过滤，权威判定为 WEB-CONTROL 对 Dev query 清单的 sanity review。
+
+### v2 批次结果
+
+| 项 | Development | sealed Holdout |
+|---|---|---|
+| 题数 | 20 | 10 |
+| Query Validity Gate | **20/20 通过** | **10/10 通过** |
+| 结构校验（tier 护栏 / OCR / 泄漏 / 密封 / Legacy） | pass（max tier 25%、min 10%、OCR 30%） | pass（max tier 20%、min 10%、OCR 30%） |
+| tier 覆盖 | 6/6 | 6/6 |
+| family 覆盖 | 6/6（max 25%） | 6/6（max 30%） |
+| 盲化包 packet sha256 | `889d6ee0…` | `ddd81996…`（仓库外） |
+| 人工判定 | 未录入（`human_review_complete=false`） | 未录入 |
+
+出题方法：从**源 chunk 的真实主张**出发人工撰写 query（`authored_v2/development_authored_v2.jsonl`
+记录每条题锚定的 chunk、实体、维度与期间），rubric 只用于 auto_prelabel 枚举候选金标。
+
+**诊断（不作为调参依据）**：v2 池化后 Dev「4 视图 top-50 池内无 grade-3」由 v1 的 **43/60 降到 2/20**，
+Holdout 为 **0/10**，FN 修正各 0。按 Issue #39，检索名次/分数**未**用于修改 query 措辞或检索参数，
+该数字仅作诊断记录。
+
+### Dev 20 query 清单
+
+见 `benchmark/adjudication/query_validity_audit_v2.json` 的 `development.queries`；
+按 WEB-CONTROL 要求，该清单已在提交人审前单独贴出供 sanity review。
+
+
 ## 1. 证据分级（本报告所有数字的引用前提）
 
 | 证据类别 | 来源 | 可否用于效度/检索质量结论 |
@@ -99,7 +143,7 @@
 | 2 | 确定性盲化判定包 export（隐藏视图/名次/分数） | ✅ `export` + 双 split 包 |
 | 3 | 判定 import/schema（grade 0–3、状态、审阅人、时间戳、freeze 哈希；Holdout 不入库） | ✅ `import` + schema + 密封护栏 |
 | 3b | **candidate-level completeness**：accept/rewrite 必须逐候选判定；缺/未知/重复候选拒绝；freeze/report 暴露完整度计数；未达 100% 不得 `human_review_complete=true`；reject/ambiguous 可题目级但须显式排除出指标 | ✅ 已修复（对应 2026-09-11 追加 review） |
-| 4 | 先做 20 Dev + 10 sealed Holdout 人工校准门线 | ✅ 包已生成（跨 tier/family） |
+| 4 | 先做 20 Dev + 10 sealed Holdout 人工校准门线 | ✅ v2 包已生成（跨 6 tier / 6 family），先过 Query Validity Gate 20/20 + 10/10 |
 | 5 | 对 30 题做人工领域判定；只用人工 grade 重算 gold；人审 FN 审计；报告 auto vs 人工分歧 | ❌ **阻塞：需人类判定**（机制全部就绪） |
 | 6 | 不据自动 rubric 推断检索质量/benchmark 无效；Legacy 冻结；不改检索 | ✅ 报告已撤回相关结论；Legacy `aa0412a2…` 未变 |
 | 7 | 新 head SHA + CI 证据 + 校准产物/聚合 + 报告分离两类证据 | ✅ 见 PR 说明（第 5 项的聚合待人工判定） |

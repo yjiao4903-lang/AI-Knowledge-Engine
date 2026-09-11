@@ -1,6 +1,9 @@
 # P8-BENCH-02 盲化人工相关性判定（blinded human adjudication）
 
-> **状态（2026-09-11）**：工具链已交付并通过无 GPU 自检；**Dev 20 + sealed Holdout 10 校准包已生成**。
+> **状态（2026-09-11，批次 v2）**：工具链已交付并通过无 GPU 自检（24/24）。
+> **v1 校准包已由 WEB-CONTROL 作废**（query 不自足，见 `superseded/README.md`），并由
+> **v2 替代批次**取代：Dev 20 在 `development_calibration_v2/`，sealed Holdout 10 在仓库外。
+> v2 批次先通过 **Query Validity Gate**（`query_validity_audit_v2.json`：Dev 20/20、Holdout 10/10）。
 > **人工领域判定尚未录入**，因此 `human_review_complete = false`，校准门线**未完成**。
 > 本目录内的包与 key 只是待判材料，不是证据。
 
@@ -27,6 +30,19 @@
 `import` 产出的 freeze 文件里 `human_review_complete` 只有在**全部校准题都由 `human` 判定且无缺题**
 时才为 `true`。
 
+## Query Validity Gate（人审前置门）
+
+人工判定前，query 必须先过 `p8_bench_query_gate.py`（确定性预过滤器）：
+
+- 不得含未解析指代（`报告中/文中/该报告/该机构/上述/本文/前文…`）；
+- 不得含泛化占位维度（`相关指标 / 数量上的差异 / 有什么变化 / 起了什么作用 / 怎么样 / 情况如何`）
+  除非已具体化；
+- 必须显式命名 ≥1 实体（latin 专名或中文专名词表）与 ≥1 具体化维度
+  （营收/毛利率/价格/产能/capex/概率/机制/份额/风险…）；
+- `reject` 的题在人审前重写或替换；只有通过 Gate 的冻结 query 才进入人审包。
+
+当前 v2 批次：Dev **20/20**、sealed Holdout **10/10** 通过（`query_validity_audit_v2.json`）。
+
 ## 工作流
 
 ```
@@ -37,22 +53,22 @@ export  →  人工判定（盲化）  →  import（只由人工 grade 重算 g
 
 ```bat
 D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py export ^
-  --questions docs\p8_review\benchmark\development_v1\pilot_v1_auto_prelabel.jsonl ^
-  --split development --n 20 ^
-  --outdir docs\p8_review\benchmark\adjudication\development_calibration_v1 ^
+  --questions <v2 池化冻结题集：.p8_local_dev\v2\development_v2_frozen.jsonl> ^
+  --split development --n 20 --version-tag v2 ^
+  --outdir docs\p8_review\benchmark\adjudication\development_calibration_v2 ^
   --keydir docs\p8_review\benchmark\adjudication\_keys ^
-  --pool-audit docs\p8_review\benchmark\development_v1\pool_audit_v1.json
+  --pool-audit docs\p8_review\benchmark\adjudication\authored_v2\development_pool_audit_v2.json
 ```
 
 产出（Dev 版本入库）：
 
 | 文件 | 用途 |
 |---|---|
-| `packet_<split>_calibration_v1.jsonl` | 机器可读人审包：冻结 query + 打散候选 + 源文本 |
-| `packet_<split>_calibration_v1.manifest.json` | 抽样/盲化/池化参数 + SHA256 |
-| `review_form_<split>_calibration_v1.md` | 人读审阅表（粘贴/填表用） |
-| `judgments_<split>_calibration_v1.template.jsonl` | 判定录入模板（已预置 cand_id 与 `grade: null`） |
-| `_keys/key_<split>_calibration_v1.json` | **盲化映射**（cand_id → chunk_id / 视图名次 / 预标注 grade） |
+| `packet_<split>_calibration_v2.jsonl` | 机器可读人审包：冻结 query + 打散候选 + 源文本 |
+| `packet_<split>_calibration_v2.manifest.json` | 抽样/盲化/池化参数 + SHA256 |
+| `review_form_<split>_calibration_v2.md` | 人读审阅表（粘贴/填表用） |
+| `judgments_<split>_calibration_v2.template.jsonl` | 判定录入模板（已预置 cand_id 与 `grade: null`） |
+| `_keys/key_<split>_calibration_v2.json` | **盲化映射**（cand_id → chunk_id / 视图名次 / 预标注 grade） |
 
 盲化保证：包内**不含**检索视图归属、视图内名次、融合分数、`auto_prelabel` grade；候选顺序按
 `random.Random("<seed>|<qid>|shuffle")` 确定性打散，`cand_id` 为打散后位置，不携带名次信息。
@@ -76,7 +92,7 @@ D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_
 
 ```bat
 D:\AI-Knowledge-Engine\.venv\Scripts\python.exe docs\p8_review\scripts\p8_bench_adjudicate.py import ^
-  --judgments <filled.jsonl> --key docs\p8_review\benchmark\adjudication\_keys\key_development_calibration_v1.json ^
+  --judgments <filled.jsonl> --key docs\p8_review\benchmark\adjudication\_keys\key_development_calibration_v2.json ^
   --questions docs\p8_review\benchmark\development_v1\pilot_v1_auto_prelabel.jsonl ^
   --split development --require-complete ^
   --adjudication-out <adj.jsonl> --gold-out <gold.jsonl> --freeze-out <freeze.json>

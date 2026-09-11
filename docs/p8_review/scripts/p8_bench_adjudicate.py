@@ -276,7 +276,7 @@ def cmd_export(a) -> int:
         if i % 10 == 0 or i == len(sample):
             print(f"  [{i}/{len(sample)}] {q['id']} cands={len(cands)}", flush=True)
 
-    stem = f"{a.split}_calibration_v1"
+    stem = f"{a.split}_calibration_{a.version_tag}"
     packet_path = outdir / f"packet_{stem}.jsonl"
     key_path = keydir / f"key_{stem}.json"
     dump_jsonl(packet_path, packet)
@@ -512,8 +512,21 @@ def assess_review(recs: list[dict], key_queries: dict) -> dict:
     }
 
 
+def refuse_if_withdrawn(key: dict, key_path, allow: bool) -> None:
+    """作废批次不得再进入人工校准流程（Issue #39 · 2026-09-11 批次替换决定）。"""
+    w = key.get("withdrawn")
+    if not w or allow:
+        return
+    raise SystemExit(
+        f"REFUSING: 该 batch 已被 WEB-CONTROL 作废，不得用于人工校准：\n  {key_path}\n"
+        f"  原因：{w.get('reason', '(未记录)')}\n"
+        f"  替代批次：{w.get('superseded_by', '(见 adjudication/README.md)')}\n"
+        "如需本地调试历史件，显式加 --allow-withdrawn。")
+
+
 def cmd_import(a) -> int:
     key = json.loads(Path(a.key).read_text(encoding="utf-8"))
+    refuse_if_withdrawn(key, a.key, getattr(a, "allow_withdrawn", False))
     key_queries = key["queries"]
     questions = {q["id"]: q for q in load_jsonl(a.questions)}
     recs = load_jsonl(a.judgments)
@@ -571,7 +584,7 @@ def cmd_import(a) -> int:
         "coverage": {"sampled": len(key_queries), "adjudicated": len(recs), "missing": missing},
     }
 
-    stem = f"{a.split}_calibration_v1"
+    stem = f"{a.split}_calibration_{getattr(a, 'version_tag', 'v2')}"
     dump_jsonl(a.adjudication_out or f"{stem}_adjudication.jsonl", recs)
     if gold_rows:
         dump_jsonl(a.gold_out or f"{stem}_gold.jsonl", gold_rows)
@@ -962,6 +975,7 @@ def main() -> int:
     e.add_argument("--max-candidates", type=int, default=20)
     e.add_argument("--text-chars", type=int, default=600)
     e.add_argument("--pool-audit", help="可选的 pool_audit json（用于把池内 FN 候选纳入待判集合）")
+    e.add_argument("--version-tag", default="v2", help="产物版本标签（v1 已作废）")
     e.add_argument("--allow-repo-holdout", action="store_true")
     e.set_defaults(func=cmd_export)
 
@@ -975,6 +989,8 @@ def main() -> int:
     i.add_argument("--freeze-out")
     i.add_argument("--require-complete", action="store_true")
     i.add_argument("--allow-repo-holdout", action="store_true")
+    i.add_argument("--allow-withdrawn", action="store_true",
+                   help="允许导入被 WEB-CONTROL 作废的历史 batch（仅本地调试）")
     i.set_defaults(func=cmd_import)
 
     r = sub.add_parser("report", help="auto_prelabel vs 人工分歧 + 人审池 recall")

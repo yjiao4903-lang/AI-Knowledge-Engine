@@ -123,17 +123,32 @@
       "by_tier_and_family": true
     },
     "development_packet": {
-      "packet": "docs/p8_review/benchmark/adjudication/development_calibration_v1/packet_development_calibration_v1.jsonl",
-      "manifest": "docs/p8_review/benchmark/adjudication/development_calibration_v1/packet_development_calibration_v1.manifest.json",
-      "review_form": "docs/p8_review/benchmark/adjudication/development_calibration_v1/review_form_development_calibration_v1.md",
-      "key": "docs/p8_review/benchmark/adjudication/_keys/key_development_calibration_v1.json",
-      "packet_sha256": "56357c375e1c5fd1..."
+      "packet": "docs/p8_review/benchmark/adjudication/development_calibration_v2/packet_development_calibration_v2.jsonl",
+      "manifest": "docs/p8_review/benchmark/adjudication/development_calibration_v2/packet_development_calibration_v2.manifest.json",
+      "review_form": "docs/p8_review/benchmark/adjudication/development_calibration_v2/review_form_development_calibration_v2.md",
+      "key": "docs/p8_review/benchmark/adjudication/_keys/key_development_calibration_v2.json",
+      "packet_sha256": "889d6ee04bb0403f...",
+      "gate": "20/20 valid"
     },
     "holdout_packet": {
-      "location": "<sealed outside repo>",
-      "in_repo": false
+      "location": "<sealed outside repo: E:/研报提取资料库/_golden/p8_bench02_adjudication/v2/holdout_calibration_v2>",
+      "in_repo": false,
+      "packet_sha256": "ddd819968ea5a23c...",
+      "gate": "10/10 valid"
     },
     "human_review_complete": false,
-    "blocker": "20 Dev + 10 sealed Holdout 的人工领域判定尚未录入；人工 gold 与分歧指标需 import/report 后生成。"
+    "blocker": "v2 批次已过 Query Validity Gate 并生成盲化包；20 Dev + 10 sealed Holdout 的人工领域判定尚未录入，human_review_complete=false。未自动/模型替代生成任何人工 grade。",
+    "query_validity_gate": "docs/p8_review/benchmark/adjudication/query_validity_audit_v2.json (Dev 20/20, sealed Holdout 10/10)",
+    "active_batch": "v2",
+    "withdrawn_batches": [
+      {
+        "batch": "v1 (Dev 20 + sealed Holdout 10)",
+        "status": "withdrawn_by_web_control",
+        "reason": "多条 query 不自足（依赖隐藏源报告上下文：报告中/相关指标/数量上的差异/作用），审阅者无法冷读判定；见 adjudication/superseded/README.md",
+        "counts_toward_human_review_complete": false,
+        "guard": "p8_bench_adjudicate.py import 遇到 key.withdrawn 直接拒绝（除非 --allow-withdrawn）",
+        "dev_packet_sha256": "56357c375e1c5fd10387284a24a783214c9c48616b97d39fed0afd691eb2aa8b"
+      }
+    ]
   }
 }
