@@ -233,7 +233,7 @@ def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> 
         raise HTTPException(status_code=500, detail=f"启动外部 Worker 失败: {exc}") from exc
 
     # Defensive unreachable branch: launch_ready currently always fails closed for
-    # every registered external launcher.  Keep the shape only for compatibility
+    # every registered external launcher. Keep the shape only for compatibility
     # if a future user-authorized manual execution architecture replaces this API.
     return {
         "task_id": task_id,
@@ -323,7 +323,7 @@ def rescan_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/archive")
 def archive_task(task_id: str, request: Request) -> dict:
-    _, importer = _require_taskpack(request)
+    _, importer = _require_task(request, task_id)
     try:
         target = importer.archive_task(task_id)
     except FileExistsError as exc:
