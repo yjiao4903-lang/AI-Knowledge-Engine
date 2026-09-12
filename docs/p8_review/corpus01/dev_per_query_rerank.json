@@ -1,0 +1,222 @@
+[
+ {
+  "qid": "DEV2-01",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.1
+  }
+ },
+ {
+  "qid": "DEV2-02",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.2
+  }
+ },
+ {
+  "qid": "DEV2-03",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-04",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-05",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.2
+  }
+ },
+ {
+  "qid": "DEV2-06",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.6
+  }
+ },
+ {
+  "qid": "DEV2-07",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.5
+  }
+ },
+ {
+  "qid": "DEV2-08",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.8
+  }
+ },
+ {
+  "qid": "DEV2-09",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 1.0
+  }
+ },
+ {
+  "qid": "DEV2-10",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.5
+  }
+ },
+ {
+  "qid": "DEV2-11",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-12",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.2
+  }
+ },
+ {
+  "qid": "DEV2-13",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-14",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.9
+  }
+ },
+ {
+  "qid": "DEV2-15",
+  "mode": "text",
+  "rerank": {
+   "hit1": 0.0,
+   "hit3": 0.0,
+   "hit5": 0.0,
+   "mrr": 0.14285714285714285,
+   "fr_share_top10": 0.5
+  }
+ },
+ {
+  "qid": "DEV2-16",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.5
+  }
+ },
+ {
+  "qid": "DEV2-17",
+  "mode": "text",
+  "rerank": {
+   "hit1": 0.0,
+   "hit3": 0.0,
+   "hit5": 1.0,
+   "mrr": 0.25,
+   "fr_share_top10": 1.0
+  }
+ },
+ {
+  "qid": "DEV2-18",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-19",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.0
+  }
+ },
+ {
+  "qid": "DEV2-20",
+  "mode": "text",
+  "rerank": {
+   "hit1": 1.0,
+   "hit3": 1.0,
+   "hit5": 1.0,
+   "mrr": 1.0,
+   "fr_share_top10": 0.5
+  }
+ }
+]
