@@ -8,7 +8,7 @@ import IndexPage from './pages/IndexPage';
 import NextResearchPage from './pages/NextResearchPage';
 import SearchPage from './pages/SearchPage';
 import SettingsPage from './pages/SettingsPage';
-import TaskCenterPage from './pages/TaskCenterPage';
+import TaskCenterWithReturnReviewPage from './pages/TaskCenterWithReturnReviewPage';
 import TopicDossierPage from './pages/TopicDossierPage';
 
 const items = [
@@ -47,7 +47,7 @@ const App: React.FC = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/document/:id" element={<DocumentPage />} />
         <Route path="/index" element={<IndexPage />} />
-        <Route path="/tasks" element={<TaskCenterPage />} />
+        <Route path="/tasks" element={<TaskCenterWithReturnReviewPage />} />
         <Route path="/external-taskpack-runs" element={<ExternalTaskpackRunsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/evaluation" element={<EvaluationPage />} />
