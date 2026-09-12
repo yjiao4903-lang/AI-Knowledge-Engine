@@ -1,8 +1,8 @@
-"""Research-return / cognition-change staging API (DL-06A/B).
+"""Research-return staging plus explicit Cognition Formal Handoff API.
 
-All endpoints operate on KE-owned candidate state only. They intentionally expose
-no formal Cognition Preview/Apply/Revision operation until the real Cognition
-contract has been inspected and verified.
+Staging review remains KE-owned. Formal operations are separate endpoints and use
+only the verified local Cognition HTTP contract: Proposal create -> Preview ->
+explicit Human Apply. KE never writes Cognition Markdown/SQLite directly.
 """
 
 from __future__ import annotations
@@ -11,6 +11,14 @@ import json
 
 from fastapi import APIRouter, HTTPException, Request
 
+from app.integration.cognition_gateway import CognitionGateway, CognitionGatewayError
+from app.integration.return_formal import (
+    FormalApplyInput,
+    FormalCognitionHandoffService,
+    FormalHandoffStateError,
+    FormalHandoffStore,
+    FormalizeInput,
+)
 from app.research.return_candidates import (
     ResearchReturnBatchInput,
     ResearchReturnCandidateService,
@@ -38,7 +46,16 @@ def _service(request: Request) -> ResearchReturnCandidateService:
     )
 
 
+def _gateway(request: Request) -> CognitionGateway:
+    cfg = request.app.state.cfg
+    return CognitionGateway(
+        cfg.cognition.api_url,
+        timeout_seconds=cfg.cognition.api_timeout_seconds,
+    )
+
+
 def _response(record, **extra) -> dict:
+    """Staging response: acceptance is never equivalent to a formal operation."""
     return {
         **extra,
         "return_candidates": record.model_dump(mode="json"),
@@ -52,8 +69,10 @@ def _response(record, **extra) -> dict:
 def _raise(exc: Exception) -> None:
     if isinstance(exc, KeyError):
         raise HTTPException(status_code=404, detail=str(exc).strip("'")) from exc
-    if isinstance(exc, ReturnCandidateStateError):
+    if isinstance(exc, (ReturnCandidateStateError, FormalHandoffStateError)):
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if isinstance(exc, CognitionGatewayError):
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     if isinstance(exc, ValueError):
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     raise exc
@@ -67,6 +86,48 @@ def _find_candidate(record, candidate_id: str):
     if candidate is None:
         raise HTTPException(status_code=404, detail=f"return candidate not found: {candidate_id}")
     return candidate
+
+
+def _refresh_derived_cognition(request: Request) -> None:
+    """Refresh only KE's read-only derived Cognition catalog before version checks."""
+    cog = getattr(request.app.state, "cognition", None) or {}
+    conn = cog.get("conn")
+    pipeline = cog.get("catalog_pipeline")
+    if not cog.get("enabled") or conn is None or pipeline is None:
+        return
+
+    from app.cognition.scanner import scan as cognition_scan
+
+    def _run() -> None:
+        result = cognition_scan(request.app.state.cfg, conn)
+        if result.has_changes:
+            pipeline.apply_scan(result)
+
+    lock = getattr(request.app.state, "index_lock", None)
+    if lock is None:
+        _run()
+        return
+    with lock:
+        _run()
+
+
+def _formal_context(request: Request, task_id: str, candidate_id: str):
+    _refresh_derived_cognition(request)
+    service = _service(request)
+    try:
+        record = service.refresh_target_versions(task_id)
+        candidate = _find_candidate(record, candidate_id)
+        pack, result, evidence, _context = service._validated_task(task_id)
+    except (KeyError, ReturnCandidateStateError, ValueError) as exc:
+        _raise(exc)
+    return service, record, candidate, pack, result, evidence
+
+
+def _formal_service(request: Request, candidate_service: ResearchReturnCandidateService):
+    return FormalCognitionHandoffService(
+        _gateway(request),
+        cognition_docs=candidate_service.cognition_docs,
+    )
 
 
 @router.post("")
@@ -84,14 +145,7 @@ def ingest_return_candidates(
 
 @router.post("/ingest-result")
 def ingest_taskpack_return_suggestions(task_id: str, request: Request) -> dict:
-    """Promote optional Worker suggestions from a Gate-passed result into KE staging.
-
-    `research_return_candidates` is an optional backward-compatible result field.
-    Its contents are never trusted directly: the same service validation checks
-    target Cognition membership, TaskPack Evidence membership, source result IDs,
-    and target-version state before persisting a candidate.
-    """
-
+    """Promote optional Worker suggestions from a Gate-passed result into KE staging."""
     service = _service(request)
     try:
         pack, _result, _evidence, _context = service._validated_task(task_id)
@@ -152,6 +206,7 @@ def list_return_candidates(task_id: str, request: Request) -> dict:
 
 @router.post("/refresh-targets")
 def refresh_return_candidate_targets(task_id: str, request: Request) -> dict:
+    _refresh_derived_cognition(request)
     try:
         record = _service(request).refresh_target_versions(task_id)
     except (KeyError, ReturnCandidateStateError, ValueError) as exc:
@@ -161,8 +216,8 @@ def refresh_return_candidate_targets(task_id: str, request: Request) -> dict:
 
 @router.get("/{candidate_id}/preflight")
 def preflight_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
-    """Refresh targets and expose an explainable KE preflight, not Cognition Preview."""
-
+    """Explain KE target state; this is distinct from Cognition Formal Preview."""
+    _refresh_derived_cognition(request)
     try:
         record = _service(request).refresh_target_versions(task_id)
     except (KeyError, ReturnCandidateStateError, ValueError) as exc:
@@ -223,3 +278,128 @@ def review_return_candidate(
         candidate=candidate.model_dump(mode="json"),
         accepted_for_future_preview=candidate.status == "accepted",
     )
+
+
+@router.get("/{candidate_id}/formal-handoff")
+def get_formal_handoff(task_id: str, candidate_id: str, request: Request) -> dict:
+    try:
+        pack = _service(request)._require_task_exists(task_id)
+        marker = FormalHandoffStore(pack).read(candidate_id)
+    except (KeyError, FormalHandoffStateError) as exc:
+        _raise(exc)
+    return {
+        "task_id": task_id,
+        "candidate_id": candidate_id,
+        "formal_handoff": marker,
+        "formal_apply_supported": bool(request.app.state.cfg.cognition.formal_apply_enabled),
+        "auto_apply": False,
+        "formal_write_performed": bool(marker and marker.get("formal_write_performed")),
+    }
+
+
+@router.post("/{candidate_id}/formalize")
+def formalize_return_candidate(
+    task_id: str,
+    candidate_id: str,
+    request: Request,
+    body: FormalizeInput | None = None,
+) -> dict:
+    """Create one Cognition Proposal item. This endpoint does not Apply it."""
+    cfg = request.app.state.cfg
+    if not cfg.cognition.proposal_publish_enabled:
+        raise HTTPException(status_code=403, detail="Cognition Proposal publication is disabled")
+    svc, _record, candidate, pack, result, evidence = _formal_context(
+        request, task_id, candidate_id
+    )
+    try:
+        marker, reused = _formal_service(request, svc).formalize(
+            pack=pack,
+            candidate=candidate,
+            result=result,
+            evidence=evidence,
+            evidence_role=body.evidence_role if body is not None else None,
+        )
+    except (FormalHandoffStateError, CognitionGatewayError, ValueError) as exc:
+        _raise(exc)
+    return {
+        "task_id": task_id,
+        "candidate_id": candidate_id,
+        "formal_handoff": marker,
+        "reused": reused,
+        "formal_preview_supported": True,
+        "formal_apply_supported": bool(cfg.cognition.formal_apply_enabled),
+        "auto_apply": False,
+        "formal_write_performed": False,
+    }
+
+
+@router.post("/{candidate_id}/formal-preview")
+def preview_formal_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
+    """Run Cognition's official zero-write Preview after rechecking target versions."""
+    svc, _record, candidate, pack, _result, _evidence = _formal_context(
+        request, task_id, candidate_id
+    )
+    if candidate.status != "accepted":
+        raise HTTPException(status_code=409, detail="return candidate must remain accepted")
+    if candidate.has_version_conflict or candidate.version_check_incomplete:
+        raise HTTPException(status_code=409, detail="target version preflight is not clean")
+    try:
+        marker = _formal_service(request, svc).preview(
+            pack=pack,
+            candidate=candidate,
+        )
+    except (FormalHandoffStateError, CognitionGatewayError, ValueError) as exc:
+        _raise(exc)
+    return {
+        "task_id": task_id,
+        "candidate_id": candidate_id,
+        "formal_handoff": marker,
+        "formal_preview_supported": True,
+        "formal_apply_supported": bool(request.app.state.cfg.cognition.formal_apply_enabled),
+        "auto_apply": False,
+        "formal_write_performed": False,
+    }
+
+
+@router.post("/{candidate_id}/formal-apply")
+def apply_formal_return_candidate(
+    task_id: str,
+    candidate_id: str,
+    body: FormalApplyInput,
+    request: Request,
+) -> dict:
+    """Explicit Human Apply. Cognition App remains the actual formal writer."""
+    cfg = request.app.state.cfg
+    if not cfg.cognition.formal_apply_enabled:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Formal Apply is disabled. Enable cognition.formal_apply_enabled "
+                "or AIKE_COGNITION_FORMAL_APPLY only after local acceptance."
+            ),
+        )
+    svc, _record, candidate, pack, _result, _evidence = _formal_context(
+        request, task_id, candidate_id
+    )
+    if candidate.status != "accepted":
+        raise HTTPException(status_code=409, detail="return candidate must remain accepted")
+    if candidate.has_version_conflict or candidate.version_check_incomplete:
+        raise HTTPException(status_code=409, detail="target version preflight is not clean")
+    try:
+        marker = _formal_service(request, svc).apply(
+            pack=pack,
+            candidate=candidate,
+            body=body,
+        )
+    except (FormalHandoffStateError, CognitionGatewayError, ValueError) as exc:
+        _raise(exc)
+    return {
+        "task_id": task_id,
+        "candidate_id": candidate_id,
+        "formal_handoff": marker,
+        "writer": "cognition_app",
+        "formal_preview_supported": True,
+        "formal_apply_supported": True,
+        "auto_apply": False,
+        "formal_write_performed": True,
+    }

@@ -48,7 +48,7 @@ class QdrantConfig(BaseModel):
 
 
 class CognitionConfig(BaseModel):
-    """Cognition read-only retrieval + Proposal staging integration."""
+    """Cognition read-only retrieval + Proposal/Human-Apply integration."""
 
     enabled: bool = True
     root: str = "E:/CODEX/AI深度研究/cognition"
@@ -68,6 +68,8 @@ class CognitionConfig(BaseModel):
     api_url: str = "http://127.0.0.1:3220/api"
     api_timeout_seconds: float = 8.0
     proposal_publish_enabled: bool = True
+    # Formal Apply remains opt-in even after a candidate is accepted and Previewed.
+    formal_apply_enabled: bool = False
 
 
 class EmbeddingConfig(BaseModel):
@@ -183,6 +185,10 @@ class Config(BaseModel):
     taskpack: TaskPackConfig = Field(default_factory=TaskPackConfig)
 
 
+def _env_bool(value: str) -> bool:
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _apply_runtime_env_overrides(cfg: Config) -> Config:
     """Apply operational overrides shared with runtime/research-os.ps1."""
 
@@ -192,6 +198,8 @@ def _apply_runtime_env_overrides(cfg: Config) -> Config:
         cfg.cognition.root = os.environ["COGNITION_DATA_ROOT"]
     if os.environ.get("COGNITION_API_URL"):
         cfg.cognition.api_url = os.environ["COGNITION_API_URL"]
+    if os.environ.get("AIKE_COGNITION_FORMAL_APPLY"):
+        cfg.cognition.formal_apply_enabled = _env_bool(os.environ["AIKE_COGNITION_FORMAL_APPLY"])
     if os.environ.get("AIKE_TASKPACK_ROOT"):
         cfg.taskpack.root_dir = os.environ["AIKE_TASKPACK_ROOT"]
     if os.environ.get("AIKE_KB_ROOT"):

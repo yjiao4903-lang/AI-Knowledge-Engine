@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -28,6 +29,10 @@ def _ready_pack(tmp_path: Path, task_id: str = "20260902_120000_test") -> tuple[
         encoding="utf-8",
     )
     return root, pack
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def test_launcher_registry_is_fixed_and_reports_availability(tmp_path):
@@ -148,6 +153,72 @@ def test_supervisor_completed_marker_moves_processing_to_completed(tmp_path):
     assert rc == 0
     assert not processing.exists()
     assert (root / "completed" / source.name / "result" / "DONE").exists()
+
+
+def test_supervisor_seals_only_deterministic_run_meta_hashes(tmp_path):
+    root, source = _ready_pack(tmp_path)
+    (source / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
+    processing = root / "processing" / source.name
+    processing.parent.mkdir(parents=True)
+    source.rename(processing)
+
+    def fake_external(_argv, **kwargs):
+        cwd = Path(kwargs["cwd"])
+
+        class FakeProcess:
+            def wait(self):
+                meta = {
+                    "worker_tool": "codex",
+                    "provider": "openai",
+                    "model": "real-worker-model",
+                    "model_version": None,
+                    "started_at": "2026-09-06T01:00:00+00:00",
+                    "completed_at": "2026-09-06T01:01:00+00:00",
+                    "prompt_version": "taskpack-synthesis-v1",
+                    "prompt_sha256": None,
+                    "task_manifest_sha256": None,
+                    "input_tokens": None,
+                    "output_tokens": None,
+                }
+                (cwd / "result" / "run_meta.json").write_text(
+                    json.dumps(meta), encoding="utf-8"
+                )
+                (cwd / "result" / "DONE").write_text("\n", encoding="utf-8")
+                return 0
+
+        return FakeProcess()
+
+    rc = run_supervisor(
+        root=root,
+        task_id=processing.name,
+        launcher="codex",
+        executable="/usr/local/bin/codex",
+        popen=fake_external,
+    )
+
+    assert rc == 0
+    completed = root / "completed" / source.name
+    meta = json.loads((completed / "result" / "run_meta.json").read_text(encoding="utf-8"))
+    assert meta["prompt_sha256"] == _sha256(completed / "AGENT_INSTRUCTION.md")
+    assert meta["task_manifest_sha256"] == _sha256(completed / "manifest.json")
+    assert meta["worker_tool"] == "codex"
+    assert meta["model"] == "real-worker-model"
+    assert meta["started_at"] == "2026-09-06T01:00:00+00:00"
+    assert meta["input_tokens"] is None
+
+
+def test_supervisor_does_not_fabricate_missing_run_meta(tmp_path):
+    root, source = _ready_pack(tmp_path)
+    (source / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
+    processing = root / "processing" / source.name
+    processing.parent.mkdir(parents=True)
+    source.rename(processing)
+    (processing / "result" / "DONE").write_text("\n", encoding="utf-8")
+
+    target = finalize_after_exit(processing, root, launcher="codex", exit_code=0)
+
+    assert target == root / "completed" / source.name
+    assert not (target / "result" / "run_meta.json").exists()
 
 
 def test_missing_worker_marker_becomes_failed_with_diagnostic(tmp_path):
