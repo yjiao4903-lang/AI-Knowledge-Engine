@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -25,6 +26,8 @@ from app.contracts.cognition import CognitionContextItem
 from app.storage.repositories.knowledge import ChunkRepository, DocumentRepository
 from app.taskpack.importer import COMPLETED, IMPORTED, TaskPackImporter
 from app.taskpack.schemas import ResultEnvelope, TaskPackEvidence
+
+logger = logging.getLogger(__name__)
 
 RETURN_CANDIDATE_SCHEMA_VERSION = "1.0"
 ReturnIntent = Literal[
@@ -135,6 +138,98 @@ class ResearchReturnBatchRecord(BaseModel):
     formal_write_performed: bool = False
 
 
+def close_candidate_provenance(
+    item: ResearchReturnCandidateInput,
+    *,
+    result: ResultEnvelope,
+    allowed_evidence: set[str],
+) -> tuple[ResearchReturnCandidateInput, list[str]]:
+    """Mechanically close provenance from declared result refs only.
+
+    This helper performs no retrieval, fuzzy matching, semantic inference, or
+    target normalization. Existing candidate evidence keeps first-occurrence
+    order; missing claim/tension Evidence is appended in source-ref traversal
+    order. Every input or derived chunk must already be a TaskPack Evidence member.
+    """
+    missing_evidence = [
+        chunk_id
+        for chunk_id in item.evidence_chunk_ids
+        if chunk_id not in allowed_evidence
+    ]
+    if missing_evidence:
+        raise ValueError(
+            f"return candidate references evidence outside TaskPack: {missing_evidence[:10]}"
+        )
+
+    claim_by_id = {row.id: row for row in result.claims}
+    tension_by_id = {row.id: row for row in result.tensions}
+    missing_claims = [
+        claim_id for claim_id in item.source_claim_ids if claim_id not in claim_by_id
+    ]
+    if missing_claims:
+        raise ValueError(f"source claim not found in TaskPack result: {missing_claims[:10]}")
+    missing_tensions = [
+        tension_id
+        for tension_id in item.source_tension_ids
+        if tension_id not in tension_by_id
+    ]
+    if missing_tensions:
+        raise ValueError(
+            f"source tension not found in TaskPack result: {missing_tensions[:10]}"
+        )
+
+    _validate_result_indexes(
+        item.source_open_question_indexes,
+        len(result.open_questions),
+        "open_question",
+    )
+    _validate_result_indexes(
+        item.source_additional_evidence_indexes,
+        len(result.additional_evidence_needed),
+        "additional_evidence_needed",
+    )
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for chunk_id in item.evidence_chunk_ids:
+        if chunk_id in seen:
+            continue
+        normalized.append(chunk_id)
+        seen.add(chunk_id)
+
+    added: list[str] = []
+
+    def append_refs(refs: list[str], source_label: str) -> None:
+        for chunk_id in refs:
+            if chunk_id not in allowed_evidence:
+                raise ValueError(
+                    f"{source_label} references evidence outside TaskPack: {chunk_id}"
+                )
+            if chunk_id in seen:
+                continue
+            normalized.append(chunk_id)
+            added.append(chunk_id)
+            seen.add(chunk_id)
+
+    for claim_id in item.source_claim_ids:
+        append_refs(claim_by_id[claim_id].evidence_refs or [], f"source claim {claim_id}")
+    for tension_id in item.source_tension_ids:
+        append_refs(
+            tension_by_id[tension_id].evidence_refs or [],
+            f"source tension {tension_id}",
+        )
+
+    payload = item.model_dump(mode="json")
+    payload["evidence_chunk_ids"] = normalized
+    return ResearchReturnCandidateInput.model_validate(payload), added
+
+
+def _validate_result_indexes(indexes: list[int], size: int, label: str) -> None:
+    bad = [index for index in indexes if index < 0 or index >= size]
+    if bad:
+        raise ValueError(f"{label} index outside TaskPack result: {bad[:10]}")
+
+
 class ResearchReturnCandidateService:
     FILE_NAME = "return_candidates.json"
 
@@ -165,7 +260,12 @@ class ResearchReturnCandidateService:
         created = 0
         reused = 0
 
-        for item in body.candidates:
+        for raw_item in body.candidates:
+            item, added_evidence = close_candidate_provenance(
+                raw_item,
+                result=result,
+                allowed_evidence=allowed_evidence,
+            )
             self._validate_input(
                 item,
                 result=result,
@@ -175,6 +275,13 @@ class ResearchReturnCandidateService:
                 tension_by_id=tension_by_id,
             )
             candidate_id = self._candidate_id(task_id, item)
+            if added_evidence:
+                logger.info(
+                    "return candidate provenance closure task_id=%s candidate_id=%s added_evidence=%s",
+                    task_id,
+                    candidate_id,
+                    added_evidence,
+                )
             snapshots = [self._target_snapshot(context_by_id[object_id]) for object_id in item.target_cognition_object_ids]
             conflict, incomplete = _version_flags(snapshots)
             old = existing.get(candidate_id)
@@ -366,9 +473,7 @@ class ResearchReturnCandidateService:
 
     @staticmethod
     def _validate_indexes(indexes: list[int], size: int, label: str) -> None:
-        bad = [index for index in indexes if index < 0 or index >= size]
-        if bad:
-            raise ValueError(f"{label} index outside TaskPack result: {bad[:10]}")
+        _validate_result_indexes(indexes, size, label)
 
     def _target_snapshot(
         self,
