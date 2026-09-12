@@ -6,7 +6,8 @@
 日期：2026-09-12  
 责任复盘主体：WEB-CONTROL  
 事故原始记录：Issue #55 / LOCAL-DEV-A incident report  
-产品整改：Issue #56
+产品整改：Issue #56 / PR #57  
+整改状态：**治理整改 + 产品硬阻断已完成**
 
 ---
 
@@ -52,7 +53,7 @@ LOCAL-DEV-A agent/window
   -> Importer Gate
 ```
 
-这里暴露了关键控制错误：
+关键控制错误可以概括为：
 
 ```text
 Can execute locally
@@ -187,7 +188,7 @@ DL-08A 的“如果没有捕获 omission 就再跑若干次”形成了事实上
 USER_RUN_REQUIRED
 ```
 
-只有用户本人可以在 Agent/窗口控制之外手工运行 Codex并回传结果。
+只有用户本人可以在 Agent/窗口控制之外手工运行 Codex 并回传结果。
 
 ### 6.2 X0：外部账户 / 付费资源 / 私有数据外发边界
 
@@ -260,9 +261,9 @@ X0 external identity / spend / data-egress authorization
 
 ---
 
-## 7. 产品级整改：Issue #56
+## 7. 产品级整改：Issue #56 / PR #57
 
-治理规则不能单独承担安全边界。Issue #56 将安全要求下沉到代码。
+治理规则不能单独承担安全边界。Issue #56 将安全要求下沉到代码，并已经合并到 `main`。
 
 ### 7.1 目标状态
 
@@ -277,7 +278,7 @@ Agent/window
 
 ### 7.2 Launcher fail-closed
 
-`ExternalWorkerLauncher.launch_ready()` 改为在以下任何副作用之前拒绝：
+`ExternalWorkerLauncher.launch_ready()` 已改为在以下任何副作用之前拒绝：
 
 1. PATH / executable discovery；
 2. TaskPack READY -> PROCESSING move；
@@ -327,9 +328,20 @@ USER_RUN_REQUIRED
 - missing task 仍保持 404；
 - supervisor 的历史 lifecycle/unit tests 仅用 fake process，不运行真实外部软件。
 
-### 7.5 CI
+### 7.5 CI / Merge 证据
 
-Issue #56 focused tests 被纳入 hosted `Research OS CI`。该 Gate 不需要也禁止真实 Codex/Claude Worker 证据。
+- Issue：#56
+- PR：#57 `[P0][SECURITY] Make external Worker execution USER_RUN_REQUIRED`
+- exact head：`709a721023a7ce54775b2238648db105e932822a`
+- Research OS CI：#311 / run `34692485237`
+- Backend contracts/retrieval：SUCCESS
+- Frontend typecheck/build：SUCCESS
+- Runtime PowerShell syntax：SUCCESS
+- WEB-CONTROL `MERGE_APPROVED`：PR #57 comment `5645754234`
+- merge commit：`4bbd991b16cae62124f212374f7d2f3e0d361e72`
+- Issue #56：closed / completed
+
+**本次整改的开发与验收过程中没有运行任何真实 Codex、Claude 或其它外部 Worker。**
 
 ---
 
@@ -349,7 +361,7 @@ Issue #56 focused tests 被纳入 hosted `Research OS CI`。该 Gate 不需要�
 - pytest；
 - hosted CI；
 - fake/stub Worker tests；
-- 不涉及外部账户的本地文件/DB/Qdrant验证；
+- 不涉及外部账户的本地文件/DB/Qdrant 验证；
 - 代码静态审查；
 - 用户本人明确提供的既有外部运行结果。
 
@@ -370,6 +382,8 @@ Issue #56 focused tests 被纳入 hosted `Research OS CI`。该 Gate 不需要�
 均自动被当前 P0 治理 supersede。
 
 历史文本可以保留作为审计证据，但不得再被解释为可执行授权。
+
+Issue #30 已记录 P0/X0 规则和最终产品整改证据；Issue #50 / PR #54 的旧 real-Codex replay Gate 已撤销。
 
 ---
 
@@ -431,24 +445,38 @@ COST_OR_QUOTA_BOUNDARY
 
 ## 12. 事故 Closure Criteria
 
-事故真正关闭的标准不是“写了道歉/文档”，而是以下控制均成立：
+事故真正关闭的标准不是“写了道歉/文档”，而是控制在治理、执行和产品三层同时成立：
 
 - [x] Codex Agent/window invocation P0 禁令进入最高治理；
 - [x] Issue #30/#50/#54 等活动控制记录撤销旧 real-Codex Gate；
 - [x] Agent-controlled Codex evidence 标记 non-authoritative；
 - [x] 建立 X0 external identity/spend/data-egress Gate；
 - [x] 新任务默认 external-resource 字段全部 DENY；
-- [x] 禁止未授权自动外部 retry；
-- [x] 产品级 external Worker fail-closed 方案已在 Issue #56 实现；
-- [x] deterministic security tests 已加入代码与 hosted CI 配置；
-- [ ] Issue #56 exact-head CI 通过并合入 `main`；
-- [ ] Issue #30 记录最终 merge 证据；
+- [x] 禁止未授权自动 external retry；
+- [x] 产品级 external Worker fail-closed 已实现；
+- [x] deterministic security tests 已进入 hosted CI；
+- [x] Issue #56 exact-head CI 全绿并合入 `main`；
+- [x] Issue #30 已登记最终 merge 证据。
 
-最后两项在 Issue #56 合并后更新。
+**P0 containment 与计划内整改闭环完成。**
 
 ---
 
-## 13. 永久原则
+## 13. 后续治理要求
+
+整改完成并不意味着未来可以放松边界。
+
+后续所有涉及外部服务的功能设计必须遵守：
+
+1. Prepare 与 Execute 拆权；
+2. Agent 可准备本地任务，但不能跨越用户外部身份/付费/数据外发边界；
+3. 用户手工提供的外部结果可被系统导入和验证；
+4. 真实外部执行不再作为 Agent-controlled Gate；
+5. 任何未来恢复外部执行能力的设计都必须重新经过用户明确治理授权，而不能从旧代码、旧任务或“之前能运行”推导授权。
+
+---
+
+## 14. 永久原则
 
 本事故必须永久留下以下原则：
 
