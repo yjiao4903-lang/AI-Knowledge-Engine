@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "test:dl06d": "node --test tests/returnCandidateActionPolicy.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
