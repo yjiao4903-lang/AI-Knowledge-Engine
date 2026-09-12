@@ -123,6 +123,13 @@ def _formal_context(request: Request, task_id: str, candidate_id: str):
     return service, record, candidate, pack, result, evidence
 
 
+def _formal_service(request: Request, candidate_service: ResearchReturnCandidateService):
+    return FormalCognitionHandoffService(
+        _gateway(request),
+        cognition_docs=candidate_service.cognition_docs,
+    )
+
+
 @router.post("")
 def ingest_return_candidates(
     task_id: str,
@@ -301,11 +308,11 @@ def formalize_return_candidate(
     cfg = request.app.state.cfg
     if not cfg.cognition.proposal_publish_enabled:
         raise HTTPException(status_code=403, detail="Cognition Proposal publication is disabled")
-    _svc, _record, candidate, pack, result, evidence = _formal_context(
+    svc, _record, candidate, pack, result, evidence = _formal_context(
         request, task_id, candidate_id
     )
     try:
-        marker, reused = FormalCognitionHandoffService(_gateway(request)).formalize(
+        marker, reused = _formal_service(request, svc).formalize(
             pack=pack,
             candidate=candidate,
             result=result,
@@ -329,7 +336,7 @@ def formalize_return_candidate(
 @router.post("/{candidate_id}/formal-preview")
 def preview_formal_return_candidate(task_id: str, candidate_id: str, request: Request) -> dict:
     """Run Cognition's official zero-write Preview after rechecking target versions."""
-    _svc, _record, candidate, pack, _result, _evidence = _formal_context(
+    svc, _record, candidate, pack, _result, _evidence = _formal_context(
         request, task_id, candidate_id
     )
     if candidate.status != "accepted":
@@ -337,7 +344,7 @@ def preview_formal_return_candidate(task_id: str, candidate_id: str, request: Re
     if candidate.has_version_conflict or candidate.version_check_incomplete:
         raise HTTPException(status_code=409, detail="target version preflight is not clean")
     try:
-        marker = FormalCognitionHandoffService(_gateway(request)).preview(
+        marker = _formal_service(request, svc).preview(
             pack=pack,
             candidate=candidate,
         )
@@ -371,7 +378,7 @@ def apply_formal_return_candidate(
                 "or AIKE_COGNITION_FORMAL_APPLY only after local acceptance."
             ),
         )
-    _svc, _record, candidate, pack, _result, _evidence = _formal_context(
+    svc, _record, candidate, pack, _result, _evidence = _formal_context(
         request, task_id, candidate_id
     )
     if candidate.status != "accepted":
@@ -379,7 +386,7 @@ def apply_formal_return_candidate(
     if candidate.has_version_conflict or candidate.version_check_incomplete:
         raise HTTPException(status_code=409, detail="target version preflight is not clean")
     try:
-        marker = FormalCognitionHandoffService(_gateway(request)).apply(
+        marker = _formal_service(request, svc).apply(
             pack=pack,
             candidate=candidate,
             body=body,
