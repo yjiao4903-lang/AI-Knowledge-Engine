@@ -4,6 +4,10 @@ Task creation accepts explicit Evidence, optional Topic Dossier identity and
 explicit Cognition stable IDs. Evidence/Cognition text is always re-resolved on
 the server. Proposal publication remains staging-only; Cognition is still the
 only formal cognition writer.
+
+P0 security policy: this API may prepare/read/import TaskPacks but may not launch
+external identity-bound workers.  Real external execution is a user-presence
+boundary represented by ``USER_RUN_REQUIRED``.
 """
 
 from __future__ import annotations
@@ -30,6 +34,8 @@ from app.taskpack.importer import (
     TaskPackImporter,
 )
 from app.taskpack.launcher import (
+    USER_RUN_REQUIRED,
+    ExternalExecutionPolicyError,
     ExternalWorkerLauncher,
     LauncherKind,
     LauncherStateError,
@@ -198,10 +204,12 @@ def get_worker_launchers(request: Request) -> dict:
     _, importer = _require_taskpack(request)
     launchers = ExternalWorkerLauncher(importer.root).describe()
     return {
+        "execution_policy": USER_RUN_REQUIRED,
+        "agent_launch_allowed": False,
         "launchers": [
             {"id": item.id, "label": item.label, "available": item.available}
             for item in launchers
-        ]
+        ],
     }
 
 
@@ -215,6 +223,8 @@ def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> 
     launcher = ExternalWorkerLauncher(importer.root)
     try:
         result = launcher.launch_ready(task_id, body.launcher)
+    except ExternalExecutionPolicyError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     except LauncherUnavailableError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except LauncherStateError as exc:
@@ -222,6 +232,9 @@ def launch_worker(task_id: str, body: LaunchWorkerRequest, request: Request) -> 
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"启动外部 Worker 失败: {exc}") from exc
 
+    # Defensive unreachable branch: launch_ready currently always fails closed for
+    # every registered external launcher.  Keep the shape only for compatibility
+    # if a future user-authorized manual execution architecture replaces this API.
     return {
         "task_id": task_id,
         "launcher": result.launcher,
@@ -310,7 +323,7 @@ def rescan_task(task_id: str, request: Request) -> dict:
 
 @router.post("/tasks/{task_id}/archive")
 def archive_task(task_id: str, request: Request) -> dict:
-    _, importer = _require_task(request, task_id)
+    _, importer = _require_taskpack(request)
     try:
         target = importer.archive_task(task_id)
     except FileExistsError as exc:
