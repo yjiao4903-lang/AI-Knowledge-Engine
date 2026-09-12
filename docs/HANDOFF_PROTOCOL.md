@@ -1,6 +1,31 @@
 # 窗口交接机制（Handoff Protocol）
 
-## 2026-09-12 最高效率补充原则（优先于一般交接流程）
+## 2026-09-12 P0 最高治理限制：任何外部窗口/Agent 禁止调用 Codex
+
+本条优先级高于本文件全部后续内容，也高于任何旧交接、Issue、PR、测试计划、LOCAL-DEV 验收要求和 WEB-CONTROL 既往授权。权威入口见 `AGENTS.md` Section -1；事故记录见 Issue #55。
+
+**任何项目执行窗口或 Agent 均不得直接或间接调用 Codex。** 包括 WEB-CONTROL、WEB-DEV/ONLINE-DEV、LOCAL-DEV-A/B、其它 LOCAL-DEV、任何 ChatGPT 项目窗口、subagent、automation、harness、脚本及其启动的子进程。
+
+禁止事项包括但不限于：
+- 启动 `codex.exe` / Codex CLI；
+- 远程控制、脚本化控制 Codex Desktop；
+- 通过 PowerShell / shell / Python / Node 子进程调用 Codex；
+- 通过 API / SDK / job wrapper 调用 Codex；
+- 由 Agent 控制 Codex 作为 External Worker；
+- 指示其它窗口/Agent/工具代为调用 Codex；
+- 为测试、benchmark、replay、验收而启动嵌套 Codex/subagent。
+
+**任何项目角色均无权豁免。** 如果任务必须依赖真实 Codex 运行，执行窗口必须停止在：
+
+`USER_RUN_REQUIRED`
+
+只能由用户本人在 Agent/窗口控制之外手工运行 Codex，并将结果/证据回传。只有新的用户明确治理指令才能改变本规则。
+
+允许替代方案：deterministic fake/stub/mock Worker、录制 fixture、读取用户已经提供的 Codex 产物、使用不启动 Codex 的 importer/protocol/formal deterministic validation。
+
+由外部窗口/Agent 控制 Codex 产生的证据不得作为项目 Gate 权威证据。发现违规按 P0 处理：尽快安全停止该 Agent 控制的调用；不得误杀用户自己运行的 Codex/Desktop；保留最小事故记录；标记证据失效；通知用户/WEB-CONTROL；不得继续依赖该证据推进下游动作。
+
+## 2026-09-12 最高效率补充原则（优先于一般交接流程，但低于上述 P0 禁令）
 
 交接机制的目的，是降低上下文损耗，不是制造额外流程。
 
@@ -26,7 +51,7 @@
 > 2026-08-29 更新：项目进入 **Integration 阶段（I0-I6）**，原独立 M12/M13 路线
 > 由《AI 研究知识体系整合：开发实施方案 V1.0》（`D:\AI知识整合体系\docs\`）取代。
 
-## 0. Integration 阶段补充约束（优先级高于后续各节）
+## 0. Integration 阶段补充约束（优先级高于后续各节，但低于 P0 Codex 禁令）
 
 1. **双仓库**：`D:\AI-Knowledge-Engine`（本仓库）与
    `E:\CODEX\AI深度研究\cognition-app` 保持独立，禁止合并（注意：实测
@@ -56,6 +81,7 @@
 
 ## 2. 窗口接手流程（新窗口启动时）
 
+0. 先读取 `AGENTS.md` Section -1；任何要求窗口调用 Codex 的旧任务必须立即改判为 `USER_RUN_REQUIRED`，不得执行；
 1. 读 `docs/IMPLEMENTATION_STATUS.md` —— 了解进度、Known Issues、ADR；
 2. 读 `docs/HANDOFF_M11.md`（或当前任务契约）—— 了解任务边界与验收标准；
 3. 验证环境（不要重复初始化）：
@@ -69,7 +95,7 @@
 
 ## 3. 窗口结束流程（交回时）
 
-1. 运行与改动风险面匹配的必要测试并记录结果；
+1. 运行与改动风险面匹配的必要测试并记录结果；真实 Codex 如为必要条件则返回 `USER_RUN_REQUIRED`，不得自行执行；
 2. 更新实际需要维护的状态/交接文件；
 3. `git commit`（每个里程碑至少一个 checkpoint）；
 4. 若任务未完成：记录真正阻塞下一窗口的信息，不为形式追加冗余交接；
@@ -77,6 +103,7 @@
 
 ## 4. 硬约束（所有窗口必须遵守）
 
+- **P0：禁止任何外部窗口/Agent 调用 Codex；详见 `AGENTS.md` Section -1 / Issue #55；**
 - 不修改 `D:\AI深度报告归档`（知识源只读）；
 - 不修改架构（SQLite/Qdrant/Qwen3/RRF/Reranker），重大变更必须先写 ADR；
 - 检索质量以 Golden Set 为准，任何调参必须 A/B；
