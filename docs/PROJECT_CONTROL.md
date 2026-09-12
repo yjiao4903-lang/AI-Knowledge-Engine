@@ -4,6 +4,20 @@ Effective: 2026-09-11
 Controller: `WEB-CONTROL`  
 Online board: GitHub Issue #30
 
+## -1. P0 execution prohibition — no agent/window may invoke Codex
+
+Effective 2026-09-12 by explicit user instruction. Incident record: Issue #55.
+
+This rule is part of the project's highest governance layer and has priority over every later section of this document, every Issue/PR/test plan, historical handoff, efficiency rule, and any prior WEB-CONTROL authorization.
+
+No project execution window/agent may invoke Codex directly or indirectly. This includes WEB-CONTROL, WEB-DEV/ONLINE-DEV, LOCAL-DEV-A/B, any ChatGPT project window, subagent, automation, harness, script or subprocess controlled by those executors.
+
+Forbidden: `codex.exe`, Codex CLI, scripted/remote Codex desktop control, shell/Python/Node subprocess invocation, API/SDK/job wrappers, agent-controlled use of Codex as External Worker, delegation to another window/agent/tool, or nested Codex/subagent execution for validation.
+
+There is no role-level exception. WEB-CONTROL cannot waive this rule. If real Codex execution is required, the executor must return `USER_RUN_REQUIRED`. Only the user may manually execute Codex outside agent/window control and provide the resulting artifacts back to the project. Changing this rule requires a new explicit user governance instruction.
+
+Deterministic fakes/stubs/mocks, recorded fixtures and user-supplied existing artifacts remain allowed. Agent/window-controlled Codex evidence is non-authoritative for Gates. Any violation is P0 and must be stopped, recorded minimally and reported without killing unrelated user-owned Codex/Desktop processes.
+
 ## 0. Execution-efficiency rule
 
 Project control must optimize for **decision quality per unit of human attention**, not procedural volume.
@@ -35,7 +49,7 @@ The project uses three execution identities:
 Use the following precedence when statements conflict:
 
 1. Explicit current user instruction.
-2. `AGENTS.md` role and permission boundaries.
+2. `AGENTS.md` role and permission boundaries, including the P0 Codex-invocation prohibition.
 3. GitHub Issue #30 and the assigned work Issue for scope/sequence.
 4. Current merged contracts/specifications on authoritative `main`.
 5. `docs/CURRENT_STATE.md` for implemented facts.
@@ -99,6 +113,8 @@ Discovery that changes architecture, schema, contract, benchmark semantics, gold
 Required in addition to G1 when touching Qdrant, models/ROCm, local corpus/index lifecycle, external Worker lifecycle or Cognition integration.
 Evidence must record environment, command, exact head and observed result.
 
+**P0 override:** G2 never authorizes an executor to launch Codex. If the only way to satisfy a requested G2 check is a real Codex run, the Gate status is `USER_RUN_REQUIRED` until the user performs that run manually and supplies evidence. Deterministic worker fakes/stubs may be used for executor-controlled validation.
+
 ### G3 — retrieval/benchmark
 Required in addition to G1/G2 for retrieval/ranking/chunking/corpus-routing changes:
 - frozen benchmark identity;
@@ -121,13 +137,15 @@ The repository already has a substantial Evidence/Retrieval/TaskPack/Validation/
 3. Historical handoff documents mix old and new stages; executors must not infer authority from file age/name alone.
 4. P8 Legacy Golden 50 is structurally concentrated in flagship documents, so flagship isolation is evidence of distractor competition, not sufficient proof of production routing architecture.
 5. Full-corpus index/reconcile nondeterminism is an engineering blocker for trustworthy benchmark iteration.
+6. Agent/window invocation of Codex is a P0-prohibited operation; old real-Worker instructions must not be executed by project windows.
 
 ## 7. Current priority order
 
 ### P0 — control and determinism
+- enforce Issue #55 / `AGENTS.md` Codex invocation prohibition;
 - repair repository branch governance;
-- triage #24/#28 under exact-head Gate;
-- reproduce and fix/contain index reconcile nondeterminism.
+- triage legacy PRs under exact-head Gate;
+- reproduce and fix/contain index reconcile nondeterminism without agent-controlled Codex execution.
 
 ### P1 — benchmark validity
 - keep Legacy 50 immutable as canary;
@@ -149,11 +167,9 @@ Only after upstream candidate/corpus effects are controlled. Compare 0.6B vs lar
 
 ## 8. Existing PR policy
 
-### PR #24 — DL-06C
-Blocked. Must reconcile the preflight/formal-preview contract and obtain fresh exact-head hosted CI plus required LOCAL-DEV Cognition/Worker integration evidence before final review.
+Historical PR notes below are retained as context only; current live Issues/PRs and `main` must be re-read before action.
 
-### PR #28 — DL-08
-Feature direction is reasonable but it was opened before current governance. It must be refreshed against authoritative `main`, revalidated, and reviewed for persistence/migration/API semantics before merge. It must not leapfrog higher-priority control/determinism work without WEB-CONTROL decision.
+Any PR/Gate requesting an executor-controlled real Codex run is automatically superseded by the P0 policy and becomes `USER_RUN_REQUIRED` for that portion.
 
 ## 9. Documentation rule
 
