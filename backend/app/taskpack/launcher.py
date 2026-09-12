@@ -1,20 +1,18 @@
-"""External Worker Launcher for the personal Research OS.
+"""External Worker launch policy for the personal Research OS.
 
-The launcher is deliberately *not* a model provider.  It knows only three fixed
-local targets (Codex CLI, Claude Code CLI, or a terminal), moves one READY
-TaskPack into ``processing/``, and starts a detached stdlib-only supervisor.
+TaskPack preparation/import remains supported, but project-controlled API/agent
+paths MUST NOT start external identity-bound workers.  Real external execution is
+a user-presence boundary and is represented as ``USER_RUN_REQUIRED``.
 
-No arbitrary executable, shell command, model API key, or prompt body comes from
-the browser.  The external worker receives only a short fixed instruction to
-read the TaskPack's own ``AGENT_INSTRUCTION.md``.
+This module intentionally keeps the historical launcher registry/result types for
+API compatibility, while making the execution path fail closed *before* PATH
+resolution, TaskPack lifecycle mutation, or subprocess creation.
 """
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Literal
@@ -23,6 +21,7 @@ from app.taskpack.schemas import is_safe_task_id
 
 LauncherKind = Literal["codex", "claude", "terminal"]
 LAUNCHER_KINDS: tuple[LauncherKind, ...] = ("codex", "claude", "terminal")
+USER_RUN_REQUIRED = "USER_RUN_REQUIRED"
 
 
 class LauncherError(RuntimeError):
@@ -30,11 +29,15 @@ class LauncherError(RuntimeError):
 
 
 class LauncherUnavailableError(LauncherError):
-    """Requested fixed launcher executable is not installed / not on PATH."""
+    """Requested launcher identifier is not part of the fixed registry."""
 
 
 class LauncherStateError(LauncherError):
     """TaskPack cannot be launched from its current lifecycle state."""
+
+
+class ExternalExecutionPolicyError(LauncherError):
+    """Project-controlled external execution is prohibited by P0 policy."""
 
 
 @dataclass(frozen=True)
@@ -57,9 +60,20 @@ _LABELS: dict[LauncherKind, str] = {
     "terminal": "Terminal",
 }
 
+_POLICY_MESSAGE = (
+    "USER_RUN_REQUIRED: project/API/agent-controlled external Worker launch is disabled. "
+    "Prepare the TaskPack only; if a real external run is necessary, the user must "
+    "perform it manually outside agent/window control and return the artifacts."
+)
+
 
 class ExternalWorkerLauncher:
-    """Move a READY TaskPack to processing and start a detached supervisor."""
+    """Compatibility facade that deliberately cannot execute external workers.
+
+    ``which`` and ``popen`` remain injectable only so existing callers/tests do not
+    need a constructor migration.  P0 policy requires that neither callback is
+    invoked by ``describe`` or ``launch_ready``.
+    """
 
     def __init__(
         self,
@@ -72,86 +86,19 @@ class ExternalWorkerLauncher:
         self.which = which
         self.popen = popen
 
-    def _resolve_executable(self, kind: LauncherKind) -> str | None:
-        if kind == "codex":
-            return self.which("codex")
-        if kind == "claude":
-            return self.which("claude")
-        return self.which("pwsh") or self.which("powershell.exe") or self.which("powershell")
-
     def describe(self) -> list[LauncherInfo]:
+        """Return the historical registry without advertising API executability."""
+
         return [
-            LauncherInfo(id=kind, label=_LABELS[kind], available=self._resolve_executable(kind) is not None)
+            LauncherInfo(id=kind, label=_LABELS[kind], available=False)
             for kind in LAUNCHER_KINDS
         ]
 
     def launch_ready(self, task_id: str, kind: LauncherKind) -> LaunchResult:
+        """Fail closed before any external-resource or filesystem side effect."""
+
         if kind not in LAUNCHER_KINDS:
             raise LauncherUnavailableError(f"不支持的 launcher: {kind}")
         if not is_safe_task_id(task_id):
             raise LauncherStateError(f"非法 task_id: {task_id}")
-
-        executable = self._resolve_executable(kind)
-        if executable is None:
-            raise LauncherUnavailableError(f"{_LABELS[kind]} 可执行文件未找到，请先安装并确保已加入 PATH")
-
-        outbox = (self.root / "outbox").resolve()
-        processing = (self.root / "processing").resolve()
-        source = (outbox / task_id).resolve()
-        target = processing / task_id
-
-        if source.parent != outbox or not source.is_dir():
-            raise LauncherStateError("只有 outbox/ 中的 READY TaskPack 可以启动外部 Worker")
-        instruction = source / "AGENT_INSTRUCTION.md"
-        if not instruction.is_file():
-            raise LauncherStateError("AGENT_INSTRUCTION.md 缺失，拒绝启动")
-
-        processing.mkdir(parents=True, exist_ok=True)
-        if target.exists():
-            raise LauncherStateError(f"processing 目标已存在: {target}")
-
-        # Rename first so the Task Center immediately reflects PROCESSING and the
-        # external worker receives the canonical processing path.  If supervisor
-        # creation itself fails, roll back atomically to READY.
-        source.rename(target)
-        try:
-            supervisor = Path(__file__).with_name("worker_supervisor.py").resolve()
-            argv = [
-                sys.executable,
-                str(supervisor),
-                "--root",
-                str(self.root),
-                "--task-id",
-                task_id,
-                "--launcher",
-                kind,
-                "--executable",
-                executable,
-            ]
-            kwargs: dict = {
-                # The supervisor must not use the moving TaskPack as *its own* cwd;
-                # otherwise Windows can prevent processing/ -> completed/failed rename.
-                "cwd": str(self.root),
-                "stdin": subprocess.DEVNULL,
-                "stdout": subprocess.DEVNULL,
-                "stderr": subprocess.DEVNULL,
-                "shell": False,
-                "close_fds": True,
-            }
-            if os.name == "nt":
-                kwargs["creationflags"] = (
-                    getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
-                    | getattr(subprocess, "DETACHED_PROCESS", 0)
-                    | getattr(subprocess, "CREATE_NO_WINDOW", 0)
-                )
-            else:
-                kwargs["start_new_session"] = True
-            process = self.popen(argv, **kwargs)
-        except BaseException:
-            # A launcher must never strand a TaskPack in PROCESSING merely because
-            # the supervisor process could not be created.
-            if target.exists() and not source.exists():
-                target.rename(source)
-            raise
-
-        return LaunchResult(launcher=kind, pid=int(process.pid), task_path=target)
+        raise ExternalExecutionPolicyError(_POLICY_MESSAGE)

@@ -1,4 +1,4 @@
-"""P1 External Worker Launcher deterministic contracts."""
+"""External Worker deterministic contracts, including P0 launch policy."""
 
 from __future__ import annotations
 
@@ -9,7 +9,10 @@ from pathlib import Path
 import pytest
 
 from app.taskpack.launcher import (
+    USER_RUN_REQUIRED,
+    ExternalExecutionPolicyError,
     ExternalWorkerLauncher,
+    LauncherStateError,
     LauncherUnavailableError,
 )
 from app.taskpack.worker_supervisor import (
@@ -35,83 +38,67 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_launcher_registry_is_fixed_and_reports_availability(tmp_path):
+def test_launcher_registry_is_fixed_but_never_advertises_api_availability(tmp_path):
     root, _ = _ready_pack(tmp_path)
-    mapping = {
-        "codex": "C:/tools/codex.cmd",
-        "claude": None,
-        "pwsh": "C:/Program Files/PowerShell/7/pwsh.exe",
-    }
-    launcher = ExternalWorkerLauncher(root, which=lambda name: mapping.get(name))
+    which_calls: list[str] = []
 
+    def forbidden_which(name: str):
+        which_calls.append(name)
+        raise AssertionError("P0 policy must fail before PATH/executable discovery")
+
+    launcher = ExternalWorkerLauncher(root, which=forbidden_which)
     rows = launcher.describe()
+
     assert [row.id for row in rows] == ["codex", "claude", "terminal"]
-    assert [row.available for row in rows] == [True, False, True]
+    assert [row.available for row in rows] == [False, False, False]
+    assert which_calls == []
 
 
-def test_launch_ready_moves_to_processing_and_spawns_only_supervisor(tmp_path):
+@pytest.mark.parametrize("kind", ["codex", "claude", "terminal"])
+def test_launch_ready_is_user_run_required_before_path_move_or_spawn(tmp_path, kind):
     root, pack = _ready_pack(tmp_path)
-    calls = []
+    calls = {"which": 0, "popen": 0}
 
-    class FakeProcess:
-        pid = 4321
+    def forbidden_which(_name: str):
+        calls["which"] += 1
+        raise AssertionError("executable discovery must not run")
 
-    def fake_popen(argv, **kwargs):
-        calls.append((argv, kwargs))
-        return FakeProcess()
+    def forbidden_popen(*_args, **_kwargs):
+        calls["popen"] += 1
+        raise AssertionError("subprocess creation must not run")
 
-    launcher = ExternalWorkerLauncher(
-        root,
-        which=lambda name: "C:/tools/codex.cmd" if name == "codex" else None,
-        popen=fake_popen,
-    )
-    result = launcher.launch_ready(pack.name, "codex")
+    launcher = ExternalWorkerLauncher(root, which=forbidden_which, popen=forbidden_popen)
 
-    assert not pack.exists()
-    assert result.task_path == root / "processing" / pack.name
-    assert result.task_path.is_dir()
-    assert result.pid == 4321
+    with pytest.raises(ExternalExecutionPolicyError, match=USER_RUN_REQUIRED):
+        launcher.launch_ready(pack.name, kind)
 
-    argv, kwargs = calls[0]
-    assert "worker_supervisor.py" in Path(argv[1]).name
-    assert argv[-1] == "C:/tools/codex.cmd"
-    assert kwargs["cwd"] == str(root.resolve())
-    assert kwargs["shell"] is False
-    # Browser/task prompt content is never copied into the launcher command line.
-    assert "SECRET LONG TASKPACK PROMPT" not in " ".join(str(item) for item in argv)
+    assert calls == {"which": 0, "popen": 0}
+    assert pack.is_dir()
+    assert not (root / "processing" / pack.name).exists()
 
 
-def test_supervisor_spawn_failure_rolls_back_processing_to_ready(tmp_path):
+def test_invalid_task_id_still_fails_before_external_policy(tmp_path):
+    root, _ = _ready_pack(tmp_path)
+    launcher = ExternalWorkerLauncher(root)
+
+    with pytest.raises(LauncherStateError, match="非法 task_id"):
+        launcher.launch_ready("../escape", "codex")
+
+
+def test_unknown_launcher_still_fails_closed(tmp_path):
     root, pack = _ready_pack(tmp_path)
+    launcher = ExternalWorkerLauncher(root)
 
-    def boom(*_args, **_kwargs):
-        raise OSError("cannot create supervisor")
-
-    launcher = ExternalWorkerLauncher(
-        root,
-        which=lambda name: "C:/tools/codex.exe" if name == "codex" else None,
-        popen=boom,
-    )
-
-    with pytest.raises(OSError, match="cannot create supervisor"):
-        launcher.launch_ready(pack.name, "codex")
+    with pytest.raises(LauncherUnavailableError, match="不支持的 launcher"):
+        launcher.launch_ready(pack.name, "arbitrary")  # type: ignore[arg-type]
 
     assert pack.is_dir()
     assert not (root / "processing" / pack.name).exists()
 
 
-def test_unavailable_launcher_does_not_move_taskpack(tmp_path):
-    root, pack = _ready_pack(tmp_path)
-    launcher = ExternalWorkerLauncher(root, which=lambda _name: None)
+def test_worker_commands_are_fixed_headless_entrypoints_for_deterministic_unit_testing():
+    """Command construction remains testable without executing any external process."""
 
-    with pytest.raises(LauncherUnavailableError):
-        launcher.launch_ready(pack.name, "claude")
-
-    assert pack.is_dir()
-    assert not (root / "processing" / pack.name).exists()
-
-
-def test_worker_commands_are_fixed_headless_entrypoints():
     codex = build_external_command("codex", "/usr/local/bin/codex")
     claude = build_external_command("claude", "/usr/local/bin/claude")
 
@@ -126,7 +113,7 @@ def test_worker_commands_are_fixed_headless_entrypoints():
         build_external_command("arbitrary", "/tmp/evil")
 
 
-def test_supervisor_completed_marker_moves_processing_to_completed(tmp_path):
+def test_supervisor_completed_marker_moves_processing_to_completed_with_fake_process(tmp_path):
     root, source = _ready_pack(tmp_path)
     processing = root / "processing" / source.name
     processing.parent.mkdir(parents=True)
@@ -170,7 +157,7 @@ def test_supervisor_seals_only_deterministic_run_meta_hashes(tmp_path):
                 meta = {
                     "worker_tool": "codex",
                     "provider": "openai",
-                    "model": "real-worker-model",
+                    "model": "fixture-model",
                     "model_version": None,
                     "started_at": "2026-09-06T01:00:00+00:00",
                     "completed_at": "2026-09-06T01:01:00+00:00",
@@ -202,7 +189,7 @@ def test_supervisor_seals_only_deterministic_run_meta_hashes(tmp_path):
     assert meta["prompt_sha256"] == _sha256(completed / "AGENT_INSTRUCTION.md")
     assert meta["task_manifest_sha256"] == _sha256(completed / "manifest.json")
     assert meta["worker_tool"] == "codex"
-    assert meta["model"] == "real-worker-model"
+    assert meta["model"] == "fixture-model"
     assert meta["started_at"] == "2026-09-06T01:00:00+00:00"
     assert meta["input_tokens"] is None
 
