@@ -61,7 +61,12 @@ class CognitionGateway:
             raise CognitionGatewayError(
                 f"Cognition API HTTP {response.status_code}: {message or body}"
             )
-        if not isinstance(body, dict) or body.get("ok") is not True:
+        if not isinstance(body, dict):
+            raise CognitionGatewayError(
+                "Cognition API 契约异常: HTTP 200 JSON body must be an object, "
+                f"got {type(body).__name__}"
+            )
+        if body.get("ok") is not True:
             raise CognitionGatewayError(f"Cognition API 契约异常: {body}")
         return body
 
