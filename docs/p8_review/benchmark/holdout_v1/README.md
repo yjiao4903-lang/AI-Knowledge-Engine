@@ -6,7 +6,9 @@
 > **不能**作为 Holdout 效度或检索质量结论。该 40 题**未作为正式 sealed Holdout 发布**；
 > 仓库仅保留其 SHA256/组成/聚合指标于 `../pilot_manifest_v1.json`。
 > 人工校准包（10 题）已密封生成于仓库外，判定与冻结流程见 `../adjudication/README.md`。
-> 当前人工校准门线**未完成**。详见 `../reports/P8_BENCH02_STATUS_20260911.md`。
+> **2026-09-12 更新（LOCAL-DEV-A）**：sealed Holdout 10 人工判定已完成、导入并冻结
+> （`human_review_complete = true`，coverage 1.0）；聚合证据见
+> `../adjudication/holdout_calibration_v2/`。详见 `../reports/P8_BENCH02_STATUS_20260911.md`。
 
 > **2026-09-11 P8-BENCH-01 状态**：**尚未建立正式 sealed Holdout 题集**。P8-BENCH-01 的
 > 机器自动出题方法经基线评测判定金标不可辩护（见 `../reports/P8_BENCH01_STATUS_20260911.md`），

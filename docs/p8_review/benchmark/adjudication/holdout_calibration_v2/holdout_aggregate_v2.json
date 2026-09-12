@@ -1,0 +1,159 @@
+{
+  "adjudication_version": "1.0",
+  "split": "holdout",
+  "n_queries": 10,
+  "n_judged": 10,
+  "status_dist": {
+    "accept": 10,
+    "rewrite": 0,
+    "reject": 0,
+    "ambiguous": 0
+  },
+  "rejected_or_ambiguous_count": 0,
+  "reviewer": "project-owner",
+  "reviewer_kind": "human",
+  "reviewed_at": "2026-09-11T17:36:00Z",
+  "human_review_complete": true,
+  "candidate_completeness": {
+    "candidates_total": 199,
+    "candidates_judged": 199,
+    "coverage": 1.0,
+    "incomplete_queries": 0
+  },
+  "judged_pool_size_distribution": {
+    "20": 9,
+    "19": 1
+  },
+  "human_grade_distribution": {
+    "0": 186,
+    "1": 0,
+    "2": 0,
+    "3": 13
+  },
+  "grade_ge2_positives_per_query_distribution": {
+    "1": 8,
+    "2": 1,
+    "3": 1
+  },
+  "fn_corrections_after_human_audit": 0,
+  "auto_vs_human_disagreement_aggregate": {
+    "exact_grade_agreement": 1.0,
+    "within_one_grade": 1.0,
+    "binary_relevance_f1": 1.0,
+    "note": "By construction: the human reviewer confirmed the proposed blinded recommendations verbatim (see limitation). This report therefore cannot demonstrate independent human discrimination versus the auto_prelabel rubric."
+  },
+  "retrieval_aggregate_human_gold": {
+    "retrieval_behavior_changes": "none (weights/RRF/routing/reranker/final_k all frozen)",
+    "production_arm": "hybrid_rerank",
+    "n": 10,
+    "hit1": 0.6,
+    "hit3": 0.8,
+    "hit5": 1.0,
+    "wilson95": {
+      "hit1": [
+        0.313,
+        0.832
+      ],
+      "hit3": [
+        0.49,
+        0.943
+      ],
+      "hit5": [
+        0.722,
+        1.0
+      ]
+    },
+    "mrr": 0.728,
+    "ndcg": 0.749,
+    "recall5": 1.0,
+    "recall10": 1.0,
+    "recall20": "not supported at final depth (frozen final_k=10); candidate-stage proxies: rerank@10=1.0, fusion@50=1.0",
+    "latency_ms": {
+      "p50": 1896.6,
+      "p95": 4323.8
+    },
+    "per_arm": {
+      "hybrid_rerank": {
+        "hit1": 0.6,
+        "hit3": 0.8,
+        "hit5": 1.0,
+        "mrr": 0.728,
+        "ndcg": 0.749
+      },
+      "hybrid": {
+        "hit1": 0.5,
+        "hit3": 0.8,
+        "hit5": 0.9,
+        "mrr": 0.658,
+        "ndcg": 0.688
+      },
+      "lexical": {
+        "hit1": 0.5,
+        "hit3": 0.7,
+        "hit5": 0.8,
+        "mrr": 0.608,
+        "ndcg": 0.641
+      },
+      "trigram": {
+        "hit1": 0.5,
+        "hit3": 0.6,
+        "hit5": 0.6,
+        "mrr": 0.57,
+        "ndcg": 0.619
+      },
+      "dense": {
+        "hit1": 0.3,
+        "hit3": 0.6,
+        "hit5": 0.6,
+        "mrr": 0.427,
+        "ndcg": 0.503
+      },
+      "terms": {
+        "hit1": 0.4,
+        "hit3": 0.5,
+        "hit5": 0.5,
+        "mrr": 0.448,
+        "ndcg": 0.467
+      }
+    },
+    "candidate_exposure": {
+      "dense@50": 0.95,
+      "lexical@50": 0.8,
+      "union@50": 0.95,
+      "fusion@30": 1.0,
+      "fusion@50": 1.0,
+      "rerank@10": 1.0,
+      "chunk_union@50": 0.867
+    },
+    "buckets": {
+      "OK": 10
+    }
+  },
+  "hashes_sealed_side": {
+    "packet_sha256": "ddd819968ea5a23cf50a8d790e39629a549814bd67e2f4c48f5ca1cdf2000b45",
+    "key_sha256": "cebacc51791675e62f93c7befc180afe307cdba2dcbc690aaf86b5317dbff7a6",
+    "judgments_sha256": "e9674c1b012055420a0c271d17d752fe91ed74a74ef2ee6ff47421599c41749f",
+    "questions_frozen_sha256": "02f2fef24d133fd2fe205173280d29932fa919e22794a9c49663b69f7ddee8a2",
+    "gold_sha256": "0f3f67fcd0651a96c49aa7bfcaf9c9586a32481101443b9dc4c04bdba84b10f4",
+    "freeze_sha256": "36ee3dfd5567382e3aba8c0f299660edf246f5c07c5d78486b84fb66e5b91d08",
+    "provenance_sha256": "58d035253c4e74d9f094d9670b411a7bf292aef0e1c0da7014e4ebf3d0977b64",
+    "report_sha256": "426a96078478491e54eee3c636b117e78d7c3e6083f61f7d974f6f082abb5464",
+    "trace_sha256": "fd91bb45d6ccabf302c51256a6371e900608aa48a7d643790fda784a73268a46"
+  },
+  "validation": {
+    "adjudicate_self_test": {
+      "pass": true,
+      "n_checks": 32
+    },
+    "bench_verify": {
+      "pass": true,
+      "legacy_n": 50,
+      "legacy_sha256": "aa0412a24ccc30b6a0d75d97e4265b948b83bdb1c674db28f45eb17453973aea",
+      "legacy_unchanged": true,
+      "dev_holdout_target_doc_overlap": 0,
+      "holdout_in_repo": false
+    }
+  },
+  "limitation": "The human reviewer confirmed all 10 judgments exactly as the proposed blinded recommendations (WEB-CONTROL Issue #39 comment 2026-09-11T17:36:00Z). The proposals were derived from the blinded key's auto_prelabel grades (binary 0/3 rubric), so the human grade distribution contains no 1/2 grades and the aggregate metrics equal the prelabel-gold metrics. This calibration validates pipeline/plumbing/completeness and provides the sealed aggregate; it is a pilot-acceptance gate, not an independent-relevance study. n=10 gives wide Wilson intervals. Judged pool is a bounded 4-view top-N sample (pooling assumption).",
+  "per_query_content": "excluded by sealing rules (stays in E:/研报提取资料库/_golden/p8_bench02_adjudication/)"
+}
