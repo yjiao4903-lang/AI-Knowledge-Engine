@@ -16,6 +16,7 @@ from pydantic import BaseModel
 
 from app.api.synthesis import _require_task, get_proposal_candidates
 from app.integration.cognition_gateway import CognitionGateway, CognitionGatewayError
+from app.research.reuse_trace import ReuseTraceReadService
 
 router = APIRouter(prefix="/api/research-os", tags=["research-os"])
 
@@ -67,6 +68,26 @@ def cognition_health(request: Request) -> dict:
         "api_url": request.app.state.cfg.cognition.api_url,
         "settings": body.get("settings", {}),
     }
+
+
+@router.get("/reuse-trace")
+def reuse_trace(object_id: str, request: Request) -> dict:
+    """Reconstruct one exact Cognition object's durable research history.
+
+    This endpoint is strictly read-only: it does not refresh catalogs, invoke the
+    Cognition gateway, run Importer Gate code, launch Workers, or write markers.
+    """
+    if object_id == "":
+        raise HTTPException(status_code=422, detail="object_id must be non-empty")
+    cognition = getattr(request.app.state, "cognition", None) or {}
+    cognition_conn = cognition.get("conn") if cognition.get("enabled") else None
+    try:
+        return ReuseTraceReadService(
+            request.app.state.cfg,
+            cognition_conn=cognition_conn,
+        ).build(object_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/tasks/{task_id}/proposal-publication")
