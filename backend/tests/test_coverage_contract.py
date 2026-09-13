@@ -24,6 +24,18 @@ def test_new_unclassified_test_module_fails_inventory_guard(monkeypatch) -> None
     assert errors == ["unclassified test modules: ['tests/test_new_unclassified.py']"]
 
 
+def test_local_only_is_excluded_from_default_hosted_collection() -> None:
+    path = BACKEND_ROOT / "tests" / "test_cognition_ingest.py"
+
+    class HostedConfig:
+        @staticmethod
+        def getoption(name: str) -> bool:
+            assert name == "--include-local-only"
+            return False
+
+    assert coverage_policy.pytest_ignore_collect(path, HostedConfig()) is True
+
+
 def test_local_only_and_external_exclusions_are_explicitly_reasoned() -> None:
     inventory = load_inventory()
     excluded = {
