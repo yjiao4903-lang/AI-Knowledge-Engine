@@ -1,13 +1,13 @@
-"""Detached lifecycle supervisor for one externally launched TaskPack.
+"""Fail-closed compatibility boundary for historical External Worker supervision.
 
-This module is intentionally stdlib-only so the API can spawn it with the current
-Python interpreter and then return immediately. It runs one fixed external CLI,
-waits for it to exit, seals the two deterministic TaskPack-input hashes in an
-existing run_meta.json, and converts ``processing/`` into ``completed/`` or
-``failed/`` according to the TaskPack's DONE / FAILED markers.
+Project code may prepare TaskPacks, ingest user-supplied results, and perform
+pure/local deterministic result finalization.  It must not construct or spawn
+Codex, Claude, PowerShell, or any other identity-bound External Worker.
 
-It is orchestration, not a model provider: no API clients, credentials, model
-selection, retrieval, or Cognition writes live here.
+The historical ``build_external_command`` and ``run_supervisor`` symbols remain
+only so stale callers fail closed with ``USER_RUN_REQUIRED``.  They deliberately
+refuse before executable validation/discovery, command construction, TaskPack
+filesystem mutation, or subprocess creation.
 """
 
 from __future__ import annotations
@@ -15,63 +15,41 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
-import re
-import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
-_FIXED_INSTRUCTION = (
-    "Read and follow AGENT_INSTRUCTION.md in the current working directory. "
-    "Complete this TaskPack only from its provided files and write the required "
-    "result files and DONE or FAILED marker into result/."
+from app.taskpack.launcher import ExternalExecutionPolicyError, USER_RUN_REQUIRED
+
+_POLICY_MESSAGE = (
+    "USER_RUN_REQUIRED: direct worker_supervisor execution is disabled. "
+    "Prepare the TaskPack only; the user may manually run an external tool outside "
+    "project/agent control and return the resulting local artifacts for import."
 )
-_TASK_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$")
+_SUPPORTED_LAUNCHERS = ("codex", "claude", "terminal")
 
 
-def _safe_task_id(value: str) -> bool:
-    return ".." not in value and _TASK_ID_RE.fullmatch(value) is not None
-
-
-def _validate_executable(kind: str, executable: str) -> None:
-    stem = Path(executable).stem.lower()
-    if kind == "codex" and stem != "codex":
-        raise ValueError("codex launcher executable mismatch")
-    if kind == "claude" and stem != "claude":
-        raise ValueError("claude launcher executable mismatch")
-    if kind == "terminal" and stem not in {"pwsh", "powershell"}:
-        raise ValueError("terminal launcher executable mismatch")
+def _refuse_external_execution() -> None:
+    raise ExternalExecutionPolicyError(_POLICY_MESSAGE)
 
 
 def build_external_command(kind: str, executable: str) -> list[str]:
-    """Return the fixed external command; no browser/user command is accepted."""
+    """Compatibility shim: never return executable External Worker argv."""
 
-    if kind not in {"codex", "claude", "terminal"}:
-        raise ValueError(f"unsupported launcher: {kind}")
-    _validate_executable(kind, executable)
-
-    if kind == "codex":
-        args = [executable, "exec", "--skip-git-repo-check", _FIXED_INSTRUCTION]
-    elif kind == "claude":
-        args = [executable, "-p", _FIXED_INSTRUCTION]
-    else:
-        args = [
-            executable,
-            "-NoLogo",
-            "-NoExit",
-            "-Command",
-            "Write-Host 'TaskPack ready. Read AGENT_INSTRUCTION.md and run the external worker here.'",
-        ]
-
-    # npm-installed CLIs are commonly .cmd wrappers on Windows. Invoke those
-    # explicitly through COMSPEC while still keeping shell=False and a fixed argv.
-    if os.name == "nt" and Path(executable).suffix.lower() in {".cmd", ".bat"}:
-        comspec = os.environ.get("COMSPEC") or "cmd.exe"
-        return [comspec, "/d", "/c", *args]
-    return args
+    # Keep the old signature for stale imports, but fail before inspecting the
+    # executable or constructing any command line.
+    del kind, executable
+    _refuse_external_execution()
 
 
 def _write_launcher_error(pack: Path, *, launcher: str, exit_code: int | None, message: str) -> None:
+    """Write a deterministic local lifecycle diagnostic.
+
+    This helper is retained only for local result-finalization compatibility.  It
+    is not reachable from the fail-closed execution entrypoints above.
+    """
+
     result = pack / "result"
     result.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -95,12 +73,10 @@ def _sha256_file(path: Path) -> str:
 
 
 def seal_run_meta_hashes(pack: Path) -> bool:
-    """Seal deterministic input hashes in an existing Worker run_meta.json.
+    """Seal deterministic TaskPack-input hashes in an existing run_meta.json.
 
-    The supervisor is trusted orchestration and can deterministically derive these
-    two values from immutable TaskPack inputs. It does *not* fabricate worker,
-    provider, model, timestamps, token counts, prompt_version, or a missing
-    run_meta.json. Any other run_meta defect remains visible to Importer Gate.
+    This pure/local helper does not fabricate a missing run_meta.json and does not
+    execute or discover any external Worker.
     """
 
     path = pack / "result" / "run_meta.json"
@@ -134,15 +110,17 @@ def _move_final(pack: Path, root: Path, destination: str) -> Path:
 
 
 def finalize_after_exit(pack: Path, root: Path, *, launcher: str, exit_code: int) -> Path:
-    """Map the external process outcome to the existing TaskPack directory state."""
+    """Finalize already-returned local artifacts without starting any process.
+
+    The name is retained for compatibility with existing deterministic result
+    fixtures.  Callers must supply a TaskPack whose result markers already exist;
+    this function does not run, discover, or construct an External Worker command.
+    """
 
     done = pack / "result" / "DONE"
     failed = pack / "result" / "FAILED"
 
     if done.exists() and not failed.exists():
-        # Real CLI workers may be unable/unwilling to calculate file hashes. Seal
-        # only the two deterministic fields from immutable TaskPack inputs before
-        # moving to completed; Importer still validates every field and hash.
         seal_run_meta_hashes(pack)
         return _move_final(pack, root, "completed")
 
@@ -152,11 +130,11 @@ def finalize_after_exit(pack: Path, root: Path, *, launcher: str, exit_code: int
             launcher=launcher,
             exit_code=exit_code,
             message=(
-                "external worker exited without result/DONE or result/FAILED; "
-                "TaskPack marked FAILED by launcher supervisor"
+                "returned local artifacts contain neither result/DONE nor result/FAILED; "
+                "TaskPack marked FAILED by deterministic finalizer"
             ),
         )
-        failed.write_text("launcher supervisor: missing DONE/FAILED marker\n", encoding="utf-8")
+        failed.write_text("deterministic finalizer: missing DONE/FAILED marker\n", encoding="utf-8")
     return _move_final(pack, root, "failed")
 
 
@@ -166,77 +144,35 @@ def run_supervisor(
     task_id: str,
     launcher: str,
     executable: str,
-    popen=subprocess.Popen,
+    popen: Callable[..., object] | None = None,
 ) -> int:
-    if not _safe_task_id(task_id):
-        raise ValueError(f"unsafe task_id: {task_id}")
-    root = root.resolve()
-    processing = (root / "processing").resolve()
-    pack = (processing / task_id).resolve()
-    if pack.parent != processing or not pack.is_dir():
-        raise FileNotFoundError(f"processing TaskPack not found: {task_id}")
+    """Historical callable retained only as a hard fail-closed policy boundary."""
 
-    command = build_external_command(launcher, executable)
-    result = pack / "result"
-    result.mkdir(parents=True, exist_ok=True)
-
-    try:
-        if launcher == "terminal":
-            kwargs: dict = {"cwd": str(pack), "shell": False}
-            if os.name == "nt":
-                kwargs["creationflags"] = getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
-            process = popen(command, **kwargs)
-            exit_code = int(process.wait())
-        else:
-            stdout_path = result / "launcher_stdout.log"
-            stderr_path = result / "launcher_stderr.log"
-            with stdout_path.open("w", encoding="utf-8") as stdout, stderr_path.open(
-                "w", encoding="utf-8"
-            ) as stderr:
-                process = popen(
-                    command,
-                    cwd=str(pack),
-                    stdin=subprocess.DEVNULL,
-                    stdout=stdout,
-                    stderr=stderr,
-                    shell=False,
-                )
-                exit_code = int(process.wait())
-    except BaseException as exc:
-        _write_launcher_error(pack, launcher=launcher, exit_code=None, message=f"launch failed: {exc}")
-        (result / "FAILED").write_text("launcher supervisor: launch failed\n", encoding="utf-8")
-        _move_final(pack, root, "failed")
-        return 1
-
-    try:
-        finalize_after_exit(pack, root, launcher=launcher, exit_code=exit_code)
-    except BaseException as exc:
-        # Keep the pack in processing if lifecycle finalization itself fails; this
-        # is safer than copying/deleting and makes the filesystem state inspectable.
-        if pack.exists():
-            _write_launcher_error(
-                pack,
-                launcher=launcher,
-                exit_code=exit_code,
-                message=f"lifecycle finalization failed: {exc}",
-            )
-        return 2
-    return 0
+    # Deliberately do not resolve ``root``, inspect ``task_id``/``executable``,
+    # create result files, build argv, or call the injected ``popen`` callback.
+    del root, task_id, launcher, executable, popen
+    _refuse_external_execution()
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
     parser.add_argument("--task-id", required=True)
-    parser.add_argument("--launcher", required=True, choices=("codex", "claude", "terminal"))
+    parser.add_argument("--launcher", required=True, choices=_SUPPORTED_LAUNCHERS)
     parser.add_argument("--executable", required=True)
     args = parser.parse_args()
-    return run_supervisor(
-        root=Path(args.root),
-        task_id=args.task_id,
-        launcher=args.launcher,
-        executable=args.executable,
-    )
+    try:
+        return run_supervisor(
+            root=Path(args.root),
+            task_id=args.task_id,
+            launcher=args.launcher,
+            executable=args.executable,
+        )
+    except ExternalExecutionPolicyError as exc:
+        # Explicit nonzero CLI result without a traceback and, critically, without
+        # touching the TaskPack or invoking an external executable.
+        print(str(exc), file=sys.stderr)
+        return 3
 
 
 if __name__ == "__main__":
