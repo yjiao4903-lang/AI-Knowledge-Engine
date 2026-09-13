@@ -9,6 +9,7 @@ reported only when an existing formal-handoff marker already records that bridge
 from __future__ import annotations
 
 import json
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ _FORMAL_HANDOFFS = Path("result") / "formal_handoffs"
 _RESULT = Path("result") / "result.json"
 _IMPORTED = Path("result") / "IMPORTED"
 _INVALID = Path("result") / "INVALID"
+_FORMAL_HANDOFF_SCHEMA_VERSION = "1.0"
 
 _COGNITION_DIR_TYPES = {
     "02_来源与阅读": "source",
@@ -55,7 +57,6 @@ class ReuseTraceReadService:
         return_events: list[dict[str, Any]] = []
         linked_packs: dict[str, Path] = {}
         task_meta_cache: dict[Path, tuple[TaskYaml | None, list[dict[str, Any]]]] = {}
-        candidate_valid: dict[Path, bool] = {}
 
         for pack in self._iter_packs():
             task_id = pack.name
@@ -63,7 +64,6 @@ class ReuseTraceReadService:
             matching_context = [row for row in context_rows if row.object_id == object_id]
 
             batch, candidate_issues, candidate_exists = self._read_candidates(pack)
-            candidate_valid[pack] = batch is not None if candidate_exists else False
             matching_candidates = (
                 [
                     row
@@ -123,10 +123,7 @@ class ReuseTraceReadService:
             if task_issues and pack not in task_meta_cache:
                 quality.extend(self._bind_issues(task_id, None, task_issues))
 
-            gate_proven = self._durable_gate_proven(
-                pack,
-                candidate_batch_valid=candidate_valid.get(pack, False),
-            )
+            gate_proven = self._durable_gate_proven(pack)
             result_path = pack / _RESULT
             if not gate_proven:
                 if result_path.exists():
@@ -354,76 +351,25 @@ class ReuseTraceReadService:
                 )
             )
 
-        proposal_id = None
-        proposal_item_id = None
-        cognition_uuid = None
-        marker_source_path = None
-        previewed_at = None
-        applied_at = None
-        formal_write_performed = False
-
+        trusted_fields = {
+            "proposal_id": None,
+            "proposal_item_id": None,
+            "cognition_uuid": None,
+            "marker_source_path": None,
+            "previewed_at": None,
+            "applied_at": None,
+            "formal_write_performed": False,
+        }
         if marker is not None:
-            proposal_id = marker.get("proposal_id")
-            proposal_item_id = marker.get("proposal_item_id")
-            formal_write_performed = bool(marker.get("formal_write_performed"))
-            preview = marker.get("preview")
-            if isinstance(preview, dict):
-                previewed_at = preview.get("previewed_at")
-            apply = marker.get("apply")
-            if isinstance(apply, dict):
-                applied_at = apply.get("applied_at")
-
-            if marker.get("task_id") not in (None, pack.name):
-                issues.append(
-                    self._quality(
-                        "formal_handoff_task_id_mismatch",
-                        "formal marker task_id does not match TaskPack directory",
-                        artifact=f"result/formal_handoffs/{candidate.candidate_id}.json",
-                    )
-                )
-            if marker.get("candidate_id") not in (None, candidate.candidate_id):
-                issues.append(
-                    self._quality(
-                        "formal_handoff_candidate_id_mismatch",
-                        "formal marker candidate_id does not match staging record",
-                        artifact=f"result/formal_handoffs/{candidate.candidate_id}.json",
-                    )
-                )
-
-            identities = marker.get("target_identities")
-            if identities is not None and not isinstance(identities, list):
-                issues.append(
-                    self._quality(
-                        "formal_identity_mapping_unreadable",
-                        "formal marker target_identities is not a list",
-                        artifact=f"result/formal_handoffs/{candidate.candidate_id}.json",
-                    )
-                )
-            elif isinstance(identities, list):
-                matches = [
-                    row
-                    for row in identities
-                    if isinstance(row, dict) and row.get("ke_target_id") == object_id
-                ]
-                if len(matches) == 1:
-                    cognition_uuid = matches[0].get("cognition_target_id")
-                    marker_source_path = matches[0].get("source_path")
-                elif len(matches) > 1:
-                    issues.append(
-                        self._quality(
-                            "formal_identity_mapping_ambiguous",
-                            "formal marker contains duplicate exact KE identity mappings",
-                            artifact=f"result/formal_handoffs/{candidate.candidate_id}.json",
-                        )
-                    )
-                elif candidate.target_cognition_object_ids:
-                    issues.append(
-                        self._quality(
-                            "formal_identity_mapping_missing",
-                            "formal marker does not record the queried exact KE identity",
-                            artifact=f"result/formal_handoffs/{candidate.candidate_id}.json",
-                        )
-                    )
+            trusted_fields, marker_issues = self._trusted_formal_marker_fields(
+                pack,
+                candidate,
+                object_id,
+                marker,
+            )
+            issues.extend(marker_issues)
+            if marker_issues:
+                marker_state = "invalid"
 
         return {
             "task_id": pack.name,
@@ -448,15 +394,240 @@ class ReuseTraceReadService:
             },
             "formal_handoff": {
                 "state": marker_state,
-                "proposal_id": proposal_id,
-                "proposal_item_id": proposal_item_id,
-                "cognition_uuid": cognition_uuid,
-                "marker_source_path": marker_source_path,
-                "previewed_at": previewed_at,
-                "applied_at": applied_at,
-                "formal_write_performed": formal_write_performed,
+                **trusted_fields,
             },
         }, issues
+
+    def _trusted_formal_marker_fields(
+        self,
+        pack: Path,
+        candidate,
+        object_id: str,
+        marker: dict[str, Any],
+    ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        artifact = f"result/formal_handoffs/{candidate.candidate_id}.json"
+        issues: list[dict[str, Any]] = []
+
+        def add(code: str, detail: str) -> None:
+            issues.append(self._quality(code, detail, artifact=artifact))
+
+        if marker.get("schema_version") != _FORMAL_HANDOFF_SCHEMA_VERSION:
+            add(
+                "formal_handoff_schema_invalid",
+                "formal marker schema_version is missing or unsupported",
+            )
+        if marker.get("task_id") != pack.name:
+            add(
+                "formal_handoff_task_id_mismatch",
+                "formal marker task_id does not match TaskPack directory",
+            )
+        if marker.get("candidate_id") != candidate.candidate_id:
+            add(
+                "formal_handoff_candidate_id_mismatch",
+                "formal marker candidate_id does not match staging record",
+            )
+
+        proposal_id = marker.get("proposal_id")
+        proposal_item_id = marker.get("proposal_item_id")
+        if not self._nonempty_string(proposal_id) or not self._nonempty_string(
+            proposal_item_id
+        ):
+            add(
+                "formal_handoff_proposal_invalid",
+                "formal marker must contain non-empty proposal_id and proposal_item_id",
+            )
+
+        formal_write_performed = marker.get("formal_write_performed")
+        if type(formal_write_performed) is not bool:
+            add(
+                "formal_write_flag_invalid",
+                "formal_write_performed must be a literal boolean",
+            )
+
+        preview = marker.get("preview")
+        preview_valid = preview is None or self._valid_preview(preview)
+        if not preview_valid:
+            add(
+                "formal_handoff_preview_invalid",
+                "formal marker preview is not a valid durable Preview record",
+            )
+
+        apply = marker.get("apply")
+        apply_valid = apply is None or self._valid_apply(apply)
+        if not apply_valid:
+            add(
+                "formal_handoff_apply_invalid",
+                "formal marker apply is not a valid durable Apply record",
+            )
+        if apply is not None and preview is None:
+            add(
+                "formal_handoff_apply_without_preview",
+                "formal marker records Apply without a prior Preview",
+            )
+        if formal_write_performed is True and not (
+            isinstance(apply, dict) and self._valid_apply(apply)
+        ):
+            add(
+                "formal_handoff_apply_required",
+                "formal_write_performed=true requires a valid Apply record",
+            )
+        if formal_write_performed is False and apply is not None:
+            add(
+                "formal_handoff_apply_flag_mismatch",
+                "an Apply record cannot coexist with formal_write_performed=false",
+            )
+
+        identity = self._trusted_identity_mapping(
+            candidate,
+            object_id,
+            marker.get("target_identities"),
+            artifact,
+            issues,
+        )
+
+        if issues:
+            return {
+                "proposal_id": None,
+                "proposal_item_id": None,
+                "cognition_uuid": None,
+                "marker_source_path": None,
+                "previewed_at": None,
+                "applied_at": None,
+                "formal_write_performed": False,
+            }, issues
+
+        assert isinstance(preview, (dict, type(None)))
+        assert isinstance(apply, (dict, type(None)))
+        assert type(formal_write_performed) is bool
+        assert identity is not None
+        return {
+            "proposal_id": proposal_id,
+            "proposal_item_id": proposal_item_id,
+            "cognition_uuid": identity["cognition_target_id"],
+            "marker_source_path": identity["source_path"],
+            "previewed_at": preview.get("previewed_at") if preview is not None else None,
+            "applied_at": apply.get("applied_at") if apply is not None else None,
+            "formal_write_performed": formal_write_performed,
+        }, []
+
+    def _trusted_identity_mapping(
+        self,
+        candidate,
+        object_id: str,
+        identities: Any,
+        artifact: str,
+        issues: list[dict[str, Any]],
+    ) -> dict[str, str] | None:
+        if not isinstance(identities, list):
+            issues.append(
+                self._quality(
+                    "formal_identity_mapping_unreadable",
+                    "formal marker target_identities is not a list",
+                    artifact=artifact,
+                )
+            )
+            return None
+
+        valid_rows: list[dict[str, str]] = []
+        malformed = False
+        for row in identities:
+            if not isinstance(row, dict):
+                malformed = True
+                continue
+            ke_target_id = row.get("ke_target_id")
+            cognition_target_id = row.get("cognition_target_id")
+            object_type = row.get("object_type")
+            source_path = row.get("source_path")
+            if not all(
+                self._nonempty_string(value)
+                for value in (
+                    ke_target_id,
+                    cognition_target_id,
+                    object_type,
+                    source_path,
+                )
+            ):
+                malformed = True
+                continue
+            try:
+                uuid.UUID(cognition_target_id)
+            except (ValueError, AttributeError, TypeError):
+                malformed = True
+                continue
+            valid_rows.append(
+                {
+                    "ke_target_id": ke_target_id,
+                    "cognition_target_id": cognition_target_id,
+                    "object_type": object_type,
+                    "source_path": source_path,
+                }
+            )
+
+        if malformed:
+            issues.append(
+                self._quality(
+                    "formal_identity_mapping_unreadable",
+                    "formal marker contains malformed target identity rows",
+                    artifact=artifact,
+                )
+            )
+
+        row_ids = [row["ke_target_id"] for row in valid_rows]
+        if len(row_ids) != len(set(row_ids)):
+            issues.append(
+                self._quality(
+                    "formal_identity_mapping_ambiguous",
+                    "formal marker contains duplicate exact KE identity mappings",
+                    artifact=artifact,
+                )
+            )
+
+        expected_ids = list(candidate.target_cognition_object_ids)
+        if sorted(row_ids) != sorted(expected_ids):
+            issues.append(
+                self._quality(
+                    "formal_identity_mapping_mismatch",
+                    "formal marker target identities do not exactly match the reviewed candidate targets",
+                    artifact=artifact,
+                )
+            )
+
+        matches = [row for row in valid_rows if row["ke_target_id"] == object_id]
+        if len(matches) != 1:
+            issues.append(
+                self._quality(
+                    "formal_identity_mapping_missing"
+                    if not matches
+                    else "formal_identity_mapping_ambiguous",
+                    "formal marker must contain exactly one mapping for the queried exact KE identity",
+                    artifact=artifact,
+                )
+            )
+            return None
+        return matches[0]
+
+    @staticmethod
+    def _nonempty_string(value: Any) -> bool:
+        return isinstance(value, str) and bool(value.strip())
+
+    @classmethod
+    def _valid_preview(cls, preview: Any) -> bool:
+        return (
+            isinstance(preview, dict)
+            and cls._nonempty_string(preview.get("previewed_at"))
+            and isinstance(preview.get("target_hashes"), dict)
+            and isinstance(preview.get("response"), dict)
+        )
+
+    @classmethod
+    def _valid_apply(cls, apply: Any) -> bool:
+        return (
+            isinstance(apply, dict)
+            and cls._nonempty_string(apply.get("applied_at"))
+            and isinstance(apply.get("response"), dict)
+            and "readback" in apply
+            and (apply.get("readback") is None or isinstance(apply.get("readback"), dict))
+        )
 
     @staticmethod
     def _read_result(pack: Path):
@@ -485,15 +656,10 @@ class ReuseTraceReadService:
         return result, None
 
     @staticmethod
-    def _durable_gate_proven(pack: Path, *, candidate_batch_valid: bool) -> bool:
+    def _durable_gate_proven(pack: Path) -> bool:
         if (pack / _INVALID).exists():
             return False
-        if (pack / _IMPORTED).exists():
-            return True
-        if candidate_batch_valid:
-            return True
-        handoff_root = pack / _FORMAL_HANDOFFS
-        return handoff_root.is_dir() and any(handoff_root.glob("*.json"))
+        return (pack / _IMPORTED).exists()
 
     def _current_object(
         self,
