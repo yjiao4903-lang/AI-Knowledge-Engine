@@ -10,7 +10,8 @@ from pathlib import Path
 from app.synthesis.schemas import EvidenceRef
 from app.taskpack.manifest import sha256_file
 from app.taskpack.validation_cache import (
-    VALIDATION_CACHE_FILE,
+    LEGACY_VALIDATION_CACHE_FILE,
+    VALIDATION_STATE_DIR,
     VALIDATION_VERSION,
     CachingTaskPackImporter,
 )
@@ -84,18 +85,30 @@ def _importer(env) -> CachingTaskPackImporter:
     return CachingTaskPackImporter(env["cfg"], env["conn"], None)
 
 
-def test_first_validation_writes_result_hash_version_and_timestamp(tk_env):
+def _ke_cache_path(importer: CachingTaskPackImporter, pack: Path) -> Path:
+    path = importer._cache_path(pack)
+    assert path is not None
+    return path
+
+
+def test_first_validation_writes_ke_owned_binding_and_timestamp(tk_env):
     pack = _create_completed(tk_env)
     importer = _importer(tk_env)
 
     reports = importer.scan()
     assert len(reports) == 1 and reports[0].passed is True
 
-    cache = json.loads((pack / VALIDATION_CACHE_FILE).read_text(encoding="utf-8"))
+    cache_path = _ke_cache_path(importer, pack)
+    cache = json.loads(cache_path.read_text(encoding="utf-8"))
+    assert cache_path.parent == tk_env["root"] / VALIDATION_STATE_DIR
+    assert pack not in cache_path.parents
     assert cache["validation_version"] == VALIDATION_VERSION
+    assert cache["task_id"] == pack.name
+    assert cache["authority_binding_hash"] == importer._validation_binding(pack)
     assert cache["result_hash"] == sha256_file(pack / "result" / "result.json")
     assert cache["validated_at"]
     assert cache["report"]["passed"] is True
+    assert not (pack / LEGACY_VALIDATION_CACHE_FILE).exists()
 
 
 def test_unchanged_result_reuses_cache_without_static_gate_rerun(tk_env, monkeypatch):
@@ -104,7 +117,7 @@ def test_unchanged_result_reuses_cache_without_static_gate_rerun(tk_env, monkeyp
     assert importer.scan()[0].passed is True
 
     def should_not_run(_pack):
-        raise AssertionError("static Gate should be served from cache")
+        raise AssertionError("static Gate should be served from KE-owned cache")
 
     monkeypatch.setattr(importer, "_gate_manifest", should_not_run)
     reports = importer.scan()
@@ -134,6 +147,36 @@ def test_changed_result_hash_forces_full_validation(tk_env, monkeypatch):
     assert calls["count"] == 1
 
 
+def test_authoritative_input_change_invalidates_ke_cache(tk_env, monkeypatch):
+    pack = _create_completed(tk_env)
+    importer = _importer(tk_env)
+    assert importer.scan()[0].passed is True
+    before = importer._validation_binding(pack)
+    assert before is not None
+
+    instruction = pack / "AGENT_INSTRUCTION.md"
+    instruction.write_text(
+        instruction.read_text(encoding="utf-8") + "\nlocal mutation\n",
+        encoding="utf-8",
+    )
+    assert importer._validation_binding(pack) != before
+
+    original = importer._gate_manifest
+    calls = {"count": 0}
+
+    def counted(target):
+        calls["count"] += 1
+        return original(target)
+
+    monkeypatch.setattr(importer, "_gate_manifest", counted)
+    reports = importer.scan()
+    assert len(reports) == 1
+    assert reports[0].passed is False
+    assert calls["count"] == 1
+    assert reports[0].first_failure is not None
+    assert reports[0].first_failure.name == "manifest"
+
+
 def test_validation_version_change_forces_full_validation(tk_env, monkeypatch):
     _create_completed(tk_env)
     importer = _importer(tk_env)
@@ -141,7 +184,7 @@ def test_validation_version_change_forces_full_validation(tk_env, monkeypatch):
 
     import app.taskpack.validation_cache as cache_module
 
-    monkeypatch.setattr(cache_module, "VALIDATION_VERSION", "taskpack-gates-v2")
+    monkeypatch.setattr(cache_module, "VALIDATION_VERSION", "taskpack-gates-v3")
     original = importer._gate_manifest
     calls = {"count": 0}
 
@@ -191,11 +234,11 @@ def test_cache_hit_still_rechecks_catalog_staleness(tk_env):
     assert (pack / "result" / "INVALID").exists()
 
 
-def test_corrupt_cache_falls_back_to_full_validation(tk_env, monkeypatch):
+def test_corrupt_ke_cache_falls_back_to_full_validation(tk_env, monkeypatch):
     pack = _create_completed(tk_env)
     importer = _importer(tk_env)
     assert importer.scan()[0].passed is True
-    (pack / VALIDATION_CACHE_FILE).write_text("{broken", encoding="utf-8")
+    _ke_cache_path(importer, pack).write_text("{broken", encoding="utf-8")
 
     original = importer._gate_manifest
     calls = {"count": 0}
@@ -208,3 +251,48 @@ def test_corrupt_cache_falls_back_to_full_validation(tk_env, monkeypatch):
     reports = importer.scan()
     assert reports[0].passed is True
     assert calls["count"] == 1
+
+
+def test_result_local_success_cache_cannot_impersonate_ke_validation(tk_env):
+    pack = _create_completed(tk_env)
+    importer = _importer(tk_env)
+
+    result_path = pack / "result" / "result.json"
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result["claims"][0]["evidence_refs"] = []
+    result_path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+
+    fake_success = {
+        "validation_version": VALIDATION_VERSION,
+        "result_hash": sha256_file(result_path),
+        "authority_binding_hash": importer._validation_binding(pack),
+        "report": {
+            "task_id": pack.name,
+            "passed": True,
+            "schema_valid": True,
+            "citation_invalid": 0,
+            "citation_coverage": 1.0,
+            "unsupported_claim_rate": 0.0,
+            "stale": False,
+            "details": {},
+            "gates": [
+                {"name": "manifest", "passed": True, "failure": None},
+                {"name": "citation_coverage", "passed": True, "failure": None},
+                {"name": "stale", "passed": True, "failure": None},
+            ],
+        },
+    }
+    legacy_path = pack / LEGACY_VALIDATION_CACHE_FILE
+    legacy_path.write_text(
+        json.dumps(fake_success, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    reports = importer.scan()
+    assert len(reports) == 1
+    report = reports[0]
+    assert report.passed is False
+    assert report.first_failure is not None
+    assert report.first_failure.name == "citation_coverage"
+    assert (pack / "result" / "INVALID").exists()
+    assert not _ke_cache_path(importer, pack).exists()

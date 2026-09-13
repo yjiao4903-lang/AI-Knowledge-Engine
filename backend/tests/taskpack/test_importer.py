@@ -1,6 +1,6 @@
 """Importer / Watcher 测试（V3.0 方案 §40-§48/§69 Task 5）。
 
-覆盖：状态机判定（目录+marker）、八步 Gate（§46）、stale（§48）、rescan/archive/list。
+覆盖：状态机判定（目录+marker）、Gate pipeline、stale（§48）、rescan/archive/list。
 """
 
 from __future__ import annotations
@@ -155,7 +155,7 @@ def test_prompt_sha_mismatch_invalidates(tk_env, tk_imp):
     created = _create(tk_env)
     completed = _move_to_completed(tk_env, created.task_path)
     # 篡改 run_meta.prompt_sha256 使其与 AGENT_INSTRUCTION.md 失配（输入文件保持原样，
-    # 避免触发 manifest gate——本测试专门检验第 4 步 prompt_sha gate）
+    # 避免触发 manifest gate——本测试专门检验 prompt_sha gate）
     meta = json.loads((completed / "result" / "run_meta.json").read_text(encoding="utf-8"))
     meta["prompt_sha256"] = "f" * 64
     (completed / "result" / "run_meta.json").write_text(json.dumps(meta), encoding="utf-8")
@@ -189,6 +189,48 @@ def test_low_coverage_invalidates(tk_env, tk_imp):
     assert rep.passed is False
     assert any(g.name == "citation_coverage" and not g.passed for g in rep.gates)
     assert tk_imp.status_of(completed) == INVALID_RESULT
+
+
+def test_malformed_evidence_row_is_explicit_parse_failure(tk_env, tk_imp):
+    created = _create(tk_env)
+    completed = _move_to_completed(tk_env, created.task_path)
+    evidence_path = completed / "evidence.jsonl"
+    original = evidence_path.read_text(encoding="utf-8").rstrip("\n")
+    evidence_path.write_text(original + "\n{broken-json\n", encoding="utf-8")
+
+    rep = tk_imp.import_task(completed)
+    assert rep.passed is False
+    assert rep.first_failure is not None
+    assert rep.first_failure.name == "evidence_parse"
+    assert "evidence.jsonl:2" in (rep.first_failure.failure or "")
+
+    invalid = json.loads((completed / "result" / "INVALID").read_text(encoding="utf-8"))
+    assert invalid["gate"] == "evidence_parse"
+    assert "evidence.jsonl:2" in invalid["reason"]
+
+
+def test_valid_evidence_rows_parse_deterministically_and_remain_unchanged(tk_env, tk_imp):
+    from datetime import datetime
+
+    created = tk_env["builder"].create_task(
+        task_type="summary",
+        query="two evidence rows",
+        evidence_refs=tk_env["refs"],
+        now=datetime(2026, 8, 30, 4, 1, 0),
+    )
+    completed = _move_to_completed(tk_env, created.task_path)
+    evidence_path = completed / "evidence.jsonl"
+    before_bytes = evidence_path.read_bytes()
+
+    first = [item.model_dump(mode="json") for item in tk_imp._read_evidence(completed)]
+    second = [item.model_dump(mode="json") for item in tk_imp._read_evidence(completed)]
+    assert len(first) == 2
+    assert first == second
+
+    rep = tk_imp.import_task(completed)
+    assert rep.passed is True
+    assert any(g.name == "evidence_parse" and g.passed for g in rep.gates)
+    assert evidence_path.read_bytes() == before_bytes
 
 
 def test_stale_evidence_marked_but_not_rewritten(tk_env, tk_imp):

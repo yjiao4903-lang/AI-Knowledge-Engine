@@ -5,13 +5,14 @@
     processing/                 -> PROCESSING
     completed/ + result/DONE    -> COMPLETED
     failed/ + FAILED            -> FAILED
-    validator fail（八步 Gate 失败）-> INVALID_RESULT
+    validator fail（Gate pipeline 失败）-> INVALID_RESULT
     用户打开并接受到 Viewer（result/IMPORTED）-> IMPORTED
     archive/                    -> ARCHIVED
 
 Importer 只读取 completed 中带 `result/DONE` 的任务（§44），避免读到半写 JSON。
-按 §46 顺序执行八步 Gate，任何失败 -> INVALID_RESULT，不进 Viewer；
-stale（§48）单独标注 STALE_EVIDENCE 供 UI 提示，且不自动改写 TaskPack。
+按 §46 Gate pipeline 执行，并先校验 evidence.jsonl 行完整性；任何失败 ->
+INVALID_RESULT，不进 Viewer。stale（§48）单独标注 STALE_EVIDENCE 供 UI 提示，
+且不自动改写 TaskPack。
 """
 
 from __future__ import annotations
@@ -89,9 +90,18 @@ class ImportFailure(Exception):
         self.detail = detail or {}
 
 
+class EvidenceParseError(ValueError):
+    """A non-empty evidence.jsonl row cannot be parsed as TaskPackEvidence."""
+
+    def __init__(self, line_number: int, reason: str) -> None:
+        self.line_number = line_number
+        self.reason = reason
+        super().__init__(f"evidence.jsonl:{line_number}: {reason}")
+
+
 @dataclass
 class ImportReport:
-    """一次 import 的完整结果（八步 Gate 逐项 + grounding 指标）。"""
+    """一次 import 的完整结果（Gate pipeline + grounding 指标）。"""
 
     task_id: str
     task_path: Path
@@ -131,7 +141,7 @@ class TaskInfo:
 
 
 class TaskPackImporter:
-    """扫描 completed/ 并按八步 Gate 导入外部 Worker 的结果。
+    """扫描 completed/ 并按 Gate pipeline 导入外部 Worker 的结果。
 
     不自行并行调度 Worker（§42：V1 无自动多 Worker），只做读与验证。
     """
@@ -172,18 +182,31 @@ class TaskPackImporter:
             return None
 
     def _read_evidence(self, pack: Path) -> list[TaskPackEvidence]:
+        """Read evidence strictly; any non-empty malformed row is corruption."""
+
         p = pack / "evidence.jsonl"
         if not p.exists():
             return []
+        try:
+            lines = p.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeError) as exc:
+            reason = str(exc).splitlines()[0] if str(exc) else type(exc).__name__
+            raise EvidenceParseError(1, f"unable to read evidence file: {reason}") from exc
+
         out: list[TaskPackEvidence] = []
-        for line in p.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
+        for line_number, raw_line in enumerate(lines, start=1):
+            line = raw_line.strip()
             if not line:
                 continue
             try:
-                out.append(TaskPackEvidence.model_validate(json.loads(line)))
-            except Exception:
-                continue
+                raw = json.loads(line)
+                out.append(TaskPackEvidence.model_validate(raw))
+            except Exception as exc:
+                detail = str(exc).splitlines()[0] if str(exc) else type(exc).__name__
+                raise EvidenceParseError(
+                    line_number,
+                    f"{type(exc).__name__}: {detail}",
+                ) from exc
         return out
 
     def _read_result(self, pack: Path) -> tuple[ResultEnvelope, dict] | None:
@@ -243,7 +266,14 @@ class TaskPackImporter:
                 return p
         return None
 
-    # ---------------- 八步 Gate（§46） ----------------
+    # ---------------- Gate pipeline（§46 + evidence integrity） ----------------
+
+    def _gate_evidence_parse(self, pack: Path) -> list[GateResult]:
+        try:
+            self._read_evidence(pack)
+        except EvidenceParseError as exc:
+            return [GateResult("evidence_parse", False, str(exc))]
+        return [GateResult("evidence_parse", True)]
 
     def _gate_manifest(self, pack: Path) -> list[GateResult]:
         manifest = self._read_manifest(pack)
@@ -361,12 +391,13 @@ class TaskPackImporter:
     # ---------------- import ----------------
 
     def import_task(self, pack: Path) -> ImportReport:
-        """按 §46 顺序执行八步 Gate，任何失败 -> INVALID_RESULT。"""
+        """按 Gate pipeline 执行；任何失败 -> INVALID_RESULT。"""
         manifest = self._read_manifest(pack)
         task_id = manifest.task_id if manifest is not None else pack.name
         report = ImportReport(task_id=task_id, task_path=pack)
 
         gate_fns = [
+            self._gate_evidence_parse,
             self._gate_manifest,
             self._gate_schema,
             self._gate_task_id,
@@ -386,7 +417,13 @@ class TaskPackImporter:
                 break
 
         result = self._read_result(pack)
-        evidence = self._read_evidence(pack)
+        try:
+            evidence = self._read_evidence(pack)
+        except EvidenceParseError as exc:
+            evidence = []
+            if failed is None:
+                report.add("evidence_parse", False, str(exc))
+                failed = f"evidence_parse: {exc}"
         if result is not None and evidence:
             allowed = {e.chunk_id for e in evidence}
             rep = validate_draft(result[0], allowed)
