@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import coverage_policy
 from coverage_policy import discover_test_modules, inventory_errors, load_inventory
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +15,13 @@ def test_every_backend_test_module_is_classified() -> None:
     assert inventory_errors() == []
     inventory = load_inventory()
     assert set(inventory) == discover_test_modules()
+
+
+def test_new_unclassified_test_module_fails_inventory_guard(monkeypatch) -> None:
+    discovered = set(load_inventory()) | {"tests/test_new_unclassified.py"}
+    monkeypatch.setattr(coverage_policy, "discover_test_modules", lambda: discovered)
+    errors = coverage_policy.inventory_errors()
+    assert errors == ["unclassified test modules: ['tests/test_new_unclassified.py']"]
 
 
 def test_local_only_and_external_exclusions_are_explicitly_reasoned() -> None:
