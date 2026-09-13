@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.cognition.pipeline import cognition_doc_id
+from app.cognition.identity import cognition_doc_id
 from app.cognition.scanner import scan
 from app.core.config import Config
 from app.storage.migrations import init_schema

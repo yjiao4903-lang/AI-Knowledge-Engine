@@ -33,8 +33,14 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q --strict-markers"
 timeout = 300
+markers = [
+    "hosted_safe: deterministic backend coverage selected automatically by hosted/default pytest",
+    "local_only: requires explicitly user-provided local service/model/hardware state and is excluded by default",
+    "external_prohibited: requires an identity-bound external service and is never selected automatically",
+    "obsolete_dead: retained only as explicitly documented dead/obsolete coverage and excluded by default",
+]
 
 [tool.ruff]
 line-length = 100

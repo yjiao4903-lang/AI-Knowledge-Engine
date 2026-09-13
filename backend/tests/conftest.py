@@ -7,9 +7,16 @@ from pathlib import Path
 
 import pytest
 
-BACKEND_DIR = Path(__file__).resolve().parents[1]
+TESTS_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = TESTS_DIR.parent
 sys.path.insert(0, str(BACKEND_DIR))
+sys.path.insert(0, str(TESTS_DIR))
 
+from coverage_policy import (  # noqa: E402,F401
+    pytest_addoption,
+    pytest_collection_modifyitems,
+    pytest_ignore_collect,
+)
 from app.core.config import Config  # noqa: E402
 from app.storage.migrations import init_schema  # noqa: E402
 from app.storage.sqlite import connect  # noqa: E402
