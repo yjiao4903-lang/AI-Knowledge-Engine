@@ -1,9 +1,11 @@
-"""External Worker deterministic contracts, including P0 launch policy."""
+"""External Worker deterministic contracts and P0 execution-policy regressions."""
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -16,9 +18,9 @@ from app.taskpack.launcher import (
     LauncherUnavailableError,
 )
 from app.taskpack.worker_supervisor import (
-    _FIXED_INSTRUCTION,
     build_external_command,
     finalize_after_exit,
+    main as supervisor_main,
     run_supervisor,
 )
 
@@ -34,8 +36,24 @@ def _ready_pack(tmp_path: Path, task_id: str = "20260902_120000_test") -> tuple[
     return root, pack
 
 
+def _processing_pack(tmp_path: Path) -> tuple[Path, Path]:
+    root, source = _ready_pack(tmp_path)
+    processing = root / "processing" / source.name
+    processing.parent.mkdir(parents=True)
+    source.rename(processing)
+    return root, processing
+
+
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _snapshot(path: Path) -> list[tuple[str, bytes | None]]:
+    rows: list[tuple[str, bytes | None]] = []
+    for item in sorted(path.rglob("*")):
+        rel = item.relative_to(path).as_posix()
+        rows.append((rel, item.read_bytes() if item.is_file() else None))
+    return rows
 
 
 def test_launcher_registry_is_fixed_but_never_advertises_api_availability(tmp_path):
@@ -96,126 +114,166 @@ def test_unknown_launcher_still_fails_closed(tmp_path):
     assert not (root / "processing" / pack.name).exists()
 
 
-def test_worker_commands_are_fixed_headless_entrypoints_for_deterministic_unit_testing():
-    """Command construction remains testable without executing any external process."""
-
-    codex = build_external_command("codex", "/usr/local/bin/codex")
-    claude = build_external_command("claude", "/usr/local/bin/claude")
-
-    assert codex[:3] == ["/usr/local/bin/codex", "exec", "--skip-git-repo-check"]
-    assert codex[-1] == _FIXED_INSTRUCTION
-    assert claude[:2] == ["/usr/local/bin/claude", "-p"]
-    assert claude[-1] == _FIXED_INSTRUCTION
-    assert "AGENT_INSTRUCTION.md" in _FIXED_INSTRUCTION
-    assert len(_FIXED_INSTRUCTION) < 300
-
-    with pytest.raises(ValueError):
-        build_external_command("arbitrary", "/tmp/evil")
+@pytest.mark.parametrize("kind", ["codex", "claude", "terminal"])
+def test_command_builder_never_returns_external_worker_argv(kind):
+    with pytest.raises(ExternalExecutionPolicyError, match=USER_RUN_REQUIRED):
+        build_external_command(kind, f"/should/not/be/inspected/{kind}")
 
 
-def test_supervisor_completed_marker_moves_processing_to_completed_with_fake_process(tmp_path):
-    root, source = _ready_pack(tmp_path)
-    processing = root / "processing" / source.name
-    processing.parent.mkdir(parents=True)
-    source.rename(processing)
+@pytest.mark.parametrize("kind", ["codex", "claude", "terminal"])
+def test_direct_supervisor_callable_is_user_run_required_with_zero_side_effects(tmp_path, kind):
+    root, processing = _processing_pack(tmp_path)
+    before = _snapshot(root)
+    calls = {"popen": 0}
 
-    def fake_external(_argv, **kwargs):
-        cwd = Path(kwargs["cwd"])
+    def forbidden_popen(*_args, **_kwargs):
+        calls["popen"] += 1
+        raise AssertionError("P0 supervisor path must never create a subprocess")
 
-        class FakeProcess:
-            def wait(self):
-                (cwd / "result" / "DONE").write_text("\n", encoding="utf-8")
-                return 0
+    with pytest.raises(ExternalExecutionPolicyError, match=USER_RUN_REQUIRED):
+        run_supervisor(
+            root=root,
+            task_id=processing.name,
+            launcher=kind,
+            executable=f"/fake/{kind}",
+            popen=forbidden_popen,
+        )
 
-        return FakeProcess()
+    assert calls["popen"] == 0
+    assert processing.is_dir()
+    assert _snapshot(root) == before
+    result = processing / "result"
+    assert not (result / "launcher_stdout.log").exists()
+    assert not (result / "launcher_stderr.log").exists()
+    assert not (result / "launcher_error.json").exists()
+    assert not (result / "DONE").exists()
+    assert not (result / "FAILED").exists()
+    assert not (root / "completed" / processing.name).exists()
+    assert not (root / "failed" / processing.name).exists()
 
-    rc = run_supervisor(
-        root=root,
-        task_id=processing.name,
-        launcher="codex",
-        executable="/usr/local/bin/codex",
-        popen=fake_external,
+
+def test_direct_supervisor_cli_returns_nonzero_without_moving_taskpack(
+    tmp_path, monkeypatch, capsys
+):
+    root, processing = _processing_pack(tmp_path)
+    before = _snapshot(root)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "worker_supervisor",
+            "--root",
+            str(root),
+            "--task-id",
+            processing.name,
+            "--launcher",
+            "codex",
+            "--executable",
+            "/fake/codex",
+        ],
     )
 
-    assert rc == 0
-    assert not processing.exists()
-    assert (root / "completed" / source.name / "result" / "DONE").exists()
+    rc = supervisor_main()
+
+    captured = capsys.readouterr()
+    assert rc != 0
+    assert USER_RUN_REQUIRED in captured.err
+    assert processing.is_dir()
+    assert _snapshot(root) == before
 
 
-def test_supervisor_seals_only_deterministic_run_meta_hashes(tmp_path):
-    root, source = _ready_pack(tmp_path)
-    (source / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
-    processing = root / "processing" / source.name
-    processing.parent.mkdir(parents=True)
-    source.rename(processing)
+def test_static_taskpack_runtime_contains_no_process_spawn_calls():
+    """Regression guard against reintroducing executable TaskPack orchestration."""
 
-    def fake_external(_argv, **kwargs):
-        cwd = Path(kwargs["cwd"])
+    taskpack_dir = Path(__file__).resolve().parents[2] / "app" / "taskpack"
+    forbidden = {
+        "subprocess.Popen",
+        "subprocess.run",
+        "subprocess.call",
+        "subprocess.check_call",
+        "subprocess.check_output",
+        "os.system",
+        "os.popen",
+    }
+    violations: list[str] = []
 
-        class FakeProcess:
-            def wait(self):
-                meta = {
-                    "worker_tool": "codex",
-                    "provider": "openai",
-                    "model": "fixture-model",
-                    "model_version": None,
-                    "started_at": "2026-09-06T01:00:00+00:00",
-                    "completed_at": "2026-09-06T01:01:00+00:00",
-                    "prompt_version": "taskpack-synthesis-v1",
-                    "prompt_sha256": None,
-                    "task_manifest_sha256": None,
-                    "input_tokens": None,
-                    "output_tokens": None,
-                }
-                (cwd / "result" / "run_meta.json").write_text(
-                    json.dumps(meta), encoding="utf-8"
-                )
-                (cwd / "result" / "DONE").write_text("\n", encoding="utf-8")
-                return 0
+    for path in sorted(taskpack_dir.glob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        aliases: dict[str, str] = {}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name in {"subprocess", "os"}:
+                        aliases[alias.asname or alias.name] = alias.name
+            elif isinstance(node, ast.ImportFrom) and node.module in {"subprocess", "os"}:
+                for alias in node.names:
+                    aliases[alias.asname or alias.name] = f"{node.module}.{alias.name}"
 
-        return FakeProcess()
+        def resolve(expr: ast.expr) -> str | None:
+            if isinstance(expr, ast.Name):
+                return aliases.get(expr.id, expr.id)
+            if isinstance(expr, ast.Attribute):
+                base = resolve(expr.value)
+                return f"{base}.{expr.attr}" if base else expr.attr
+            return None
 
-    rc = run_supervisor(
-        root=root,
-        task_id=processing.name,
-        launcher="codex",
-        executable="/usr/local/bin/codex",
-        popen=fake_external,
-    )
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            name = resolve(node.func)
+            if name in forbidden or (isinstance(node.func, ast.Attribute) and node.func.attr == "popen"):
+                violations.append(f"{path.name}:{node.lineno}:{name}")
 
-    assert rc == 0
-    completed = root / "completed" / source.name
-    meta = json.loads((completed / "result" / "run_meta.json").read_text(encoding="utf-8"))
-    assert meta["prompt_sha256"] == _sha256(completed / "AGENT_INSTRUCTION.md")
-    assert meta["task_manifest_sha256"] == _sha256(completed / "manifest.json")
-    assert meta["worker_tool"] == "codex"
-    assert meta["model"] == "fixture-model"
-    assert meta["started_at"] == "2026-09-06T01:00:00+00:00"
-    assert meta["input_tokens"] is None
+    assert violations == []
 
 
-def test_supervisor_does_not_fabricate_missing_run_meta(tmp_path):
-    root, source = _ready_pack(tmp_path)
-    (source / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
-    processing = root / "processing" / source.name
-    processing.parent.mkdir(parents=True)
-    source.rename(processing)
+def test_deterministic_finalizer_seals_existing_run_meta_without_external_execution(tmp_path):
+    root, processing = _processing_pack(tmp_path)
+    (processing / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
+    meta = {
+        "worker_tool": "codex",
+        "provider": "openai",
+        "model": "fixture-model",
+        "model_version": None,
+        "started_at": "2026-09-06T01:00:00+00:00",
+        "completed_at": "2026-09-06T01:01:00+00:00",
+        "prompt_version": "taskpack-synthesis-v1",
+        "prompt_sha256": None,
+        "task_manifest_sha256": None,
+        "input_tokens": None,
+        "output_tokens": None,
+    }
+    (processing / "result" / "run_meta.json").write_text(json.dumps(meta), encoding="utf-8")
     (processing / "result" / "DONE").write_text("\n", encoding="utf-8")
 
-    target = finalize_after_exit(processing, root, launcher="codex", exit_code=0)
+    target = finalize_after_exit(processing, root, launcher="manual", exit_code=0)
 
-    assert target == root / "completed" / source.name
+    assert target == root / "completed" / processing.name
+    sealed = json.loads((target / "result" / "run_meta.json").read_text(encoding="utf-8"))
+    assert sealed["prompt_sha256"] == _sha256(target / "AGENT_INSTRUCTION.md")
+    assert sealed["task_manifest_sha256"] == _sha256(target / "manifest.json")
+    assert sealed["worker_tool"] == "codex"
+    assert sealed["model"] == "fixture-model"
+    assert sealed["started_at"] == "2026-09-06T01:00:00+00:00"
+    assert sealed["input_tokens"] is None
+
+
+def test_deterministic_finalizer_does_not_fabricate_missing_run_meta(tmp_path):
+    root, processing = _processing_pack(tmp_path)
+    (processing / "manifest.json").write_text('{"task_id":"test"}\n', encoding="utf-8")
+    (processing / "result" / "DONE").write_text("\n", encoding="utf-8")
+
+    target = finalize_after_exit(processing, root, launcher="manual", exit_code=0)
+
+    assert target == root / "completed" / processing.name
     assert not (target / "result" / "run_meta.json").exists()
 
 
-def test_missing_worker_marker_becomes_failed_with_diagnostic(tmp_path):
-    root, source = _ready_pack(tmp_path)
-    processing = root / "processing" / source.name
-    processing.parent.mkdir(parents=True)
-    source.rename(processing)
+def test_missing_return_marker_becomes_failed_with_diagnostic(tmp_path):
+    root, processing = _processing_pack(tmp_path)
 
-    target = finalize_after_exit(processing, root, launcher="codex", exit_code=0)
+    target = finalize_after_exit(processing, root, launcher="manual", exit_code=0)
 
-    assert target == root / "failed" / source.name
+    assert target == root / "failed" / processing.name
     assert (target / "result" / "FAILED").exists()
     assert (target / "result" / "launcher_error.json").exists()
