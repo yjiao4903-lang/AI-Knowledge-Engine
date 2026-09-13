@@ -20,7 +20,7 @@
     "tests/taskpack/test_validation_cache.py": {"classification": "HOSTED_SAFE", "reason": "Deterministic synthetic/temp/fake/local-runner coverage; selected automatically by hosted CI."},
     "tests/test_api.py": {"classification": "LOCAL_ONLY", "reason": "Requires local Qdrant plus inference/model startup and indexes fixture documents through the real application lifecycle."},
     "tests/test_chunker.py": {"classification": "HOSTED_SAFE", "reason": "Deterministic synthetic/temp/fake/local-runner coverage; selected automatically by hosted CI."},
-    "tests/test_cognition_ingest.py": {"classification": "HOSTED_SAFE", "reason": "Deterministic synthetic/temp/fake/local-runner coverage; selected automatically by hosted CI."},
+    "tests/test_cognition_ingest.py": {"classification": "LOCAL_ONLY", "reason": "Integration suite instantiates the real DenseRetriever and requires the local embedding model plus a live Qdrant collection."},
     "tests/test_cognition_scanner.py": {"classification": "HOSTED_SAFE", "reason": "Deterministic synthetic/temp/fake/local-runner coverage; selected automatically by hosted CI."},
     "tests/test_coverage_contract.py": {"classification": "HOSTED_SAFE", "reason": "Machine-enforced coverage inventory and CI selection contract regression."},
     "tests/test_dense_index.py": {"classification": "LOCAL_ONLY", "reason": "Requires a local Qdrant collection and embedding model through fixture_retrieval."},
