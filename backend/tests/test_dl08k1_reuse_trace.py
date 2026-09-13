@@ -419,3 +419,102 @@ def test_api_returns_read_model_payload_and_malformed_marker_stays_http_200(tmp_
         assert any(row["code"] == "formal_handoff_unreadable" for row in body["quality"]["issues"])
     finally:
         conn.close()
+
+
+def test_formal_marker_semantic_corruption_is_fail_closed(tmp_path):
+    cfg, conn, task_a, _task_b = _environment(tmp_path)
+    marker_path = task_a / "result" / "formal_handoffs" / "rc-task-a.json"
+    baseline = json.loads(marker_path.read_text(encoding="utf-8"))
+
+    def assert_invalid(marker: dict, expected_codes: set[str]) -> None:
+        _write_json(marker_path, marker)
+        body = ReuseTraceReadService(cfg, conn).build(OBJECT_ID)
+        event = next(
+            row for row in body["return_events"] if row["candidate_id"] == "rc-task-a"
+        )
+        assert event["formal_handoff"] == {
+            "state": "invalid",
+            "proposal_id": None,
+            "proposal_item_id": None,
+            "cognition_uuid": None,
+            "marker_source_path": None,
+            "previewed_at": None,
+            "applied_at": None,
+            "formal_write_performed": False,
+        }
+        codes = {
+            row["code"]
+            for row in body["quality"]["issues"]
+            if row["candidate_id"] == "rc-task-a"
+        }
+        assert expected_codes <= codes
+
+    try:
+        marker = json.loads(json.dumps(baseline))
+        marker["task_id"] = "wrong-task"
+        marker["candidate_id"] = "wrong-candidate"
+        assert_invalid(
+            marker,
+            {
+                "formal_handoff_task_id_mismatch",
+                "formal_handoff_candidate_id_mismatch",
+            },
+        )
+
+        marker = json.loads(json.dumps(baseline))
+        marker["formal_write_performed"] = "false"
+        assert_invalid(marker, {"formal_write_flag_invalid"})
+
+        marker = json.loads(json.dumps(baseline))
+        marker["apply"] = None
+        marker["formal_write_performed"] = True
+        assert_invalid(marker, {"formal_handoff_apply_required"})
+
+        marker = json.loads(json.dumps(baseline))
+        marker["preview"] = None
+        assert_invalid(marker, {"formal_handoff_apply_without_preview"})
+
+        marker = json.loads(json.dumps(baseline))
+        marker["schema_version"] = "999"
+        assert_invalid(marker, {"formal_handoff_schema_invalid"})
+
+        marker = json.loads(json.dumps(baseline))
+        marker["target_identities"][0]["cognition_target_id"] = "not-a-uuid"
+        assert_invalid(marker, {"formal_identity_mapping_unreadable"})
+    finally:
+        conn.close()
+
+
+def test_unresolved_questions_require_canonical_imported_gate_marker(tmp_path):
+    cfg, conn, task_a, task_b = _environment(tmp_path)
+    imported = task_a / "result" / "IMPORTED"
+    try:
+        imported.unlink()
+        body = ReuseTraceReadService(cfg, conn).build(OBJECT_ID)
+
+        # Candidate and formal-handoff history remain visible, but neither can
+        # bootstrap Importer/Gate authority for local unresolved questions.
+        event_a = next(
+            row for row in body["return_events"] if row["candidate_id"] == "rc-task-a"
+        )
+        assert event_a["formal_handoff"]["state"] == "present"
+        assert not any(row["task_id"] == "task-a" for row in body["unresolved_questions"])
+        assert any(row["task_id"] == "task-b" for row in body["unresolved_questions"])
+        assert any(
+            row["code"] == "result_gate_unproven" and row["task_id"] == "task-a"
+            for row in body["quality"]["issues"]
+        )
+
+        # INVALID dominates even when IMPORTED is present.
+        imported.write_text("", encoding="utf-8")
+        _write_json(task_a / "result" / "INVALID", {"reason": "fixture invalid"})
+        invalid_body = ReuseTraceReadService(cfg, conn).build(OBJECT_ID)
+        assert not any(
+            row["task_id"] == "task-a" for row in invalid_body["unresolved_questions"]
+        )
+        assert any(
+            row["code"] == "result_gate_unproven" and row["task_id"] == "task-a"
+            for row in invalid_body["quality"]["issues"]
+        )
+    finally:
+        conn.close()
