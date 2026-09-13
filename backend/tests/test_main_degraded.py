@@ -34,8 +34,8 @@ def test_app_starts_and_runs_api_when_index_pipeline_unavailable(tmp_path, monke
         def __init__(self, *args, **kwargs):
             raise RuntimeError("qdrant unavailable")
 
-    monkeypatch.setattr(main, "InferenceManager", lambda cfg: _Manager())
-    monkeypatch.setattr(main, "DenseRetriever", lambda cfg: object())
+    monkeypatch.setattr(main, "InferenceManager", lambda cfg, auto_start=False: _Manager())
+    monkeypatch.setattr(main, "LazyDenseRetriever", lambda cfg: object())
     monkeypatch.setattr(main, "RerankerService", lambda cfg, manager: None)
     monkeypatch.setattr(main, "SearchEngine", lambda *args, **kwargs: object())
     monkeypatch.setattr("app.indexing.pipeline.IndexPipeline", _UnavailablePipeline)
@@ -54,7 +54,7 @@ def test_app_starts_and_runs_api_when_index_pipeline_unavailable(tmp_path, monke
 
 
 def test_dense_search_reports_service_unavailable_without_qdrant():
-    body = search.SearchRequest(query="test")
+    body = search.SearchRequest(query="test", options=search.SearchOptions(mode="dense"))
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(qdrant_available=False)))
     try:
         search.search(body, request)
